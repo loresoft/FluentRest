@@ -219,7 +219,7 @@ namespace FluentRest
 
             var httpClient = new HttpClient(HttpHandler, DisposeHandler);
             
-            var headerValue = new ProductInfoHeaderValue(ThisAssembly.AssemblyProduct, ThisAssembly.AssemblyFileVersion);
+            var headerValue = new ProductInfoHeaderValue(ThisAssembly.AssemblyProduct, ThisAssembly.AssemblyVersion);
             httpClient.DefaultRequestHeaders.UserAgent.Add(headerValue);
 
             var httpResponse = await httpClient
