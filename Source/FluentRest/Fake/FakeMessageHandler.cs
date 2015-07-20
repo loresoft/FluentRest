@@ -73,11 +73,8 @@ namespace FluentRest.Fake
             if (!response.IsSuccessStatusCode || response.Content == null || response.StatusCode == HttpStatusCode.NoContent)
                 return;
 
-            using (var httpStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-            using (var filestream = new FileStream(contentPath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, true))
-            {
-                await httpStream.CopyToAsync(filestream, bufferSize).ConfigureAwait(false);
-            }
+            var contents = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+            File.WriteAllBytes(contentPath, contents);
         }
 
         private static Task SaveResponse(HttpResponseMessage response, string responsePath)
@@ -137,8 +134,8 @@ namespace FluentRest.Fake
 
                 // copy headers
                 foreach (var header in fakeResponse.ResponseHeaders)
-                    httpContent.Headers.Add(header.Key, header.Value);
-                
+                    httpContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
+
                 httpResponse.Content = httpContent;
 
                 return httpResponse;
@@ -187,7 +184,7 @@ namespace FluentRest.Fake
 
         private static string RequestHash(HttpRequestMessage request)
         {
-            // use ToString to as finger print
+            // use ToString as fingerprint
             var requestString = request.ToString();
             var inputBytes = Encoding.UTF8.GetBytes(requestString);
 

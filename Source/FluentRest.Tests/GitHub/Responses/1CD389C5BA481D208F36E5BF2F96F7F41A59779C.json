@@ -1,0 +1,87 @@
+{
+  "StatusCode": 200,
+  "ReasonPhrase": "OK",
+  "ResponseHeaders": {
+    "Status": [
+      "200 OK"
+    ],
+    "X-RateLimit-Limit": [
+      "5000"
+    ],
+    "X-RateLimit-Remaining": [
+      "4986"
+    ],
+    "X-RateLimit-Reset": [
+      "1437367540"
+    ],
+    "X-OAuth-Scopes": [
+      "gist, notifications, read:org, repo, user"
+    ],
+    "X-Accepted-OAuth-Scopes": [
+      ""
+    ],
+    "Vary": [
+      "Accept",
+      "Authorization",
+      "Cookie",
+      "X-GitHub-OTP",
+      "Accept-Encoding"
+    ],
+    "X-GitHub-Media-Type": [
+      "github.v3"
+    ],
+    "X-XSS-Protection": [
+      "1; mode=block"
+    ],
+    "X-Frame-Options": [
+      "deny"
+    ],
+    "Content-Security-Policy": [
+      "default-src 'none'"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Expose-Headers": [
+      "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "X-GitHub-Request-Id": [
+      "3294FE8F:0556:FF18BEE:55AC74EF"
+    ],
+    "Strict-Transport-Security": [
+      "max-age=31536000; includeSubdomains; preload"
+    ],
+    "X-Content-Type-Options": [
+      "nosniff"
+    ],
+    "X-Served-By": [
+      "139317cebd6caf9cd03889139437f00b"
+    ],
+    "Cache-Control": [
+      "max-age=60, s-maxage=60, private"
+    ],
+    "Date": [
+      "Mon, 20 Jul 2015 04:11:27 GMT"
+    ],
+    "ETag": [
+      "\"ad05c48379d410420716a0b0373cb684\""
+    ],
+    "Server": [
+      "GitHub.com"
+    ]
+  },
+  "ContentHeaders": {
+    "Content-Length": [
+      "3918"
+    ],
+    "Content-Type": [
+      "application/json; charset=utf-8"
+    ],
+    "Last-Modified": [
+      "Mon, 20 Jul 2015 03:40:43 GMT"
+    ]
+  }
+}

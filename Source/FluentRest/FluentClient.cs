@@ -218,6 +218,8 @@ namespace FluentRest
                 .ConfigureAwait(false);
 
             var httpClient = new HttpClient(HttpHandler, DisposeHandler);
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("FluentRest", "1.0.0.0"));
+
             var httpResponse = await httpClient
                 .SendAsync(httpRequest)
                 .ConfigureAwait(false);

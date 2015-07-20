@@ -75,13 +75,46 @@
   <ItemGroup>
     <Compile Include="EchoTests.cs" />
     <Compile Include="EchoResult.cs" />
-    <Compile Include="GoogleTests.cs" />
+    <Compile Include="GitHub\GitHubTests.cs" />
+    <Compile Include="GitHub\Models\Issue.cs" />
+    <Compile Include="GitHub\Models\Label.cs" />
+    <Compile Include="GitHub\Models\Milestone.cs" />
+    <Compile Include="GitHub\Models\Organization.cs" />
+    <Compile Include="GitHub\Models\Owner.cs" />
+    <Compile Include="GitHub\Models\PullRequest.cs" />
+    <Compile Include="GitHub\Models\Repository.cs" />
+    <Compile Include="GitHub\Models\User.cs" />
+    <Compile Include="Google\Maps\GoogleTests.cs" />
+    <Compile Include="Google\Maps\Models\AddressComponent.cs" />
+    <Compile Include="Google\Maps\Models\Geometry.cs" />
+    <Compile Include="Google\Maps\Models\GeocodeResponse.cs" />
+    <Compile Include="Google\Maps\Models\Location.cs" />
+    <Compile Include="Google\Maps\Models\GeocodeResult.cs" />
+    <Compile Include="Google\Maps\Models\Viewport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="GitHub\Responses\1CD389C5BA481D208F36E5BF2F96F7F41A59779C.data">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="GitHub\Responses\1CD389C5BA481D208F36E5BF2F96F7F41A59779C.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="GitHub\Responses\8979EE55D90B34E9BD48C6D48B9D3D1CA096E0D4.data">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="GitHub\Responses\8979EE55D90B34E9BD48C6D48B9D3D1CA096E0D4.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="GitHub\Responses\F31A91B2B5952B03C70AD67B8041515304B5940F.data">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="GitHub\Responses\F31A91B2B5952B03C70AD67B8041515304B5940F.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FluentRest\FluentRest.csproj">
@@ -92,6 +125,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
