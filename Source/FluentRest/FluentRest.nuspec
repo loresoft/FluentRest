@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata>
+    <id>FluentRest</id>
+    <version>1.0.0</version>
+    <authors>LoreSoft</authors>
+    <owners>LoreSoft</owners>
+    <licenseUrl>https://raw.githubusercontent.com/loresoft/FluentRest/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/loresoft/FluentRest</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Fluent wrapper over HttpClient to make REST calls easier</description>
+    <summary>Fluent wrapper over HttpClient</summary>
+    <copyright>Copyright (c) 2015, LoreSoft</copyright>
+    <language>en-US</language>
+    <tags>http fluent rest httpclient</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\FluentRest.dll" target="lib\net45\FluentRest.dll" />
+    <file src="bin\Release\FluentRest.pdb" target="lib\net45\FluentRest.pdb" />
+    <file src="bin\Release\FluentRest.XML" target="lib\net45\FluentRest.xml" />
+    <file src="**\*.cs" target="src" />
+    <file src="..\GlobalAssemblyInfo.cs" target="src" />
+  </files>
+</package>

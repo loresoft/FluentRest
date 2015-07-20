@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <BuildFolder>$(MSBuildProjectDirectory)\Build</BuildFolder>
+    <ToolFolder>$(MSBuildProjectDirectory)\Tools</ToolFolder>
+    <SourceFolder>$(MSBuildProjectDirectory)\Source</SourceFolder>
+
+    <MSBuildCommunityTasksPath>$(ToolFolder)\MSBuildTasks\tools</MSBuildCommunityTasksPath>
+    <XUnitTasksPath>$(ToolFolder)\xunit.runner.console\tools</XUnitTasksPath>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.targets"/>
+
+  <!-- Version Number -->
+  <PropertyGroup>
+    <BuildNumber Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' ">$(APPVEYOR_BUILD_NUMBER)</BuildNumber>
+    <BuildNumber Condition=" '$(BUILD_NUMBER)' != '' ">$(BUILD_NUMBER)</BuildNumber>
+    <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
+    
+    <BuildConfiguration  Condition=" '$(BuildConfiguration)' == '' ">Release</BuildConfiguration>
+
+    <Major Condition=" '$(Major)' == '' ">1</Major>
+    <Minor Condition=" '$(Minor)' == '' ">0</Minor>
+    <Revision Condition=" '$(Revision)' == '' ">0</Revision>
+
+    <AssemblyVersion>$(Major).0.0.0</AssemblyVersion>
+    <AssemblyFileVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</AssemblyFileVersion>
+    <AssemblyInformationalVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</AssemblyInformationalVersion>
+    <PackageVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</PackageVersion>
+  </PropertyGroup>
+
+
+  <Target Name="Clean">
+    <DeleteTree Directories="**\obj\**;**\bin\**" />
+    <DeleteTree Directories="$(BuildFolder)" ContinueOnError="true" />
+  </Target>
+
+  <Target Name="Version">
+    <Time>
+      <Output TaskParameter="Year" PropertyName="Year" />
+    </Time>
+
+    <Message Text="Version: $(AssemblyInformationalVersion)"/>
+
+    <AssemblyInfo CodeLanguage="CS"
+                  OutputFile="$(SourceFolder)\GlobalAssemblyInfo.cs"
+                  GenerateClass="true"
+                  AssemblyProduct="FluentRest"
+                  AssemblyCompany="LoreSoft"
+                  AssemblyCopyright="Copyright © $(Year) LoreSoft"
+                  AssemblyConfiguration="$(BuildConfiguration)"
+                  AssemblyVersion="$(AssemblyVersion)"
+                  AssemblyFileVersion="$(AssemblyFileVersion)"
+                  AssemblyInformationalVersion="$(AssemblyInformationalVersion)"
+                  AssemblyTrademark=""
+                  ComVisible="false"/>
+  </Target>
+
+  <Target Name="Compile" DependsOnTargets="Clean;Version">
+    <MSBuild Projects="$(SourceFolder)\FluentRest.sln"
+             Properties="Configuration=$(BuildConfiguration)"/>
+  </Target>
+
+  <Target Name="Test" DependsOnTargets="Compile">
+    <ItemGroup>
+      <TestAssemblies Include="$(SourceFolder)\**\*.Tests\bin\$(BuildConfiguration)\*.Tests.dll"/>
+    </ItemGroup>
+
+    <exec Command="$(XUnitTasksPath)\xunit.console.exe &quot;%(TestAssemblies.Identity)&quot; -appveyor"/>
+  </Target>
+
+
+  <Target Name="Package" DependsOnTargets="Test">
+    <MakeDir Directories="$(BuildFolder)" Condition="!EXISTS($(BuildFolder))" />
+
+    <ItemGroup>
+      <NuGetFiles Include="$(SourceFolder)\**\*.nuspec"/>
+    </ItemGroup>
+
+    <NuGetPack File="%(NuGetFiles.Identity)"
+               OutputDirectory="$(BuildFolder)"
+               Version="$(PackageVersion)"
+               Symbols="true"  />
+
+  </Target>
+
+  <Target Name="Publish" DependsOnTargets="Package">
+
+    <!-- 
+      Requires API key to be set ...
+      nuget.exe setapikey <myget-key> -Source https://www.myget.org/F/loresoft/
+    -->
+
+    <ItemGroup>
+      <NuGetPackages Include="$(BuildFolder)\*.nupkg" Exclude="$(BuildFolder)\*.symbols.nupkg"/>
+      <NuGetSymbols Include="$(BuildFolder)\*.symbols.nupkg" />
+    </ItemGroup>
+
+    <!-- Push to MyGet on Build -->
+    <NuGetPush File="%(NuGetPackages.Identity)"
+               Source="https://www.myget.org/F/loresoft/" />
+
+    <!-- Push to Symbols on Build -->
+    <NuGetPush File="%(NuGetSymbols.Identity)"
+               Source="https://nuget.symbolsource.org/MyGet/loresoft" />
+
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="Package">
+  </Target>
+
+</Project>

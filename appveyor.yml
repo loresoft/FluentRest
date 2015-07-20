@@ -1,0 +1,18 @@
+os: Visual Studio 2015 RC
+version: 1.0.0.{build}
+environment:
+  Major: 1
+  Minor: 0
+  Revision: 0
+configuration: Release
+before_build:
+- .\bootstrap.cmd
+build:
+  project: master.proj
+  verbosity: minimal
+test: off
+artifacts:
+- path: Build\*.nupkg
+deploy:
+- provider: Environment
+  name: MyGet
