@@ -95,11 +95,12 @@ namespace FluentRest.Fake
             GetPaths(request, out responsePath, out contentPath);
 
             if (!File.Exists(responsePath))
-                return new HttpResponseMessage(HttpStatusCode.NotFound)
-                {
-                    RequestMessage = request,
-                    ReasonPhrase = "Response file not found."
-                };
+            {
+                var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
+                httpResponseMessage.RequestMessage = request;
+                httpResponseMessage.ReasonPhrase = $"Response file '{responsePath}' not found";
+                return httpResponseMessage;
+            }
 
             var httpContent = LoadContent(contentPath);
 
