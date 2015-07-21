@@ -37,7 +37,7 @@ namespace FluentRest
             if (data == null)
                 return null;
 
-            var json = await Task.Run(() => JsonConvert.SerializeObject(data, Settings)).ConfigureAwait(false);
+            var json = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(data, Settings)).ConfigureAwait(false);
             var stringContent = new StringContent(json, Encoding.UTF8, ContentType);
 
             return stringContent;
@@ -52,7 +52,7 @@ namespace FluentRest
         public async Task<TData> DeserializeAsync<TData>(HttpContent content)
         {
             var json = await content.ReadAsStringAsync().ConfigureAwait(false);
-            var data = await Task.Run(() => JsonConvert.DeserializeObject<TData>(json, Settings)).ConfigureAwait(false);
+            var data = await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<TData>(json, Settings)).ConfigureAwait(false);
 
             return data;
         }

@@ -1,6 +1,6 @@
 using System;
 
-namespace FluentRest.Headers
+namespace FluentRest
 {
     /// <summary>
     /// Contains the standard set of headers applicable to an HTTP request.

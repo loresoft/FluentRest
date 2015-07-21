@@ -47,14 +47,14 @@
                   OutputFile="$(SourceFolder)\GlobalAssemblyInfo.cs"
                   GenerateClass="true"
                   AssemblyProduct="FluentRest"
+                  AssemblyDescription="Fluent wrapper over HttpClient"
                   AssemblyCompany="LoreSoft"
                   AssemblyCopyright="Copyright © $(Year) LoreSoft"
                   AssemblyConfiguration="$(BuildConfiguration)"
                   AssemblyVersion="$(AssemblyVersion)"
                   AssemblyFileVersion="$(AssemblyFileVersion)"
                   AssemblyInformationalVersion="$(AssemblyInformationalVersion)"
-                  AssemblyTrademark=""
-                  ComVisible="false"/>
+                  AssemblyTrademark=""/>
   </Target>
 
   <Target Name="Compile" DependsOnTargets="Clean;Version">

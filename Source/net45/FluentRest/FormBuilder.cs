@@ -46,7 +46,9 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(name));
 
             var v = value ?? string.Empty;
-            Request.FormData.Add(name, v);
+
+            var list = Request.FormData.GetOrAdd(name, n => new List<string>());
+            list.Add(v);
 
             return this as TBuilder;
         }
@@ -58,15 +60,10 @@ namespace FluentRest
         /// <param name="value">The form parameter value.</param>
         /// <returns>A fluent request builder.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-        public TBuilder FormValue(string name, object value)
+        public TBuilder FormValue<T>(string name, object value)
         {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
-
             var v = value != null ? Convert.ToString(value) : string.Empty;
-            Request.FormData.Add(name, v);
-
-            return this as TBuilder;
+            return FormValue(name, v);
         }
 
         /// <summary>
@@ -83,7 +80,7 @@ namespace FluentRest
             foreach (var pair in data)
             {
                 var v = Convert.ToString(pair.Value);
-                Request.FormData.Add(pair.Key, v);
+                FormValue(pair.Key, v);
             }
 
             return this as TBuilder;
@@ -101,8 +98,7 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(data));
 
             foreach (var pair in data)
-                Request.FormData.Add(pair.Key, pair.Value);
-
+                FormValue(pair.Key, pair.Value);
 
             return this as TBuilder;
         }

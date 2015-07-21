@@ -9,19 +9,21 @@
 //------------------------------------------------------------------------------
 
 [assembly: System.Reflection.AssemblyProduct("FluentRest")]
+[assembly: System.Reflection.AssemblyDescription("Fluent wrapper over HttpClient")]
 [assembly: System.Reflection.AssemblyCompany("LoreSoft")]
 [assembly: System.Reflection.AssemblyCopyright("Copyright © 2015 LoreSoft")]
 [assembly: System.Reflection.AssemblyConfiguration("Release")]
 [assembly: System.Reflection.AssemblyVersion("1.0.0.0")]
 [assembly: System.Reflection.AssemblyFileVersion("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersion("1.0.0.0")]
-[assembly: System.Runtime.InteropServices.ComVisible(false)]
 
 
 
 internal sealed partial class ThisAssembly {
     
     internal const string AssemblyProduct = "FluentRest";
+    
+    internal const string AssemblyDescription = "Fluent wrapper over HttpClient";
     
     internal const string AssemblyCompany = "LoreSoft";
     

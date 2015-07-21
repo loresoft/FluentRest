@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata>
+    <id>FluentRest</id>
+    <version>1.0.0</version>
+    <authors>LoreSoft</authors>
+    <owners>LoreSoft</owners>
+    <licenseUrl>https://raw.githubusercontent.com/loresoft/FluentRest/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/loresoft/FluentRest</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Fluent wrapper over HttpClient to make REST calls easier</description>
+    <summary>Fluent wrapper over HttpClient</summary>
+    <copyright>Copyright (c) 2015, LoreSoft</copyright>
+    <language>en-US</language>
+    <tags>HTTP HttpClient REST Fluent</tags>
+    <dependencies>
+      <group>
+        <dependency id="Microsoft.Net.Http" version="2.2.29" />
+        <dependency id="Newtonsoft.Json" version="7.0.0" />
+      </group>
+      <group targetFramework="portable-net4+sl5+netcore45+wpa81+wp8">
+        <dependency id="Microsoft.Bcl.Async" version="1.0.168"/>
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="net40\FluentRest\bin\Release\FluentRest.dll" target="lib\net40\" />
+    <file src="net40\FluentRest\bin\Release\FluentRest.xml" target="lib\net40\" />
+    <file src="net40\FluentRest\bin\Release\FluentRest.pdb" target="lib\net40\" />
+
+    <file src="net45\FluentRest\bin\Release\FluentRest.dll" target="lib\net45\" />
+    <file src="net45\FluentRest\bin\Release\FluentRest.xml" target="lib\net45\" />
+    <file src="net45\FluentRest\bin\Release\FluentRest.pdb" target="lib\net45\" />
+
+    <file src="portable\FluentRest\bin\Release\FluentRest.dll" target="lib\portable-net4+sl5+netcore45+wpa81+wp8\" />
+    <file src="portable\FluentRest\bin\Release\FluentRest.xml" target="lib\portable-net4+sl5+netcore45+wpa81+wp8\" />
+    <file src="portable\FluentRest\bin\Release\FluentRest.pdb" target="lib\portable-net4+sl5+netcore45+wpa81+wp8\" />
+
+    <file src="net45\FluentRest\**\*.cs" target="src" />
+    <file src="GlobalAssemblyInfo.cs" target="src" />
+  </files>
+</package>

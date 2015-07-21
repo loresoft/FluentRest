@@ -66,25 +66,7 @@ namespace FluentRest
             if (value == null)
                 Request.Headers.Remove(name);
             else
-                Request.Headers[name] = value;
-
-            return this as TBuilder;
-        }
-
-        /// <summary>
-        /// Sets HTTP header with the specified <paramref name="name"/> and <paramref name="values"/>.
-        /// </summary>
-        /// <param name="name">The header name.</param>
-        /// <param name="values">The header values.</param>
-        /// <returns>A fluent request builder.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="name"/> is <see langword="null" />.</exception>
-        public TBuilder Header(string name, IEnumerable<string> values)
-        {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
-
-            foreach (var value in values)
-                Request.Headers.Add(name, value);
+                Request.Headers[name] = new List<string>(new[] { value });
 
             return this as TBuilder;
         }
@@ -177,7 +159,9 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(name));
 
             var v = value ?? string.Empty;
-            Request.QueryString.Add(name, v);
+
+            var list = Request.QueryString.GetOrAdd(name, n => new List<string>());
+            list.Add(v);
 
             return this as TBuilder;
 
@@ -197,9 +181,7 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(name));
 
             var v = value != null ? Convert.ToString(value) : string.Empty;
-            Request.QueryString.Add(name, v);
-
-            return this as TBuilder;
+            return QueryString(name, v);
         }
     }
 }

@@ -79,7 +79,7 @@ namespace FluentRest.Fake
 
         private static Task SaveResponse(HttpResponseMessage response, string responsePath)
         {
-            return Task.Run(() =>
+            return Task.Factory.StartNew(() =>
             {
                 var fakeResponse = Convert(response);
                 var json = JsonConvert.SerializeObject(fakeResponse, Formatting.Indented);
@@ -124,7 +124,7 @@ namespace FluentRest.Fake
 
         private static Task<HttpResponseMessage> LoadResponse(HttpContent httpContent, string responsePath)
         {
-            return Task.Run(() =>
+            return Task.Factory.StartNew(() =>
             {
                 var json = File.ReadAllText(responsePath);
                 var fakeResponse = JsonConvert.DeserializeObject<FakeResponseMessage>(json);

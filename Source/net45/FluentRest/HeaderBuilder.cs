@@ -1,7 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http.Headers;
-using HttpRequestHeaders = FluentRest.Headers.HttpRequestHeaders;
+using HttpRequestHeaders = FluentRest.HttpRequestHeaders;
 
 namespace FluentRest
 {
@@ -266,7 +267,7 @@ namespace FluentRest
             if (value == null)
                 Request.Headers.Remove(name);
             else
-                Request.Headers[name] = value;
+                Request.Headers[name] = new List<string>(new[] { value });
         }
 
         private void AppendHeader(string name, string value)
@@ -274,7 +275,8 @@ namespace FluentRest
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            Request.Headers.Add(name, value);
+            var list = Request.Headers.GetOrAdd(name, n => new List<string>());
+            list.Add(value);
         }
     }
 }

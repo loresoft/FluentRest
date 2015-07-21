@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Net;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 
@@ -17,9 +16,9 @@ namespace FluentRest
         /// </summary>
         public FluentRequest()
         {
-            Headers = new NameValueCollection();
-            FormData = new NameValueCollection();
-            QueryString = new NameValueCollection();
+            Headers = new Dictionary<string, ICollection<string>>();
+            FormData = new Dictionary<string, ICollection<string>>();
+            QueryString = new Dictionary<string, ICollection<string>>();
             Paths = new List<string>();
             Method = HttpMethod.Get;
         }
@@ -30,7 +29,7 @@ namespace FluentRest
         /// <value>
         /// The collection of HTTP request headers.
         /// </value>
-        public NameValueCollection Headers { get; set; }
+        public IDictionary<string, ICollection<string>> Headers { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of HTTP form data.
@@ -38,7 +37,7 @@ namespace FluentRest
         /// <value>
         /// The collection of HTTP form data.
         /// </value>
-        public NameValueCollection FormData { get; set; }
+        public IDictionary<string, ICollection<string>> FormData { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of URI query string parameters.
@@ -46,7 +45,7 @@ namespace FluentRest
         /// <value>
         /// The collection of URI query string parameters.
         /// </value>
-        public NameValueCollection QueryString { get; set; }
+        public IDictionary<string, ICollection<string>> QueryString { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of URI segment paths.
@@ -54,7 +53,7 @@ namespace FluentRest
         /// <value>
         /// The collection of URI segment paths.
         /// </value>
-        public List<string> Paths { get; set; }
+        public IList<string> Paths { get; set; }
 
         /// <summary>
         /// Gets or sets the HTTP method used by the HTTP request message.
@@ -129,9 +128,10 @@ namespace FluentRest
 
             var queryString = new StringBuilder();
 
-            foreach (var key in QueryString.AllKeys)
+            foreach (var pair in QueryString)
             {
-                var values = QueryString.GetValues(key) ?? new[] { string.Empty };
+                var key = pair.Key;
+                var values = pair.Value.ToList();
 
                 foreach (var value in values)
                 {

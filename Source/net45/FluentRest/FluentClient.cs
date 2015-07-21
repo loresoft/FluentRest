@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using FluentRest.Fake;
 
 namespace FluentRest
 {
@@ -208,10 +207,10 @@ namespace FluentRest
             httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(Serializer.ContentType));
 
             // copy headers
-            foreach (var header in fluentRequest.Headers.AllKeys)
+            foreach (var header in fluentRequest.Headers)
             {
-                var values = fluentRequest.Headers.GetValues(header) ?? new[] { string.Empty };
-                httpRequest.Headers.Add(header, values);
+                var values = header.Value.ToList();
+                httpRequest.Headers.Add(header.Key, values);
             }
 
             httpRequest.Content = await GetContent(fluentRequest)
@@ -235,24 +234,25 @@ namespace FluentRest
             return response;
         }
 
-        private Task<HttpContent> GetContent(FluentRequest fluentRequest)
+        private async Task<HttpContent> GetContent(FluentRequest fluentRequest)
         {
             if (fluentRequest.Method == HttpMethod.Get)
-                return Task.FromResult<HttpContent>(null);
+                return null;
 
             if (fluentRequest.ContentData != null)
-                return Serializer.SerializeAsync(fluentRequest.ContentData);
+                return await Serializer.SerializeAsync(fluentRequest.ContentData).ConfigureAwait(false);
 
             // convert NameValue to KeyValuePair
             var formData = new List<KeyValuePair<string, string>>();
-            foreach (var key in fluentRequest.FormData.AllKeys)
+            foreach (var pair in fluentRequest.FormData)
             {
-                var values = fluentRequest.FormData.GetValues(key) ?? new[] { string.Empty };
+                var key = pair.Key;
+                var values = pair.Value.ToList();
                 formData.AddRange(values.Select(value => new KeyValuePair<string, string>(key, value)));
             }
 
             var httpContent = new FormUrlEncodedContent(formData);
-            return Task.FromResult<HttpContent>(httpContent);
+            return httpContent;
         }
     }
 }
