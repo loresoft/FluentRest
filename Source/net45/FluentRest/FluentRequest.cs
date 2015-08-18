@@ -21,6 +21,7 @@ namespace FluentRest
             QueryString = new Dictionary<string, ICollection<string>>();
             Paths = new List<string>();
             Method = HttpMethod.Get;
+            CompletionOption = HttpCompletionOption.ResponseContentRead;
         }
 
         /// <summary>
@@ -79,6 +80,13 @@ namespace FluentRest
         /// </value>
         public object ContentData { get; set; }
 
+        /// <summary>
+        /// Gets or sets when the operation should complete (as soon as a response is available or after reading the whole response content).
+        /// </summary>
+        /// <value>
+        /// When the operation should complete (as soon as a response is available or after reading the whole response content).
+        /// </value>
+        public HttpCompletionOption CompletionOption { get; set; }
 
         /// <summary>
         /// Gets the computed Uri used for the HTTP request.

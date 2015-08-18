@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FluentRest
@@ -106,7 +107,8 @@ namespace FluentRest
             var fluentBuilder = new QueryBuilder(fluentRequest);
             builder(fluentBuilder);
 
-            return Send<TResponse>(fluentRequest);
+            var token = fluentBuilder.Token;
+            return Send<TResponse>(fluentRequest, token);
         }
 
         /// <summary>
@@ -128,7 +130,8 @@ namespace FluentRest
             var fluentBuilder = new FormBuilder(fluentRequest);
             builder(fluentBuilder);
 
-            return Send<TResponse>(fluentRequest);
+            var token = fluentBuilder.Token;
+            return Send<TResponse>(fluentRequest, token);
         }
 
         /// <summary>
@@ -150,7 +153,8 @@ namespace FluentRest
             var fluentBuilder = new FormBuilder(fluentRequest);
             builder(fluentBuilder);
 
-            return Send<TResponse>(fluentRequest);
+            var token = fluentBuilder.Token;
+            return Send<TResponse>(fluentRequest, token);
         }
 
         /// <summary>
@@ -172,7 +176,8 @@ namespace FluentRest
             var fluentBuilder = new FormBuilder(fluentRequest);
             builder(fluentBuilder);
 
-            return Send<TResponse>(fluentRequest);
+            var token = fluentBuilder.Token;
+            return Send<TResponse>(fluentRequest, token);
         }
 
         /// <summary>
@@ -193,11 +198,12 @@ namespace FluentRest
             var fluentBuilder = new FormBuilder(fluentRequest);
             builder(fluentBuilder);
 
-            return Send<TResponse>(fluentRequest);
+            var token = fluentBuilder.Token;
+            return Send<TResponse>(fluentRequest, token);
         }
 
 
-        private async Task<TResponse> Send<TResponse>(FluentRequest fluentRequest)
+        private async Task<TResponse> Send<TResponse>(FluentRequest fluentRequest, CancellationToken cancellationToken)
         {
             var httpRequest = new HttpRequestMessage();
             httpRequest.RequestUri = fluentRequest.RequestUri();
@@ -217,12 +223,12 @@ namespace FluentRest
                 .ConfigureAwait(false);
 
             var httpClient = new HttpClient(HttpHandler, DisposeHandler);
-            
+
             var headerValue = new ProductInfoHeaderValue(ThisAssembly.AssemblyProduct, ThisAssembly.AssemblyVersion);
             httpClient.DefaultRequestHeaders.UserAgent.Add(headerValue);
 
             var httpResponse = await httpClient
-                .SendAsync(httpRequest)
+                .SendAsync(httpRequest, fluentRequest.CompletionOption, cancellationToken)
                 .ConfigureAwait(false);
 
             httpResponse.EnsureSuccessStatusCode();
