@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FluentRest
 {
@@ -104,6 +106,44 @@ namespace FluentRest
 
 
         /// <summary>
+        /// Sets the <see cref="P:FluentRest.FluentRequest.BaseUri"/> and the <see cref="P:FluentRest.FluentRequest.QueryString"/> from the specified Uri.
+        /// </summary>
+        /// <param name="path">The full Uri path.</param>
+        /// <returns>A fluent request builder.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path" /> is <see langword="null" />.</exception>
+        public TBuilder FullUri(Uri path)
+        {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+
+            var baseBuilder = new UriBuilder(path) { Query = string.Empty };
+
+            // set BaseUri
+            BaseUri(baseBuilder.Uri);
+
+            // Set QueryString
+            ParseQueryString(path.Query);
+
+            return this as TBuilder;
+        }
+
+        /// <summary>
+        /// Sets the <see cref="P:FluentRest.FluentRequest.BaseUri"/> and the <see cref="P:FluentRest.FluentRequest.QueryString"/> from the specified Uri.
+        /// </summary>
+        /// <param name="path">The full Uri path.</param>
+        /// <returns>A fluent request builder.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path" /> is <see langword="null" />.</exception>
+        public TBuilder FullUri(string path)
+        {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+
+            var u = new Uri(path, UriKind.Absolute);
+            return FullUri(u);
+        }
+
+
+        /// <summary>
         /// Appends the specified <paramref name="path"/> to the BaseUri of the request.
         /// </summary>
         /// <param name="path">The path to append.</param>
@@ -182,6 +222,73 @@ namespace FluentRest
 
             var v = value != null ? Convert.ToString(value) : string.Empty;
             return QueryString(name, v);
+        }
+
+
+        // based on HttpUtility.ParseQueryString
+        private void ParseQueryString(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return;
+
+            int l = s.Length;
+            int i = 0;
+
+            // remove leading ?
+            if (s[0] == '?')
+                i = 1;
+
+            while (i < l)
+            {
+                // find next & while noting first = on the way (and if there are more) 
+                int si = i;
+                int ti = -1;
+
+                while (i < l)
+                {
+                    char ch = s[i];
+
+                    if (ch == '=')
+                    {
+                        if (ti < 0)
+                            ti = i;
+                    }
+                    else if (ch == '&')
+                    {
+                        break;
+                    }
+
+                    i++;
+                }
+
+                // extract the name / value pair
+                string name = null;
+                string value = null;
+
+                if (ti >= 0)
+                {
+                    name = s.Substring(si, ti - si);
+                    value = s.Substring(ti + 1, i - ti - 1);
+                }
+                else
+                {
+                    value = s.Substring(si, i - si);
+                }
+
+                // decode
+                name = string.IsNullOrEmpty(name) ? string.Empty : Uri.UnescapeDataString(name);
+                value = string.IsNullOrEmpty(value) ? string.Empty : Uri.UnescapeDataString(value);
+
+                // add name / value pair to the collection
+                QueryString(name, value);
+
+                // trailing '&'
+
+                //if (i == l-1 && s[i] == '&')
+                //    base.Add(null, String.Empty);
+
+                i++;
+            }
         }
     }
 }

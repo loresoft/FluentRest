@@ -65,5 +65,19 @@ namespace FluentRest.Tests
             builder.Header("Test", value);
             Assert.False(builder.Request.Headers.ContainsKey("Test"));
         }
+
+        [Fact]
+        public void QueryStringFullUri()
+        {
+            var request = new FluentRequest();
+            var builder = new QueryBuilder(request);
+
+            builder.FullUri("http://test.com/path?q=testing&size=10");
+
+
+            Assert.Equal("http://test.com/path", request.BaseUri.ToString());
+            Assert.Equal(2, request.QueryString.Count);
+            Assert.Equal("testing", request.QueryString["q"].FirstOrDefault());
+        }
     }
 }
