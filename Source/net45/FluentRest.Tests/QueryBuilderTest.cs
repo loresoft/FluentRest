@@ -42,7 +42,6 @@ namespace FluentRest.Tests
             var request = new FluentRequest();
             var builder = new QueryBuilder(request);
 
-            string value = null;
             builder.BaseUri("http://test.com/");
             builder.Header("Test", "Test");
 

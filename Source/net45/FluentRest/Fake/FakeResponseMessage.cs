@@ -10,7 +10,18 @@ namespace FluentRest.Fake
     public class FakeResponseMessage
     {
         /// <summary>
-        /// Gets or sets the status code.
+        /// Initializes a new instance of the <see cref="FakeResponseMessage"/> class.
+        /// </summary>
+        public FakeResponseMessage()
+        {
+            StatusCode = HttpStatusCode.OK;
+            ReasonPhrase = "OK";
+            ResponseHeaders = new Dictionary<string, IEnumerable<string>>();
+            ContentHeaders = new Dictionary<string, IEnumerable<string>>();
+        }
+
+        /// <summary>
+        /// Gets or sets the HTTP status code.
         /// </summary>
         /// <value>
         /// The status code.

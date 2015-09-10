@@ -93,27 +93,28 @@
     <Compile Include="Google\Maps\Models\Location.cs" />
     <Compile Include="Google\Maps\Models\GeocodeResult.cs" />
     <Compile Include="Google\Maps\Models\Viewport.cs" />
+    <Compile Include="MemoryStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryBuilderTest.cs" />
     <Compile Include="UserData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GitHub\Responses\1CD389C5BA481D208F36E5BF2F96F7F41A59779C.data">
+    <None Include="GitHub\Responses\86B51C50C0819744B4C83AF1FC5E10DAFBCADA75.data">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="GitHub\Responses\1CD389C5BA481D208F36E5BF2F96F7F41A59779C.json">
+    <None Include="GitHub\Responses\86B51C50C0819744B4C83AF1FC5E10DAFBCADA75.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="GitHub\Responses\8979EE55D90B34E9BD48C6D48B9D3D1CA096E0D4.data">
+    <None Include="GitHub\Responses\13CEC436066CBF20DD4CF76543B3B8E9B0396251.data">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="GitHub\Responses\8979EE55D90B34E9BD48C6D48B9D3D1CA096E0D4.json">
+    <None Include="GitHub\Responses\13CEC436066CBF20DD4CF76543B3B8E9B0396251.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="GitHub\Responses\F31A91B2B5952B03C70AD67B8041515304B5940F.data">
+    <None Include="GitHub\Responses\DCB967FFAC76ED1E8844C1FFED9EE10E092C2A71.data">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="GitHub\Responses\F31A91B2B5952B03C70AD67B8041515304B5940F.json">
+    <None Include="GitHub\Responses\DCB967FFAC76ED1E8844C1FFED9EE10E092C2A71.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

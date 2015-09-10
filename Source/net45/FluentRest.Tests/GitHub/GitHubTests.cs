@@ -20,7 +20,7 @@ namespace FluentRest.Tests.GitHub
                 .AppendPath("repos")
                 .AppendPath("loresoft")
                 .AppendPath("FluentRest")
-                .Header(h => h.Authorization("token", "7ca62d97436f382253c6b9648d40b4b59630b778"))
+                .Header(h => h.Authorization("token", "7ca..."))
             );
 
             Assert.NotNull(result);
@@ -36,7 +36,7 @@ namespace FluentRest.Tests.GitHub
                 .AppendPath("loresoft")
                 .AppendPath("FluentRest")
                 .AppendPath("issues")
-                .Header(h => h.Authorization("token", "7ca62d97436f382253c6b9648d40b4b59630b778"))
+                .Header(h => h.Authorization("token", "7ca..."))
             );
 
             Assert.NotNull(result);
@@ -52,7 +52,7 @@ namespace FluentRest.Tests.GitHub
                 .AppendPath("FluentRest")
                 .AppendPath("issues")
                 .AppendPath("1")
-                .Header(h => h.Authorization("token", "7ca62d97436f382253c6b9648d40b4b59630b778"))
+                .Header(h => h.Authorization("token", "7ca..."))
             );
 
             Assert.NotNull(result);
@@ -62,9 +62,10 @@ namespace FluentRest.Tests.GitHub
         {
             var serializer = new JsonContentSerializer();
 
-            var fakeHttp = new FakeMessageHandler();
-            fakeHttp.Mode = FakeResponseMode.Fake;
-            fakeHttp.StorePath = @".\GitHub\Responses";
+            var fakeStore = new FileMessageStore();
+            fakeStore.StorePath = @".\GitHub\Responses";
+
+            var fakeHttp = new FakeMessageHandler(fakeStore, FakeResponseMode.Fake);
 
             var client = new FluentClient(serializer, fakeHttp);
             client.BaseUri = new Uri("https://api.github.com/", UriKind.Absolute);

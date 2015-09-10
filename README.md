@@ -16,7 +16,7 @@ To install FluentRest, run the following command in the Package Manager Console
 
     PM> Install-Package FluentRest
     
-More information about NuGet package avaliable at
+More information about NuGet package available at
 <https://nuget.org/packages/FluentRest>
 
 ## Development Builds
@@ -29,8 +29,8 @@ In your Package Manager settings add the following package source for developmen
 ## Features
 
 * Fluent request building
-* Fluent form building
-* Automatic deserialization of response
+* Fluent form data building
+* Automatic deserialization of response content
 * Plugin different serialization 
 * Fake HTTP responses
 
@@ -62,22 +62,72 @@ var result = await client.GetAsync<Repository>(b => b
     .AppendPath("repos")
     .AppendPath("loresoft")
     .AppendPath("FluentRest")
-    .Header(h => h.Authorization("token", "7ca62d97436f382253c6b9648d40b4b59630b778"))
+    .Header(h => h.Authorization("token", "7ca..."))
 );
 ```
 
-# Fake Response
+## Fake Response
 
-FluentRest has the ability to fake a HTTP responses by loading the response from disk.  You can first capture the response, then use it for unit tests.
+FluentRest has the ability to fake an HTTP responses by using a custom HttpClientHandler. Faking the HTTP response allows creating unit tests without having to make the actual HTTP call.  
+
+### Fake Response Stores
+
+Fake HTTP responses can be stored in the following message stores.  To create your own message store, implement `IFakeMessageStore`.
+
+#### MemoryMessageStore
+
+The memory message store allows composing a JSON response in the unit test.  Register the responses on the start of the unit test.
+
+
+Register a fake response by URL.
+
+```csharp
+MemoryMessageStore.Current.Register(b => b
+    .Url("https://api.github.com/repos/loresoft/FluentRest")
+    .StatusCode(HttpStatusCode.OK)
+    .ReasonPhrase("OK")
+    .Content(c => c
+        .Header("Content-Type", "application/json; charset=utf-8")
+        .Data(responseObject) // object to be JSON serialized
+    )
+);
+```
+
+Use the fake response in a unit test
+
+```csharp
+var serializer = new JsonContentSerializer();
+
+// use memory store by default
+var fakeHttp = new FakeMessageHandler();
+
+var client = new FluentClient(serializer, fakeHttp);
+client.BaseUri = new Uri("https://api.github.com/", UriKind.Absolute);
+
+// make HTTP call
+var result = await client.GetAsync<Repository>(b => b
+    .AppendPath("repos")
+    .AppendPath("loresoft")
+    .AppendPath("FluentRest")
+    .Header(h => h.Authorization("token", "7ca..."))
+);
+```
+
+#### FileMessageStore
+
+The file message store allows saving an HTTP call response on the first use.  You can then use that saved response for all future unit test runs.
+
 
 Configure the FluentRest to capture response.
 
 ```csharp
 var serializer = new JsonContentSerializer();
 
-var fakeHttp = new FakeMessageHandler();
-fakeHttp.Mode = FakeResponseMode.Capture;
-fakeHttp.StorePath = @".\GitHub\Responses";
+// use file store to load from disk
+var fakeStore = new FileMessageStore();
+fakeStore.StorePath = @".\GitHub\Responses";
+
+var fakeHttp = new FakeMessageHandler(fakeStore, FakeResponseMode.Capture);
 
 var client = new FluentClient(serializer, fakeHttp);
 client.BaseUri = new Uri("https://api.github.com/", UriKind.Absolute);
@@ -86,7 +136,7 @@ var result = await client.GetAsync<Repository>(b => b
     .AppendPath("repos")
     .AppendPath("loresoft")
     .AppendPath("FluentRest")
-    .Header(h => h.Authorization("token", "7ca62d97436f382253c6b9648d40b4b59630b778"))
+    .Header(h => h.Authorization("token", "7ca..."))
 );
 ```
 
@@ -95,9 +145,11 @@ Use captured response
 ```csharp
 var serializer = new JsonContentSerializer();
 
-var fakeHttp = new FakeMessageHandler();
-fakeHttp.Mode = FakeResponseMode.Fake;
-fakeHttp.StorePath = @".\GitHub\Responses";
+// use file store to load from disk
+var fakeStore = new FileMessageStore();
+fakeStore.StorePath = @".\GitHub\Responses";
+
+var fakeHttp = new FakeMessageHandler(fakeStore, FakeResponseMode.Fake);
 
 var client = new FluentClient(serializer, fakeHttp);
 client.BaseUri = new Uri("https://api.github.com/", UriKind.Absolute);
@@ -106,6 +158,7 @@ var result = await client.GetAsync<Repository>(b => b
     .AppendPath("repos")
     .AppendPath("loresoft")
     .AppendPath("FluentRest")
-    .Header(h => h.Authorization("token", "7ca62d97436f382253c6b9648d40b4b59630b778"))
+    .Header(h => h.Authorization("token", "7ca..."))
 );
 ```
+

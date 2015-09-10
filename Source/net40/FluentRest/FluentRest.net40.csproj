@@ -95,14 +95,38 @@
     <Compile Include="..\..\net45\FluentRest\DictionaryExtensions.cs">
       <Link>DictionaryExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\..\net45\FluentRest\Fake\FakeContainerBuilder.cs">
+      <Link>Fake\FakeContainerBuilder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net45\FluentRest\Fake\FakeContentBuilder.cs">
+      <Link>Fake\FakeContentBuilder.cs</Link>
+    </Compile>
     <Compile Include="..\..\net45\FluentRest\Fake\FakeMessageHandler.cs">
       <Link>Fake\FakeMessageHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net45\FluentRest\Fake\FakeMessageStore.cs">
+      <Link>Fake\FakeMessageStore.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net45\FluentRest\Fake\FakeResponseBuilder.cs">
+      <Link>Fake\FakeResponseBuilder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net45\FluentRest\Fake\FakeResponseContainer.cs">
+      <Link>Fake\FakeResponseContainer.cs</Link>
     </Compile>
     <Compile Include="..\..\net45\FluentRest\Fake\FakeResponseMessage.cs">
       <Link>Fake\FakeResponseMessage.cs</Link>
     </Compile>
     <Compile Include="..\..\net45\FluentRest\Fake\FakeResponseMode.cs">
       <Link>Fake\FakeResponseMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net45\FluentRest\Fake\FileMessageStore.cs">
+      <Link>Fake\FileMessageStore.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net45\FluentRest\Fake\IFakeMessageStore.cs">
+      <Link>Fake\IFakeMessageStore.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net45\FluentRest\Fake\MemoryMessageStore.cs">
+      <Link>Fake\MemoryMessageStore.cs</Link>
     </Compile>
     <Compile Include="..\..\net45\FluentRest\FluentClient.cs">
       <Link>FluentClient.cs</Link>
