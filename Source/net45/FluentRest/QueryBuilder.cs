@@ -73,6 +73,22 @@ namespace FluentRest
             return this as TBuilder;
         }
 
+        /// <summary>
+        /// Sets HTTP header with the specified <paramref name="name"/> and <paramref name="value"/> if the specified <paramref name="condition"/> is true.
+        /// </summary>
+        /// <param name="condition">If condition is true, header will be added; otherwise ignore header.</param>
+        /// <param name="name">The header name.</param>
+        /// <param name="value">The header value.</param>
+        /// <returns>A fluent request builder.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+        public TBuilder HeaderIf(Func<bool> condition, string name, string value)
+        {
+            if (condition == null || !condition())
+                return this as TBuilder;
+
+            return Header(name, value);
+        }
+
 
         /// <summary>
         /// Sets the base URI address used when sending requests.
@@ -222,6 +238,22 @@ namespace FluentRest
 
             var v = value != null ? Convert.ToString(value) : string.Empty;
             return QueryString(name, v);
+        }
+
+        /// <summary>
+        /// Appends the specified <paramref name="name"/> and <paramref name="value"/> to the request Uri if the specified <paramref name="condition"/> is true.
+        /// </summary>
+        /// <param name="condition">If condition is true, query string will be added; otherwise ignore query string.</param>
+        /// <param name="name">The query parameter name.</param>
+        /// <param name="value">The query parameter value.</param>
+        /// <returns>A fluent request builder.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+        public TBuilder QueryStringIf(Func<bool> condition, string name, string value)
+        {
+            if (condition == null || !condition())
+                return this as TBuilder;
+
+            return Header(name, value);
         }
 
 
