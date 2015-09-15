@@ -173,14 +173,20 @@ namespace FluentRest
         }
 
         /// <summary>
-        /// Appends the specified <paramref name="path"/> to the BaseUri of the request.
+        /// Appends the specified <paramref name="path" /> to the BaseUri of the request.
         /// </summary>
         /// <param name="path">The path to append.</param>
-        /// <returns>A fluent request builder.</returns>
-        public TBuilder AppendPath(string path)
+        /// <param name="encode">if <see langword="true"/>, URL encode the specified <paramref name="path"/>.</param>
+        /// <returns>
+        /// A fluent request builder.
+        /// </returns>
+        public TBuilder AppendPath(string path, bool encode = false)
         {
-            if (path != null)
-                Request.Paths.Add(path);
+            if (path == null)
+                return this as TBuilder;
+
+            var s = encode ? Uri.EscapeUriString(path) : path;
+            Request.Paths.Add(s);
 
             return this as TBuilder;
         }
@@ -189,14 +195,18 @@ namespace FluentRest
         /// Appends the specified <paramref name="paths"/> to the BaseUri of the request.
         /// </summary>
         /// <param name="paths">The paths to append.</param>
+        /// <param name="encode">if <see langword="true"/>, URL encode the specified <paramref name="paths"/>.</param>
         /// <returns>A fluent request builder.</returns>
-        public TBuilder AppendPath(IEnumerable<string> paths)
+        public TBuilder AppendPath(IEnumerable<string> paths, bool encode = false)
         {
             if (paths == null)
                 return this as TBuilder;
 
             foreach (var path in paths)
-                Request.Paths.Add(path);
+            {
+                var s = encode ? Uri.EscapeUriString(path) : path;
+                Request.Paths.Add(s);
+            }
 
             return this as TBuilder;
         }
@@ -224,19 +234,21 @@ namespace FluentRest
         }
 
         /// <summary>
-        /// Appends the specified <paramref name="name"/> and <paramref name="value"/> to the request Uri.
+        /// Appends the specified <paramref name="name" /> and <paramref name="value" /> to the request Uri.
         /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
         /// <param name="name">The query parameter name.</param>
         /// <param name="value">The query parameter value.</param>
-        /// <returns>A fluent request builder.</returns>
-        /// <returns>A fluent request builder.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="name"/> is <see langword="null" />.</exception>
-        public TBuilder QueryString(string name, object value)
+        /// <returns>
+        /// A fluent request builder.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+        public TBuilder QueryString<TValue>(string name, TValue value)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            var v = value != null ? Convert.ToString(value) : string.Empty;
+            var v = value != null ? value.ToString() : string.Empty;
             return QueryString(name, v);
         }
 
@@ -253,9 +265,27 @@ namespace FluentRest
             if (condition == null || !condition())
                 return this as TBuilder;
 
-            return Header(name, value);
+            return QueryString(name, value);
         }
 
+        /// <summary>
+        /// Appends the specified <paramref name="name" /> and <paramref name="value" /> to the request Uri if the specified <paramref name="condition" /> is true.
+        /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="condition">If condition is true, query string will be added; otherwise ignore query string.</param>
+        /// <param name="name">The query parameter name.</param>
+        /// <param name="value">The query parameter value.</param>
+        /// <returns>
+        /// A fluent request builder.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+        public TBuilder QueryStringIf<TValue>(Func<bool> condition, string name, TValue value)
+        {
+            if (condition == null || !condition())
+                return this as TBuilder;
+
+            return QueryString(name, value);
+        }
 
         // based on HttpUtility.ParseQueryString
         private void ParseQueryString(string s)

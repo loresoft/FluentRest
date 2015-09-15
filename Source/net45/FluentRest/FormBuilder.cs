@@ -54,34 +54,37 @@ namespace FluentRest
         }
 
         /// <summary>
-        /// Appends the specified <paramref name="name"/> and <paramref name="value"/> to the form post body.
+        /// Appends the specified <paramref name="name" /> and <paramref name="value" /> to the form post body.
         /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
         /// <param name="name">The form parameter name.</param>
         /// <param name="value">The form parameter value.</param>
-        /// <returns>A fluent request builder.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-        public TBuilder FormValue<T>(string name, object value)
+        /// <returns>
+        /// A fluent request builder.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+        public TBuilder FormValue<TValue>(string name, TValue value)
         {
-            var v = value != null ? Convert.ToString(value) : string.Empty;
+            var v = value != null ? value.ToString() : string.Empty;
             return FormValue(name, v);
         }
 
         /// <summary>
         /// Appends the specified key value pairs to the form post body.
         /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
         /// <param name="data">The form key value parameters.</param>
-        /// <returns>A fluent request builder.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="data" /> is <see langword="null" />.</exception>
-        public TBuilder FormValue(IEnumerable<KeyValuePair<string, object>> data)
+        /// <returns>
+        /// A fluent request builder.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="data" /> is <see langword="null" />.</exception>
+        public TBuilder FormValue<TValue>(IEnumerable<KeyValuePair<string, TValue>> data)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
 
             foreach (var pair in data)
-            {
-                var v = Convert.ToString(pair.Value);
-                FormValue(pair.Key, v);
-            }
+                FormValue(pair.Key, pair.Value);
 
             return this as TBuilder;
         }
@@ -112,6 +115,25 @@ namespace FluentRest
         /// <returns>A fluent request builder.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
         public TBuilder FormValueIf(Func<bool> condition, string name, string value)
+        {
+            if (condition == null || !condition())
+                return this as TBuilder;
+
+            return FormValue(name, value);
+        }
+
+        /// <summary>
+        /// Appends the specified <paramref name="name" /> and <paramref name="value" /> to the form post body if the specified <paramref name="condition" /> is true.
+        /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="condition">If condition is true, form data will be added; otherwise ignore form data.</param>
+        /// <param name="name">The form parameter name.</param>
+        /// <param name="value">The form parameter value.</param>
+        /// <returns>
+        /// A fluent request builder.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+        public TBuilder FormValueIf<TValue>(Func<bool> condition, string name, TValue value)
         {
             if (condition == null || !condition())
                 return this as TBuilder;

@@ -122,9 +122,13 @@ namespace FluentRest
                 return BaseUri;
 
             // append paths
+            var basePath = BaseUri.ToString();
+            basePath = AppendSlash(basePath);
+
             var paths = string.Join("/", Paths);
-            var pathUri = new Uri(paths, UriKind.RelativeOrAbsolute);
-            var requestPath = new Uri(BaseUri, pathUri);
+            var fullPath = basePath + paths;
+
+            var requestPath = new Uri(fullPath, UriKind.Absolute);
 
             return requestPath;
         }
@@ -157,6 +161,21 @@ namespace FluentRest
             builder.Query = queryString.ToString();
 
             return builder.Uri;
+        }
+
+        private static string AppendSlash(string path)
+        {
+            if (path == null)
+                return null;
+
+            int l = path.Length;
+            if (l == 0)
+                return path;
+
+            if (path[l - 1] != '/')
+                path += '/';
+
+            return path;
         }
     }
 }

@@ -74,6 +74,7 @@
     <Compile Include="Fake\MemoryMessageStore.cs" />
     <Compile Include="FluentClient.cs" />
     <Compile Include="FluentException.cs" />
+    <Compile Include="FluentResponse.cs" />
     <Compile Include="HeaderBuilder.cs" />
     <Compile Include="FormBuilder.cs" />
     <Compile Include="QueryBuilder.cs" />

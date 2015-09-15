@@ -89,13 +89,12 @@ namespace FluentRest
 
 
         /// <summary>
-        /// Sends a GET request using specified fluent builder as an asynchronous operation.
+        /// Sends a GET request using specified fluent <paramref name="builder"/> as an asynchronous operation.
         /// </summary>
-        /// <typeparam name="TResponse">The type of the response.</typeparam>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
-        public Task<TResponse> GetAsync<TResponse>(Action<QueryBuilder> builder)
+        public async Task<FluentResponse> GetAsync(Action<QueryBuilder> builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
@@ -108,17 +107,34 @@ namespace FluentRest
             builder(fluentBuilder);
 
             var token = fluentBuilder.Token;
-            return Send<TResponse>(fluentRequest, token);
+            var response = await Send(fluentRequest, token).ConfigureAwait(false);
+
+            return response;
         }
 
         /// <summary>
-        /// Sends a POST request using specified fluent builder as an asynchronous operation.
+        /// Sends a GET request using specified fluent <paramref name="builder"/> as an asynchronous operation.
         /// </summary>
         /// <typeparam name="TResponse">The type of the response.</typeparam>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
-        public Task<TResponse> PostAsync<TResponse>(Action<FormBuilder> builder)
+        public async Task<TResponse> GetAsync<TResponse>(Action<QueryBuilder> builder)
+        {
+            var response = await GetAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
+
+            return data;
+        }
+
+
+        /// <summary>
+        /// Sends a POST request using specified fluent builder as an asynchronous operation.
+        /// </summary>
+        /// <param name="builder">The fluent builder factory.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        public async Task<FluentResponse> PostAsync(Action<FormBuilder> builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
@@ -131,17 +147,34 @@ namespace FluentRest
             builder(fluentBuilder);
 
             var token = fluentBuilder.Token;
-            return Send<TResponse>(fluentRequest, token);
+            var response = await Send(fluentRequest, token).ConfigureAwait(false);
+
+            return response;
         }
 
         /// <summary>
-        /// Sends a PUT request using specified fluent builder as an asynchronous operation.
+        /// Sends a POST request using specified fluent builder as an asynchronous operation.
         /// </summary>
         /// <typeparam name="TResponse">The type of the response.</typeparam>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
-        public Task<TResponse> PutAsync<TResponse>(Action<FormBuilder> builder)
+        public async Task<TResponse> PostAsync<TResponse>(Action<FormBuilder> builder)
+        {
+            var response = await PostAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
+
+            return data;
+        }
+
+
+        /// <summary>
+        /// Sends a PUT request using specified fluent builder as an asynchronous operation.
+        /// </summary>
+        /// <param name="builder">The fluent builder factory.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        public async Task<FluentResponse> PutAsync(Action<FormBuilder> builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
@@ -154,17 +187,34 @@ namespace FluentRest
             builder(fluentBuilder);
 
             var token = fluentBuilder.Token;
-            return Send<TResponse>(fluentRequest, token);
+            var response = await Send(fluentRequest, token).ConfigureAwait(false);
+
+            return response;
         }
 
         /// <summary>
-        /// Sends a DELETE request using specified fluent builder as an asynchronous operation.
+        /// Sends a PUT request using specified fluent builder as an asynchronous operation.
         /// </summary>
         /// <typeparam name="TResponse">The type of the response.</typeparam>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
-        public Task<TResponse> DeleteAsync<TResponse>(Action<FormBuilder> builder)
+        public async Task<TResponse> PutAsync<TResponse>(Action<FormBuilder> builder)
+        {
+            var response = await PutAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
+
+            return data;
+        }
+
+
+        /// <summary>
+        /// Sends a DELETE request using specified fluent builder as an asynchronous operation.
+        /// </summary>
+        /// <param name="builder">The fluent builder factory.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        public async Task<FluentResponse> DeleteAsync(Action<FormBuilder> builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
@@ -177,18 +227,35 @@ namespace FluentRest
             builder(fluentBuilder);
 
             var token = fluentBuilder.Token;
-            return Send<TResponse>(fluentRequest, token);
+            var response = await Send(fluentRequest, token).ConfigureAwait(false);
+
+            return response;
         }
 
         /// <summary>
-        /// Sends a request using specified fluent builder as an asynchronous operation.
+        /// Sends a DELETE request using specified fluent builder as an asynchronous operation.
         /// </summary>
         /// <typeparam name="TResponse">The type of the response.</typeparam>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        public async Task<TResponse> DeleteAsync<TResponse>(Action<FormBuilder> builder)
+        {
+            var response = await DeleteAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
+
+            return data;
+        }
+
+
+        /// <summary>
+        /// Sends a request using specified fluent builder as an asynchronous operation.
+        /// </summary>
+        /// <param name="builder">The fluent builder factory.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
-        public Task<TResponse> SendAsync<TResponse>(Action<FormBuilder> builder)
+        public async Task<FluentResponse> SendAsync(Action<FormBuilder> builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
@@ -199,11 +266,29 @@ namespace FluentRest
             builder(fluentBuilder);
 
             var token = fluentBuilder.Token;
-            return Send<TResponse>(fluentRequest, token);
+            var response = await Send(fluentRequest, token).ConfigureAwait(false);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Sends a request using specified fluent builder as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="TResponse">The type of the response.</typeparam>
+        /// <param name="builder">The fluent builder factory.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        public async Task<TResponse> SendAsync<TResponse>(Action<FormBuilder> builder)
+        {
+            var response = await PostAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
+
+            return data;
         }
 
 
-        private async Task<TResponse> Send<TResponse>(FluentRequest fluentRequest, CancellationToken cancellationToken)
+        private async Task<FluentResponse> Send(FluentRequest fluentRequest, CancellationToken cancellationToken)
         {
             var httpRequest = new HttpRequestMessage();
             httpRequest.RequestUri = fluentRequest.RequestUri();
@@ -231,13 +316,18 @@ namespace FluentRest
                 .SendAsync(httpRequest, fluentRequest.CompletionOption, cancellationToken)
                 .ConfigureAwait(false);
 
-            httpResponse.EnsureSuccessStatusCode();
+            var fluentResponse = new FluentResponse(Serializer, httpResponse.Content);
+            fluentResponse.ReasonPhrase = httpResponse.ReasonPhrase;
+            fluentResponse.StatusCode = httpResponse.StatusCode;
+            fluentResponse.Request = fluentRequest;
 
-            var response = await Serializer
-                .DeserializeAsync<TResponse>(httpResponse.Content)
-                .ConfigureAwait(false);
+            var headers = new Dictionary<string, ICollection<string>>();
+            foreach (var header in httpResponse.Headers)
+                headers.Add(header.Key, header.Value.ToList());
 
-            return response;
+            fluentResponse.Headers = headers;
+
+            return fluentResponse;
         }
 
         private async Task<HttpContent> GetContent(FluentRequest fluentRequest)

@@ -21,10 +21,10 @@
     <BuildConfiguration  Condition=" '$(BuildConfiguration)' == '' ">Release</BuildConfiguration>
 
     <Major Condition=" '$(Major)' == '' ">1</Major>
-    <Minor Condition=" '$(Minor)' == '' ">1</Minor>
+    <Minor Condition=" '$(Minor)' == '' ">2</Minor>
     <Revision Condition=" '$(Revision)' == '' ">0</Revision>
 
-    <AssemblyVersion>$(Major).1.0.0</AssemblyVersion>
+    <AssemblyVersion>$(Major).2.0.0</AssemblyVersion>
     <AssemblyFileVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</AssemblyFileVersion>
     <AssemblyInformationalVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</AssemblyInformationalVersion>
     <PackageVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</PackageVersion>

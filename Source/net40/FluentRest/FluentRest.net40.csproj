@@ -137,6 +137,9 @@
     <Compile Include="..\..\net45\FluentRest\FluentRequest.cs">
       <Link>FluentRequest.cs</Link>
     </Compile>
+    <Compile Include="..\..\net45\FluentRest\FluentResponse.cs">
+      <Link>FluentResponse.cs</Link>
+    </Compile>
     <Compile Include="..\..\net45\FluentRest\FormBuilder.cs">
       <Link>FormBuilder.cs</Link>
     </Compile>

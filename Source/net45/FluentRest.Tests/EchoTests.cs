@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -101,6 +102,29 @@ namespace FluentRest.Tests
                 .FormValue("key", "value")
                 .QueryString("page", 10)
             );
+
+            Assert.NotNull(result);
+            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("Value", result.Form["Test"]);
+            Assert.Equal("value", result.Form["key"]);
+        }
+
+        [Fact]
+        public async void EchoPostResponse()
+        {
+            var client = CreateClient();
+
+            var response = await client.PostAsync(b => b
+                .AppendPath("post")
+                .FormValue("Test", "Value")
+                .FormValue("key", "value")
+                .QueryString("page", 10)
+            );
+
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var result = await response.DeserializeAsync<EchoResult>();
 
             Assert.NotNull(result);
             Assert.Equal("http://httpbin.org/post?page=10", result.Url);

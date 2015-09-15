@@ -78,5 +78,66 @@ namespace FluentRest.Tests
             Assert.Equal(2, request.QueryString.Count);
             Assert.Equal("testing", request.QueryString["q"].FirstOrDefault());
         }
+
+        [Fact]
+        public void AppendPathWithoutTrailingSlash()
+        {
+            var request = new FluentRequest();
+            var builder = new QueryBuilder(request);
+
+            builder.BaseUri("http://test.com/api").AppendPath("v1");
+
+            var url = request.RequestUri();
+
+            Assert.Equal("http://test.com/api/v1", url.ToString());
+        }
+
+        [Fact]
+        public void AppendPathWithTrailingSlash()
+        {
+            var request = new FluentRequest();
+            var builder = new QueryBuilder(request);
+
+            builder.BaseUri("http://test.com/api/").AppendPath("v1");
+
+            var url = request.RequestUri();
+
+            Assert.Equal("http://test.com/api/v1", url.ToString());
+        }
+
+        [Fact]
+        public void RequestUriNoBasePath()
+        {
+            var request = new FluentRequest();
+            var builder = new QueryBuilder(request);
+
+            builder.AppendPath("http://test.com/api/v1");
+
+            Assert.Throws<FluentException>(() => request.RequestUri());
+        }
+
+        [Fact]
+        public void RequestUriInvalid()
+        {
+            var request = new FluentRequest();
+            var builder = new QueryBuilder(request);
+
+            Assert.Throws<UriFormatException>(() => builder.BaseUri("/api/").AppendPath("v1"));
+        }
+
+        [Fact]
+        public void RequestUriInvalidUri()
+        {
+            var request = new FluentRequest();
+            var builder = new QueryBuilder(request);
+            var baseUri = new Uri("/api", UriKind.Relative);
+
+            Assert.Throws<UriFormatException>(() =>
+            {
+                builder.BaseUri(baseUri).AppendPath("v1");
+                var uri = request.RequestUri();
+            });
+        }
+
     }
 }
