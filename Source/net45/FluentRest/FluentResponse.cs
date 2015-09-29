@@ -65,16 +65,32 @@ namespace FluentRest
         /// </value>
         public FluentRequest Request { get; set; }
 
+        /// <summary>
+        /// Gets or sets the response HttpContent.
+        /// </summary>
+        /// <value>
+        /// The response HttpContent.
+        /// </value>
+        public HttpContent HttpContent => _httpContent;
 
         /// <summary>
-        /// Deserializes the the <see cref="HttpContent"/> asynchronous.
+        /// Gets the response serializer.
+        /// </summary>
+        /// <value>
+        /// The response serializer.
+        /// </value>
+        public IContentSerializer Serializer => _serializer;
+
+
+        /// <summary>
+        /// Deserializes the the <see cref="System.Net.Http.HttpContent"/> asynchronous.
         /// </summary>
         /// <typeparam name="TData">The type of the data.</typeparam>
         /// <returns>The data object deserialized from the HttpContent.</returns>
         public async Task<TData> DeserializeAsync<TData>()
         {
-            var response = await _serializer
-                .DeserializeAsync<TData>(_httpContent)
+            var response = await Serializer
+                .DeserializeAsync<TData>(HttpContent)
                 .ConfigureAwait(false);
 
             return response;
