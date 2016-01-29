@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -185,6 +186,48 @@ namespace FluentRest.Tests
             dynamic data = result.Json;
             Assert.Equal(user.Id, (long)data.Id);
             Assert.Equal(user.FirstName, (string)data.FirstName);
+        }
+
+        [Fact]
+        public async void EchoError()
+        {
+            var client = CreateClient();
+
+            await Assert.ThrowsAsync<HttpRequestException>(async() =>
+            {
+                var result = await client.PostAsync<EchoResult>(b => b
+                    .AppendPath("status/500")
+                    .FormValue("Test", "Value")
+                    .FormValue("key", "value")
+                    .QueryString("page", 10)
+                );
+                Assert.NotNull(result);
+            });
+        }
+
+        [Fact]
+        public async void DefaultPost()
+        {
+            var client = CreateClient();
+
+            client.Defaults(c => c
+                .Header(h => h.Authorization("Token", "abc-def-123"))
+            );
+
+            var result = await client.PostAsync<EchoResult>(b => b
+                .AppendPath("post")
+                .FormValue("Test", "Value")
+                .FormValue("key", "value")
+                .QueryString("page", 10)
+            );
+
+            Assert.NotNull(result);
+            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("Value", result.Form["Test"]);
+            Assert.Equal("value", result.Form["key"]);
+            Assert.Equal("Token abc-def-123", result.Headers["Authorization"]);
+
+
         }
 
         private static FluentClient CreateClient()

@@ -99,6 +99,7 @@
     <Compile Include="UserData.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="GitHub\Responses\86B51C50C0819744B4C83AF1FC5E10DAFBCADA75.data">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

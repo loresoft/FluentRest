@@ -9,7 +9,7 @@ namespace FluentRest
     /// <summary>
     /// Represents a Fluent HTTP request message.
     /// </summary>
-    public class FluentRequest
+    public class FluentRequest : ICloneable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FluentRequest"/> class.
@@ -116,6 +116,41 @@ namespace FluentRest
         }
 
 
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>
+        /// A new object that is a copy of this instance.
+        /// </returns>
+        public FluentRequest Clone()
+        {
+            var request = new FluentRequest
+            {
+                BaseUri = BaseUri,
+                CompletionOption = CompletionOption,
+                Method = Method,
+                Paths = new List<string>(Paths),
+                Headers = new Dictionary<string, ICollection<string>>(Headers),
+                QueryString = new Dictionary<string, ICollection<string>>(QueryString),
+                FormData = new Dictionary<string, ICollection<string>>(FormData)
+            };
+
+
+            return request;
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>
+        /// A new object that is a copy of this instance.
+        /// </returns>
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+
+
         private Uri BuildRequestPath()
         {
             if (Paths == null || Paths.Count == 0)
@@ -177,5 +212,6 @@ namespace FluentRest
 
             return path;
         }
+
     }
 }

@@ -13,6 +13,8 @@ namespace FluentRest
     /// </summary>
     public class FluentClient
     {
+        private FluentRequest _defaultRequest;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FluentClient"/> class.
         /// </summary>
@@ -51,7 +53,10 @@ namespace FluentRest
             Serializer = serializer;
             HttpHandler = httpHandler;
             DisposeHandler = disposeHandler;
+
+            _defaultRequest = new FluentRequest();
         }
+
 
 
         /// <summary>
@@ -60,7 +65,11 @@ namespace FluentRest
         /// <value>
         /// The base URI for requests.
         /// </value>
-        public Uri BaseUri { get; set; }
+        public Uri BaseUri
+        {
+            get { return _defaultRequest.BaseUri; }
+            set { _defaultRequest.BaseUri = value; }
+        }
 
         /// <summary>
         /// Gets the serializer to convert to and from <see cref="HttpContent"/>.
@@ -89,6 +98,21 @@ namespace FluentRest
 
 
         /// <summary>
+        /// Set the initial default values for all request from this instance of <see cref="FluentClient"/>.
+        /// </summary>
+        /// <param name="builder">The fluent builder factory.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        public void Defaults(Action<FormBuilder> builder)
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            var fluentBuilder = new FormBuilder(_defaultRequest);
+            builder(fluentBuilder);
+        }
+
+
+        /// <summary>
         /// Sends a GET request using specified fluent <paramref name="builder"/> as an asynchronous operation.
         /// </summary>
         /// <param name="builder">The fluent builder factory.</param>
@@ -99,8 +123,7 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var fluentRequest = new FluentRequest();
-            fluentRequest.BaseUri = BaseUri;
+            var fluentRequest = _defaultRequest.Clone();
             fluentRequest.Method = HttpMethod.Get;
 
             var fluentBuilder = new QueryBuilder(fluentRequest);
@@ -139,8 +162,7 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var fluentRequest = new FluentRequest();
-            fluentRequest.BaseUri = BaseUri;
+            var fluentRequest = _defaultRequest.Clone();
             fluentRequest.Method = HttpMethod.Post;
 
             var fluentBuilder = new FormBuilder(fluentRequest);
@@ -179,8 +201,7 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var fluentRequest = new FluentRequest();
-            fluentRequest.BaseUri = BaseUri;
+            var fluentRequest = _defaultRequest.Clone();
             fluentRequest.Method = HttpMethod.Put;
 
             var fluentBuilder = new FormBuilder(fluentRequest);
@@ -219,8 +240,7 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var fluentRequest = new FluentRequest();
-            fluentRequest.BaseUri = BaseUri;
+            var fluentRequest = _defaultRequest.Clone();
             fluentRequest.Method = HttpMethod.Delete;
 
             var fluentBuilder = new FormBuilder(fluentRequest);
@@ -261,7 +281,7 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(builder));
 
             // build request
-            var fluentRequest = new FluentRequest { BaseUri = BaseUri };
+            var fluentRequest = _defaultRequest.Clone();
             var fluentBuilder = new FormBuilder(fluentRequest);
             builder(fluentBuilder);
 
