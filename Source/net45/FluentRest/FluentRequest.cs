@@ -9,7 +9,10 @@ namespace FluentRest
     /// <summary>
     /// Represents a Fluent HTTP request message.
     /// </summary>
-    public class FluentRequest : ICloneable
+    public class FluentRequest
+#if !PORTABLE
+        : ICloneable
+#endif
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FluentRequest"/> class.
@@ -139,6 +142,7 @@ namespace FluentRest
             return request;
         }
 
+#if !PORTABLE
         /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
@@ -149,7 +153,7 @@ namespace FluentRest
         {
             return Clone();
         }
-
+#endif
 
         private Uri BuildRequestPath()
         {
