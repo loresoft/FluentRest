@@ -77,6 +77,7 @@
     <Compile Include="FluentResponse.cs" />
     <Compile Include="HeaderBuilder.cs" />
     <Compile Include="FormBuilder.cs" />
+    <Compile Include="IFluentInterceptor.cs" />
     <Compile Include="QueryBuilder.cs" />
     <Compile Include="FluentRequest.cs" />
     <Compile Include="HttpRequestHeaders.cs" />

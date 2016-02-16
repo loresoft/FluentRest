@@ -105,6 +105,9 @@
     <Compile Include="..\..\net45\FluentRest\IContentSerializer.cs">
       <Link>IContentSerializer.cs</Link>
     </Compile>
+    <Compile Include="..\..\net45\FluentRest\IFluentInterceptor.cs">
+      <Link>IFluentInterceptor.cs</Link>
+    </Compile>
     <Compile Include="..\..\net45\FluentRest\JsonContentSerializer.cs">
       <Link>JsonContentSerializer.cs</Link>
     </Compile>

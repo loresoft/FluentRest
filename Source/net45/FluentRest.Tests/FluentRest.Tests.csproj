@@ -93,6 +93,8 @@
     <Compile Include="Google\Maps\Models\Location.cs" />
     <Compile Include="Google\Maps\Models\GeocodeResult.cs" />
     <Compile Include="Google\Maps\Models\Viewport.cs" />
+    <Compile Include="InterceptorTests.cs" />
+    <Compile Include="LogInterceptor.cs" />
     <Compile Include="MemoryStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryBuilderTest.cs" />

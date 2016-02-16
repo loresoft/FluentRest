@@ -19,7 +19,7 @@ namespace FluentRest
         /// Initializes a new instance of the <see cref="FluentClient"/> class.
         /// </summary>
         public FluentClient()
-            : this(new JsonContentSerializer(), new HttpClientHandler(), true)
+            : this(new JsonContentSerializer(), new HttpClientHandler(), true, new List<IFluentInterceptor>())
         {
         }
 
@@ -29,7 +29,7 @@ namespace FluentRest
         /// <param name="serializer">The serializer to convert to and from HttpContent.</param>
         /// <param name="httpHandler">The HTTP handler stack to use for sending requests.</param>
         public FluentClient(IContentSerializer serializer, HttpMessageHandler httpHandler)
-            : this(serializer, httpHandler, true)
+            : this(serializer, httpHandler, true, new List<IFluentInterceptor>())
         {
         }
 
@@ -43,6 +43,23 @@ namespace FluentRest
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
         public FluentClient(IContentSerializer serializer, HttpMessageHandler httpHandler, bool disposeHandler)
+            : this(serializer, httpHandler, disposeHandler, new List<IFluentInterceptor>())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FluentClient"/> class.
+        /// </summary>
+        /// <param name="serializer">The serializer to convert to and from HttpContent.</param>
+        /// <param name="httpHandler">The HTTP handler stack to use for sending requests.</param>
+        /// <param name="disposeHandler">
+        /// <c>true</c> if the inner handler should be disposed of by the Dispose method, 
+        /// <c>false</c> if you intend to reuse the inner handler.
+        /// </param>
+        /// <param name="interceptors">The list of <see cref="IFluentInterceptor"/> for this client..</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
+        public FluentClient(IContentSerializer serializer, HttpMessageHandler httpHandler, bool disposeHandler, IEnumerable<IFluentInterceptor> interceptors)
         {
             if (serializer == null)
                 throw new ArgumentNullException(nameof(serializer));
@@ -53,10 +70,10 @@ namespace FluentRest
             Serializer = serializer;
             HttpHandler = httpHandler;
             DisposeHandler = disposeHandler;
+            Interceptors = interceptors ?? new List<IFluentInterceptor>();
 
             _defaultRequest = new FluentRequest();
         }
-
 
 
         /// <summary>
@@ -96,6 +113,13 @@ namespace FluentRest
         /// </value>
         public bool DisposeHandler { get; }
 
+        /// <summary>
+        /// Gets the list of Http interceptors for this client.
+        /// </summary>
+        /// <value>
+        /// The Http interceptors for this client.
+        /// </value>
+        public IEnumerable<IFluentInterceptor> Interceptors { get; }
 
         /// <summary>
         /// Set the initial default values for all request from this instance of <see cref="FluentClient"/>.
@@ -310,42 +334,18 @@ namespace FluentRest
 
         private async Task<FluentResponse> Send(FluentRequest fluentRequest, CancellationToken cancellationToken)
         {
-            var httpRequest = new HttpRequestMessage();
-            httpRequest.RequestUri = fluentRequest.RequestUri();
-            httpRequest.Method = fluentRequest.Method;
-
-            // add serializer media type
-            httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(Serializer.ContentType));
-
-            // copy headers
-            foreach (var header in fluentRequest.Headers)
-            {
-                var values = header.Value.ToList();
-                httpRequest.Headers.Add(header.Key, values);
-            }
-
-            httpRequest.Content = await GetContent(fluentRequest)
-                .ConfigureAwait(false);
-
             var httpClient = new HttpClient(HttpHandler, DisposeHandler);
 
             var headerValue = new ProductInfoHeaderValue(ThisAssembly.AssemblyProduct, ThisAssembly.AssemblyVersion);
             httpClient.DefaultRequestHeaders.UserAgent.Add(headerValue);
 
+            var httpRequest = await TransformRequest(fluentRequest);
+
             var httpResponse = await httpClient
                 .SendAsync(httpRequest, fluentRequest.CompletionOption, cancellationToken)
                 .ConfigureAwait(false);
 
-            var fluentResponse = new FluentResponse(Serializer, httpResponse.Content);
-            fluentResponse.ReasonPhrase = httpResponse.ReasonPhrase;
-            fluentResponse.StatusCode = httpResponse.StatusCode;
-            fluentResponse.Request = fluentRequest;
-
-            var headers = new Dictionary<string, ICollection<string>>();
-            foreach (var header in httpResponse.Headers)
-                headers.Add(header.Key, header.Value.ToList());
-
-            fluentResponse.Headers = headers;
+            var fluentResponse = TransformResponse(fluentRequest, httpResponse);
 
             return fluentResponse;
         }
@@ -369,6 +369,45 @@ namespace FluentRest
 
             var httpContent = new FormUrlEncodedContent(formData);
             return httpContent;
+        }
+
+        private async Task<HttpRequestMessage> TransformRequest(FluentRequest fluentRequest)
+        {
+            var httpRequest = new HttpRequestMessage();
+            httpRequest.RequestUri = fluentRequest.RequestUri();
+            httpRequest.Method = fluentRequest.Method;
+
+            // add serializer media type
+            httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(Serializer.ContentType));
+
+            // copy headers
+            foreach (var header in fluentRequest.Headers)
+            {
+                var values = header.Value.ToList();
+                httpRequest.Headers.Add(header.Key, values);
+            }
+
+            httpRequest.Content = await GetContent(fluentRequest).ConfigureAwait(false);
+
+            // run request interceptors
+            return Interceptors.Aggregate(httpRequest, (current, interceptor) => interceptor.TransformRequest(fluentRequest, current));
+        }
+
+        private FluentResponse TransformResponse(FluentRequest fluentRequest, HttpResponseMessage httpResponse)
+        {
+            var fluentResponse = new FluentResponse(Serializer, httpResponse.Content);
+            fluentResponse.ReasonPhrase = httpResponse.ReasonPhrase;
+            fluentResponse.StatusCode = httpResponse.StatusCode;
+            fluentResponse.Request = fluentRequest;
+
+            var headers = new Dictionary<string, ICollection<string>>();
+            foreach (var header in httpResponse.Headers)
+                headers.Add(header.Key, header.Value.ToList());
+
+            fluentResponse.Headers = headers;
+
+            // run response interceptors
+            return Interceptors.Aggregate(fluentResponse, (current, interceptor) => interceptor.TransformResponse(httpResponse, current));
         }
     }
 }
