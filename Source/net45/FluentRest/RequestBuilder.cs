@@ -62,5 +62,21 @@ namespace FluentRest
             Request.CompletionOption = completionOption;
             return this as TBuilder;
         }
+
+
+        /// <summary>
+        /// Sets a state value on the request. 
+        /// </summary>
+        /// <param name="key">The state key .</param>
+        /// <param name="value">The status value.</param>
+        /// <returns>A fluent request builder.</returns>
+        public TBuilder State(string key, object value)
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException("Argument is null or empty", nameof(key));
+
+            Request.State[key] = value;
+            return this as TBuilder;
+        }
     }
 }

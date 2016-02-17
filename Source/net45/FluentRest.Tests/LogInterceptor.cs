@@ -4,10 +4,10 @@ using System.Net.Http;
 
 namespace FluentRest.Tests
 {
-    public class LogInterceptor : IFluentInterceptor
+    public class LogInterceptor : IFluentClientInterceptor
     {
-        private readonly Stopwatch _watch = new Stopwatch();
         private readonly Action<string> _writer;
+        private const string _key = "LogInterceptor:Stopwatch";
 
         public LogInterceptor(Action<string> writer)
         {
@@ -17,7 +17,8 @@ namespace FluentRest.Tests
 
         public HttpRequestMessage TransformRequest(FluentRequest fluentRequest, HttpRequestMessage httpRequest)
         {
-            _watch.Restart();
+            var watch = Stopwatch.StartNew();
+            fluentRequest.State[_key] = watch;
 
             _writer?.Invoke($"Request: {httpRequest}");
 
@@ -26,9 +27,16 @@ namespace FluentRest.Tests
 
         public FluentResponse TransformResponse(HttpResponseMessage httpResponse, FluentResponse fluentResponse)
         {
-            _watch.Stop();
+            var message = $"Response: {httpResponse}";
 
-            _writer?.Invoke($"Response: {httpResponse}; Time: {_watch.ElapsedMilliseconds} ms");
+            var watch = fluentResponse.Request?.GetState<Stopwatch>(_key);
+            if (watch != null)
+            {
+                watch.Stop();
+                message += $"; Time: {watch.ElapsedMilliseconds} ms";
+            }
+
+            _writer?.Invoke(message);
 
             return fluentResponse;
         }

@@ -18,8 +18,8 @@ namespace FluentRest
         /// <summary>
         /// Initializes a new instance of the <see cref="FluentClient"/> class.
         /// </summary>
-        public FluentClient()
-            : this(new JsonContentSerializer(), new HttpClientHandler(), true, new List<IFluentInterceptor>())
+        public FluentClient() 
+            : this(new JsonContentSerializer(), new HttpClientHandler(), true, new List<IFluentClientInterceptor>())
         {
         }
 
@@ -29,7 +29,7 @@ namespace FluentRest
         /// <param name="serializer">The serializer to convert to and from HttpContent.</param>
         /// <param name="httpHandler">The HTTP handler stack to use for sending requests.</param>
         public FluentClient(IContentSerializer serializer, HttpMessageHandler httpHandler)
-            : this(serializer, httpHandler, true, new List<IFluentInterceptor>())
+            : this(serializer, httpHandler, true, new List<IFluentClientInterceptor>())
         {
         }
 
@@ -43,7 +43,7 @@ namespace FluentRest
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
         public FluentClient(IContentSerializer serializer, HttpMessageHandler httpHandler, bool disposeHandler)
-            : this(serializer, httpHandler, disposeHandler, new List<IFluentInterceptor>())
+            : this(serializer, httpHandler, disposeHandler, new List<IFluentClientInterceptor>())
         {
         }
 
@@ -56,10 +56,10 @@ namespace FluentRest
         /// <c>true</c> if the inner handler should be disposed of by the Dispose method, 
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
-        /// <param name="interceptors">The list of <see cref="IFluentInterceptor"/> for this client..</param>
+        /// <param name="interceptors">The list of <see cref="IFluentClientInterceptor"/> for this client..</param>
         /// <exception cref="System.ArgumentNullException">
         /// </exception>
-        public FluentClient(IContentSerializer serializer, HttpMessageHandler httpHandler, bool disposeHandler, IEnumerable<IFluentInterceptor> interceptors)
+        public FluentClient(IContentSerializer serializer, HttpMessageHandler httpHandler, bool disposeHandler, IEnumerable<IFluentClientInterceptor> interceptors)
         {
             if (serializer == null)
                 throw new ArgumentNullException(nameof(serializer));
@@ -67,10 +67,13 @@ namespace FluentRest
             if (httpHandler == null)
                 throw new ArgumentNullException(nameof(httpHandler));
 
+            if (interceptors == null)
+                throw new ArgumentNullException(nameof(interceptors));
+
             Serializer = serializer;
             HttpHandler = httpHandler;
             DisposeHandler = disposeHandler;
-            Interceptors = interceptors ?? new List<IFluentInterceptor>();
+            Interceptors = new List<IFluentClientInterceptor>(interceptors);
 
             _defaultRequest = new FluentRequest();
         }
@@ -114,15 +117,29 @@ namespace FluentRest
         public bool DisposeHandler { get; }
 
         /// <summary>
-        /// Gets the list of Http interceptors for this client.
+        /// Gets the list of fluent client interceptors for this client.
         /// </summary>
         /// <value>
-        /// The Http interceptors for this client.
+        /// The fluent interceptors for this client.
         /// </value>
-        public IEnumerable<IFluentInterceptor> Interceptors { get; }
+        public IList<IFluentClientInterceptor> Interceptors { get; }
+
 
         /// <summary>
-        /// Set the initial default values for all request from this instance of <see cref="FluentClient"/>.
+        /// Set the initial default values for all requests from this instance of <see cref="FluentClient" />.
+        /// </summary>
+        /// <param name="request">The default request.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="request" /> is <see langword="null" />.</exception>
+        public void Defaults(FluentRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            _defaultRequest = request;
+        }
+
+        /// <summary>
+        /// Set the initial default values for all requests from this instance of <see cref="FluentClient"/>.
         /// </summary>
         /// <param name="builder">The fluent builder factory.</param>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
@@ -321,7 +338,6 @@ namespace FluentRest
         /// <typeparam name="TResponse">The type of the response.</typeparam>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
         public async Task<TResponse> SendAsync<TResponse>(Action<FormBuilder> builder)
         {
@@ -408,6 +424,33 @@ namespace FluentRest
 
             // run response interceptors
             return Interceptors.Aggregate(fluentResponse, (current, interceptor) => interceptor.TransformResponse(httpResponse, current));
+        }
+
+
+        /// <summary>
+        /// Creates an instance of <see cref="FluentClient"/> with specified fluent <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder">The fluent builder.</param>
+        /// <returns>A new instance of <see cref="FluentClient"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        public static FluentClient Create(Action<FluentClientBuilder> builder)
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+
+            var fluentClientBuilder = new FluentClientBuilder();
+            builder(fluentClientBuilder);
+
+            var client = new FluentClient(
+                fluentClientBuilder.ContentSerializer,
+                fluentClientBuilder.MessageHandler,
+                fluentClientBuilder.ShouldDisposeHandler,
+                fluentClientBuilder.Interceptors);
+
+            client.Defaults(fluentClientBuilder.DefaultRequest);
+
+            return client;
         }
     }
 }

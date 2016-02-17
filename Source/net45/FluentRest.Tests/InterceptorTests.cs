@@ -24,7 +24,7 @@ namespace FluentRest.Tests
                 .AppendPath("get")
                 .QueryString("page", 1)
                 .QueryString("size", 10)
-                );
+            );
 
             Assert.NotNull(result);
             Assert.Equal("http://httpbin.org/get?page=1&size=10", result.Url);
@@ -43,7 +43,7 @@ namespace FluentRest.Tests
                 .FormValue("Test", "Value")
                 .FormValue("key", "value")
                 .QueryString("page", 10)
-                );
+            );
 
             Assert.NotNull(result);
             Assert.Equal("http://httpbin.org/post?page=10", result.Url);
@@ -61,7 +61,7 @@ namespace FluentRest.Tests
                 .AppendPath("post")
                 .QueryString("page", 10)
                 .Content(user)
-                );
+            );
 
             Assert.NotNull(result);
             Assert.Equal("http://httpbin.org/post?page=10", result.Url);
@@ -75,13 +75,10 @@ namespace FluentRest.Tests
 
         private FluentClient CreateClient()
         {
-            var serializer = new JsonContentSerializer();
-            var httpHandler = new HttpClientHandler();
-            var interceptors = new List<IFluentInterceptor>();
-            interceptors.Add(new LogInterceptor(_output.WriteLine));
-
-            var client = new FluentClient(serializer, httpHandler, true, interceptors);
-            client.BaseUri = new Uri("http://httpbin.org/", UriKind.Absolute);
+            var client = FluentClient.Create(c => c
+                .Interceptor(new LogInterceptor(_output.WriteLine))
+                .BaseUri(new Uri("http://httpbin.org/", UriKind.Absolute))
+            );
 
             return client;
         }

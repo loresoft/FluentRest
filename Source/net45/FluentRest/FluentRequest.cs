@@ -19,6 +19,7 @@ namespace FluentRest
         /// </summary>
         public FluentRequest()
         {
+            State = new Dictionary<string, object>();
             Headers = new Dictionary<string, ICollection<string>>();
             FormData = new Dictionary<string, ICollection<string>>();
             QueryString = new Dictionary<string, ICollection<string>>();
@@ -26,6 +27,14 @@ namespace FluentRest
             Method = HttpMethod.Get;
             CompletionOption = HttpCompletionOption.ResponseContentRead;
         }
+
+        /// <summary>
+        /// Gets or sets the state dictionary.
+        /// </summary>
+        /// <value>
+        /// The state dictionary.
+        /// </value>
+        public IDictionary<string, object> State { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of HTTP request headers.
@@ -104,6 +113,24 @@ namespace FluentRest
             requestUri = BuildQueryString(requestUri);
 
             return requestUri;
+        }
+
+        /// <summary>
+        /// Gets the value for the specified <paramref name="key"/> from the request <see cref="State"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="key">The state key.</param>
+        /// <returns>The value for the specified <paramref name="key"/> if found; otherwise null.</returns>
+        public T GetState<T>(string key)
+        {
+            object value = null;
+            if (!State.TryGetValue(key, out value))
+                return default(T);
+
+            if (value == null)
+                return default(T);
+
+            return value is T ? (T)value : default(T);
         }
 
 

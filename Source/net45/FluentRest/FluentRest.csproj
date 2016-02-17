@@ -73,11 +73,12 @@
     <Compile Include="Fake\IFakeMessageStore.cs" />
     <Compile Include="Fake\MemoryMessageStore.cs" />
     <Compile Include="FluentClient.cs" />
+    <Compile Include="FluentClientBuilder.cs" />
     <Compile Include="FluentException.cs" />
     <Compile Include="FluentResponse.cs" />
     <Compile Include="HeaderBuilder.cs" />
     <Compile Include="FormBuilder.cs" />
-    <Compile Include="IFluentInterceptor.cs" />
+    <Compile Include="IFluentClientInterceptor.cs" />
     <Compile Include="QueryBuilder.cs" />
     <Compile Include="FluentRequest.cs" />
     <Compile Include="HttpRequestHeaders.cs" />

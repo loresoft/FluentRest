@@ -131,6 +131,9 @@
     <Compile Include="..\..\net45\FluentRest\FluentClient.cs">
       <Link>FluentClient.cs</Link>
     </Compile>
+    <Compile Include="..\..\net45\FluentRest\FluentClientBuilder.cs">
+      <Link>FluentClientBuilder.cs</Link>
+    </Compile>
     <Compile Include="..\..\net45\FluentRest\FluentException.cs">
       <Link>FluentException.cs</Link>
     </Compile>
@@ -155,8 +158,8 @@
     <Compile Include="..\..\net45\FluentRest\IContentSerializer.cs">
       <Link>IContentSerializer.cs</Link>
     </Compile>
-    <Compile Include="..\..\net45\FluentRest\IFluentInterceptor.cs">
-      <Link>IFluentInterceptor.cs</Link>
+    <Compile Include="..\..\net45\FluentRest\IFluentClientInterceptor.cs">
+      <Link>IFluentClientInterceptor.cs</Link>
     </Compile>
     <Compile Include="..\..\net45\FluentRest\JsonContentSerializer.cs">
       <Link>JsonContentSerializer.cs</Link>

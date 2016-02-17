@@ -6,7 +6,7 @@ namespace FluentRest
     /// <summary>
     /// An <see langword="interface"/> for transforming HTTP requests and response
     /// </summary>
-    public interface IFluentInterceptor
+    public interface IFluentClientInterceptor
     {
         /// <summary>
         /// Transforms the <see cref="FluentRequest"/> to <see cref="HttpRequestMessage"/>.
