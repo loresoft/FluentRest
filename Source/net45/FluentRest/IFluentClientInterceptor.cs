@@ -11,11 +11,19 @@ namespace FluentRest
         /// <summary>
         /// Allow for modification of the current request before send the HTTP request.
         /// </summary>
-        Task RequestAsync(InterceptorRequestContext requestContext);
+        /// <param name="context">The request context.</param>
+        /// <returns>
+        /// The task representing the asynchronous operation.
+        /// </returns>
+        Task RequestAsync(InterceptorRequestContext context);
 
         /// <summary>
         /// Allow for modification of the current response before returning the response.
         /// </summary>
-        Task ResponseAsync(InterceptorResponseContext responseContext);
+        /// <param name="context">The current response context.</param>
+        /// <returns>
+        /// The task representing the asynchronous operation.
+        /// </returns>
+        Task ResponseAsync(InterceptorResponseContext context);
     }
 }

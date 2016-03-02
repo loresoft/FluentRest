@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 
 namespace FluentRest
 {
@@ -26,6 +27,7 @@ namespace FluentRest
             Paths = new List<string>();
             Method = HttpMethod.Get;
             CompletionOption = HttpCompletionOption.ResponseContentRead;
+            CancellationToken = CancellationToken.None;
         }
 
         /// <summary>
@@ -99,6 +101,14 @@ namespace FluentRest
         /// When the operation should complete (as soon as a response is available or after reading the whole response content).
         /// </value>
         public HttpCompletionOption CompletionOption { get; set; }
+
+        /// <summary>
+        /// Gets or sets the cancellation token to cancel the request operation.
+        /// </summary>
+        /// <value>
+        /// The cancellation token to cancel the request operation.
+        /// </value>
+        public CancellationToken CancellationToken { get; set; }
 
         /// <summary>
         /// Gets the computed Uri used for the HTTP request.

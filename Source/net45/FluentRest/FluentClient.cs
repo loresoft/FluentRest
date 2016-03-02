@@ -18,7 +18,7 @@ namespace FluentRest
         /// <summary>
         /// Initializes a new instance of the <see cref="FluentClient"/> class.
         /// </summary>
-        public FluentClient() 
+        public FluentClient()
             : this(new JsonContentSerializer(), new HttpClientHandler(), true, new List<IFluentClientInterceptor>())
         {
         }
@@ -74,6 +74,7 @@ namespace FluentRest
             HttpHandler = httpHandler;
             DisposeHandler = disposeHandler;
             Interceptors = new List<IFluentClientInterceptor>(interceptors);
+            MaxRetry = 1;
 
             _defaultRequest = new FluentRequest();
         }
@@ -124,6 +125,13 @@ namespace FluentRest
         /// </value>
         public IList<IFluentClientInterceptor> Interceptors { get; }
 
+        /// <summary>
+        /// Gets or sets the maximum number of times to allow retry when triggered by an interceptor.
+        /// </summary>
+        /// <value>
+        /// The maximum number of times to allow retry.
+        /// </value>
+        public int MaxRetry { get; set; }
 
         /// <summary>
         /// Set the initial default values for all requests from this instance of <see cref="FluentClient" />.
@@ -170,8 +178,7 @@ namespace FluentRest
             var fluentBuilder = new QueryBuilder(fluentRequest);
             builder(fluentBuilder);
 
-            var token = fluentBuilder.Token;
-            var response = await Send(fluentRequest, token).ConfigureAwait(false);
+            var response = await SendAsync(fluentRequest).ConfigureAwait(false);
 
             return response;
         }
@@ -209,8 +216,7 @@ namespace FluentRest
             var fluentBuilder = new FormBuilder(fluentRequest);
             builder(fluentBuilder);
 
-            var token = fluentBuilder.Token;
-            var response = await Send(fluentRequest, token).ConfigureAwait(false);
+            var response = await SendAsync(fluentRequest).ConfigureAwait(false);
 
             return response;
         }
@@ -248,8 +254,7 @@ namespace FluentRest
             var fluentBuilder = new FormBuilder(fluentRequest);
             builder(fluentBuilder);
 
-            var token = fluentBuilder.Token;
-            var response = await Send(fluentRequest, token).ConfigureAwait(false);
+            var response = await SendAsync(fluentRequest).ConfigureAwait(false);
 
             return response;
         }
@@ -287,8 +292,7 @@ namespace FluentRest
             var fluentBuilder = new FormBuilder(fluentRequest);
             builder(fluentBuilder);
 
-            var token = fluentBuilder.Token;
-            var response = await Send(fluentRequest, token).ConfigureAwait(false);
+            var response = await SendAsync(fluentRequest).ConfigureAwait(false);
 
             return response;
         }
@@ -323,11 +327,11 @@ namespace FluentRest
 
             // build request
             var fluentRequest = _defaultRequest.Clone();
+
             var fluentBuilder = new FormBuilder(fluentRequest);
             builder(fluentBuilder);
 
-            var token = fluentBuilder.Token;
-            var response = await Send(fluentRequest, token).ConfigureAwait(false);
+            var response = await SendAsync(fluentRequest).ConfigureAwait(false);
 
             return response;
         }
@@ -341,30 +345,53 @@ namespace FluentRest
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
         public async Task<TResponse> SendAsync<TResponse>(Action<FormBuilder> builder)
         {
-            var response = await PostAsync(builder).ConfigureAwait(false);
+            var response = await SendAsync(builder).ConfigureAwait(false);
             var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
 
             return data;
         }
 
 
-        private async Task<FluentResponse> Send(FluentRequest fluentRequest, CancellationToken cancellationToken)
+        /// <summary>
+        /// Sends a request using specified fluent request as an asynchronous operation.
+        /// </summary>
+        /// <param name="fluentRequest">The fluent request to send.</param>
+        /// <returns>
+        /// The task object representing the asynchronous operation.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentRequest" /> is <see langword="null" />.</exception>
+        public async Task<FluentResponse> SendAsync(FluentRequest fluentRequest)
         {
+            if (fluentRequest == null)
+                throw new ArgumentNullException(nameof(fluentRequest));
+
             var httpClient = new HttpClient(HttpHandler, DisposeHandler);
 
             var headerValue = new ProductInfoHeaderValue(ThisAssembly.AssemblyProduct, ThisAssembly.AssemblyVersion);
             httpClient.DefaultRequestHeaders.UserAgent.Add(headerValue);
 
-            var httpRequest = await TransformRequest(fluentRequest);
+            FluentResponse fluentResponse;
+            int count = 0;
 
-            var httpResponse = await httpClient
-                .SendAsync(httpRequest, fluentRequest.CompletionOption, cancellationToken)
-                .ConfigureAwait(false);
+            do
+            {
+                var httpRequest = await TransformRequest(fluentRequest).ConfigureAwait(false);
 
-            var fluentResponse = await TransformResponse(fluentRequest, httpResponse);
+                var httpResponse = await httpClient
+                    .SendAsync(httpRequest, fluentRequest.CompletionOption, fluentRequest.CancellationToken)
+                    .ConfigureAwait(false);
+
+                fluentResponse = await TransformResponse(fluentRequest, httpResponse).ConfigureAwait(false);
+                
+                // track call count to prevent infinite loop
+                count++;
+
+            } while (fluentResponse.ShouldRetry && count <= MaxRetry);
 
             return fluentResponse;
         }
+
 
         private async Task<HttpContent> GetContent(FluentRequest fluentRequest)
         {
@@ -408,7 +435,7 @@ namespace FluentRest
             // run request interceptors
             var context = new InterceptorRequestContext(this, fluentRequest) { HttpRequest = httpRequest };
             foreach (var interceptor in Interceptors)
-                await interceptor.RequestAsync(context);
+                await interceptor.RequestAsync(context).ConfigureAwait(false);
 
             return context.HttpRequest ?? httpRequest;
         }
@@ -427,9 +454,9 @@ namespace FluentRest
             fluentResponse.Headers = headers;
 
             // run response interceptors
-            var context = new InterceptorResponseContext(this, httpResponse) { Response = fluentResponse }
-;            foreach (var interceptor in Interceptors)
-                await interceptor.ResponseAsync(context);
+            var context = new InterceptorResponseContext(this, httpResponse) { Response = fluentResponse };
+            foreach (var interceptor in Interceptors)
+                await interceptor.ResponseAsync(context).ConfigureAwait(false);
 
             return context.Response ?? fluentResponse;
         }

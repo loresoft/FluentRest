@@ -82,6 +82,16 @@ namespace FluentRest
         /// </value>
         public IContentSerializer Serializer => _serializer;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the request should be retried.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the request should be retried; otherwise, <c>false</c>.
+        /// </value>
+        /// <remarks>
+        /// This flag can be used by interceptors to cause the current request to be resubmit.
+        /// </remarks>
+        public bool ShouldRetry { get; set; }
 
         /// <summary>
         /// Throws an exception if the <see cref="IsSuccessStatusCode"/> property for the HTTP response is false.

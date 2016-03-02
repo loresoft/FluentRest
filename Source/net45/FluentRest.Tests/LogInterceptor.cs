@@ -15,10 +15,10 @@ namespace FluentRest.Tests
             _writer = writer;
         }
 
-        public Task RequestAsync(InterceptorRequestContext requestContext)
+        public Task RequestAsync(InterceptorRequestContext context)
         {
-            var fluentRequest = requestContext.Request;
-            var httpRequest = requestContext.HttpRequest;
+            var fluentRequest = context.Request;
+            var httpRequest = context.HttpRequest;
 
             var watch = Stopwatch.StartNew();
             fluentRequest.State[_key] = watch;
@@ -29,10 +29,10 @@ namespace FluentRest.Tests
             return Task.WhenAll();
         }
 
-        public Task ResponseAsync(InterceptorResponseContext responseContext)
+        public Task ResponseAsync(InterceptorResponseContext context)
         {
-            var fluentResponse = responseContext.Response;
-            var httpResponse = responseContext.HttpResponse;
+            var fluentResponse = context.Response;
+            var httpResponse = context.HttpResponse;
 
             var message = $"Response: {httpResponse}";
 
