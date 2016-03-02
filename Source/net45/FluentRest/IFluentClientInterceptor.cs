@@ -1,5 +1,5 @@
 using System;
-using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace FluentRest
 {
@@ -9,19 +9,13 @@ namespace FluentRest
     public interface IFluentClientInterceptor
     {
         /// <summary>
-        /// Transforms the <see cref="FluentRequest"/> to <see cref="HttpRequestMessage"/>.
+        /// Allow for modification of the current request before send the HTTP request.
         /// </summary>
-        /// <param name="fluentRequest">The fluent request.</param>
-        /// <param name="httpRequest">The HTTP request.</param>
-        /// <returns>The <see cref="HttpRequestMessage"/> to be sent.</returns>
-        HttpRequestMessage TransformRequest(FluentRequest fluentRequest, HttpRequestMessage httpRequest);
+        Task RequestAsync(InterceptorRequestContext requestContext);
 
         /// <summary>
-        /// Transforms the <see cref="HttpResponseMessage"/> to <see cref="FluentResponse"/>.
+        /// Allow for modification of the current response before returning the response.
         /// </summary>
-        /// <param name="httpResponse">The HTTP response.</param>
-        /// <param name="fluentResponse">The fluent response.</param>
-        /// <returns>The FluentResponse from the the HTTP call.</returns>
-        FluentResponse TransformResponse(HttpResponseMessage httpResponse, FluentResponse fluentResponse);
+        Task ResponseAsync(InterceptorResponseContext responseContext);
     }
 }

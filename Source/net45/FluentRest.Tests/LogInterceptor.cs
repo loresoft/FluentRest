@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace FluentRest.Tests
 {
@@ -14,19 +15,25 @@ namespace FluentRest.Tests
             _writer = writer;
         }
 
-
-        public HttpRequestMessage TransformRequest(FluentRequest fluentRequest, HttpRequestMessage httpRequest)
+        public Task RequestAsync(InterceptorRequestContext requestContext)
         {
+            var fluentRequest = requestContext.Request;
+            var httpRequest = requestContext.HttpRequest;
+
             var watch = Stopwatch.StartNew();
             fluentRequest.State[_key] = watch;
 
             _writer?.Invoke($"Request: {httpRequest}");
 
-            return httpRequest;
+            // use WhenAll for backward compatibility
+            return Task.WhenAll();
         }
 
-        public FluentResponse TransformResponse(HttpResponseMessage httpResponse, FluentResponse fluentResponse)
+        public Task ResponseAsync(InterceptorResponseContext responseContext)
         {
+            var fluentResponse = responseContext.Response;
+            var httpResponse = responseContext.HttpResponse;
+
             var message = $"Response: {httpResponse}";
 
             var watch = fluentResponse.Request?.GetState<Stopwatch>(_key);
@@ -38,7 +45,9 @@ namespace FluentRest.Tests
 
             _writer?.Invoke(message);
 
-            return fluentResponse;
+
+            // use WhenAll for backward compatibility
+            return Task.WhenAll();
         }
     }
 }

@@ -361,7 +361,7 @@ namespace FluentRest
                 .SendAsync(httpRequest, fluentRequest.CompletionOption, cancellationToken)
                 .ConfigureAwait(false);
 
-            var fluentResponse = TransformResponse(fluentRequest, httpResponse);
+            var fluentResponse = await TransformResponse(fluentRequest, httpResponse);
 
             return fluentResponse;
         }
@@ -406,10 +406,14 @@ namespace FluentRest
             httpRequest.Content = await GetContent(fluentRequest).ConfigureAwait(false);
 
             // run request interceptors
-            return Interceptors.Aggregate(httpRequest, (current, interceptor) => interceptor.TransformRequest(fluentRequest, current));
+            var context = new InterceptorRequestContext(this, fluentRequest) { HttpRequest = httpRequest };
+            foreach (var interceptor in Interceptors)
+                await interceptor.RequestAsync(context);
+
+            return context.HttpRequest ?? httpRequest;
         }
 
-        private FluentResponse TransformResponse(FluentRequest fluentRequest, HttpResponseMessage httpResponse)
+        private async Task<FluentResponse> TransformResponse(FluentRequest fluentRequest, HttpResponseMessage httpResponse)
         {
             var fluentResponse = new FluentResponse(Serializer, httpResponse.Content);
             fluentResponse.ReasonPhrase = httpResponse.ReasonPhrase;
@@ -423,7 +427,11 @@ namespace FluentRest
             fluentResponse.Headers = headers;
 
             // run response interceptors
-            return Interceptors.Aggregate(fluentResponse, (current, interceptor) => interceptor.TransformResponse(httpResponse, current));
+            var context = new InterceptorResponseContext(this, httpResponse) { Response = fluentResponse }
+;            foreach (var interceptor in Interceptors)
+                await interceptor.ResponseAsync(context);
+
+            return context.Response ?? fluentResponse;
         }
 
 

@@ -111,6 +111,12 @@
     <Compile Include="..\..\net45\FluentRest\IFluentClientInterceptor.cs">
       <Link>IFluentClientInterceptor.cs</Link>
     </Compile>
+    <Compile Include="..\..\net45\FluentRest\InterceptorRequestContext.cs">
+      <Link>InterceptorRequestContext.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net45\FluentRest\InterceptorResponseContext.cs">
+      <Link>InterceptorResponseContext.cs</Link>
+    </Compile>
     <Compile Include="..\..\net45\FluentRest\JsonContentSerializer.cs">
       <Link>JsonContentSerializer.cs</Link>
     </Compile>

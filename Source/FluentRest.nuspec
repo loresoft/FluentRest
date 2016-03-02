@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>FluentRest</id>
-    <version>1.3.0</version>
+    <version>1.5.0</version>
     <authors>LoreSoft</authors>
     <owners>LoreSoft</owners>
     <licenseUrl>https://raw.githubusercontent.com/loresoft/FluentRest/master/LICENSE</licenseUrl>
@@ -15,8 +15,12 @@
     <tags>HTTP HttpClient REST Fluent</tags>
     <dependencies>
       <group targetFramework="net45">
+        <dependency id="Newtonsoft.Json" version="7.0.1" />
+      </group>
+      <group targetFramework="net40">
         <dependency id="Microsoft.Net.Http" version="2.2.29" />
         <dependency id="Newtonsoft.Json" version="7.0.1" />
+        <dependency id="Microsoft.Bcl.Async" version="1.0.168"/>
       </group>
       <group targetFramework="portable-net4+sl5+netcore45+wpa81+wp8">
         <dependency id="Microsoft.Net.Http" version="2.2.29" />

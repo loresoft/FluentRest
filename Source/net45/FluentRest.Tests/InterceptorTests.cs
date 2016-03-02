@@ -77,11 +77,14 @@ namespace FluentRest.Tests
         {
             var client = FluentClient.Create(c => c
                 .Interceptor(new LogInterceptor(_output.WriteLine))
-                .BaseUri(new Uri("http://httpbin.org/", UriKind.Absolute))
+                .Defaults(d => d
+                    .State("happy", "joy")
+                    .BaseUri(new Uri("http://httpbin.org/", UriKind.Absolute)))
             );
 
             return client;
         }
 
     }
+
 }
