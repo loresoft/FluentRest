@@ -21,24 +21,12 @@ namespace FluentRest
         public FluentRequest Request { get; }
 
         /// <summary>
-        /// Gets or sets the cancellation token to cancel the request operation.
-        /// </summary>
-        /// <value>
-        /// The cancellation token to cancel the request operation.
-        /// </value>
-        /// <remarks>
-        /// CancellationToken is stored here to keep FluentRequest serializable.
-        /// </remarks>
-        internal CancellationToken Token { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="RequestBuilder{TBuilder}"/> class.
         /// </summary>
         /// <param name="request">The fluent HTTP request being built.</param>
         protected RequestBuilder(FluentRequest request)
         {
             Request = request;
-            Token = System.Threading.CancellationToken.None;
         }
 
         /// <summary>
@@ -48,7 +36,7 @@ namespace FluentRest
         /// <returns>A fluent request builder.</returns>
         public TBuilder CancellationToken(CancellationToken cancellationToken)
         {
-            Token = cancellationToken;
+            Request.CancellationToken = cancellationToken;
             return this as TBuilder;
         }
 
@@ -60,6 +48,22 @@ namespace FluentRest
         public TBuilder CompletionOption(HttpCompletionOption completionOption)
         {
             Request.CompletionOption = completionOption;
+            return this as TBuilder;
+        }
+
+
+        /// <summary>
+        /// Sets a state value on the request. 
+        /// </summary>
+        /// <param name="key">The state key .</param>
+        /// <param name="value">The status value.</param>
+        /// <returns>A fluent request builder.</returns>
+        public TBuilder State(string key, object value)
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException("Argument is null or empty", nameof(key));
+
+            Request.State[key] = value;
             return this as TBuilder;
         }
     }

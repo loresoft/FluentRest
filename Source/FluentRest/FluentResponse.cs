@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -81,14 +82,48 @@ namespace FluentRest
         /// </value>
         public IContentSerializer Serializer => _serializer;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the request should be retried.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the request should be retried; otherwise, <c>false</c>.
+        /// </value>
+        /// <remarks>
+        /// This flag can be used by interceptors to cause the current request to be resubmit.
+        /// </remarks>
+        public bool ShouldRetry { get; set; }
 
         /// <summary>
-        /// Deserializes the the <see cref="System.Net.Http.HttpContent"/> asynchronous.
+        /// Throws an exception if the <see cref="IsSuccessStatusCode"/> property for the HTTP response is false.
+        /// </summary>
+        /// <returns>The HTTP response message if the call is successful.</returns>
+        /// <exception cref="HttpRequestException">Response status code does not indicate success.</exception>
+        public FluentResponse EnsureSuccessStatusCode()
+        {
+            if (IsSuccessStatusCode)
+                return this;
+
+            if (HttpContent != null)
+                HttpContent.Dispose();
+
+            int statusCode = (int)StatusCode;
+            throw new HttpRequestException($"Response status code does not indicate success: {statusCode} ({ReasonPhrase}).");
+        }
+
+        /// <summary>
+        /// Deserializes the the <see cref="System.Net.Http.HttpContent" /> asynchronous.
         /// </summary>
         /// <typeparam name="TData">The type of the data.</typeparam>
-        /// <returns>The data object deserialized from the HttpContent.</returns>
-        public async Task<TData> DeserializeAsync<TData>()
+        /// <param name="ensureSuccess">Throw an exception if the <see cref="IsSuccessStatusCode"/> property for the HTTP response is false.</param>
+        /// <returns>
+        /// The data object deserialized from the HttpContent.
+        /// </returns>
+        /// <exception cref="HttpRequestException">Response status code does not indicate success.</exception>
+        public async Task<TData> DeserializeAsync<TData>(bool ensureSuccess = true)
         {
+            if (ensureSuccess)
+                EnsureSuccessStatusCode();
+
             var response = await Serializer
                 .DeserializeAsync<TData>(HttpContent)
                 .ConfigureAwait(false);

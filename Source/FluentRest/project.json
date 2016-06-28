@@ -1,61 +1,75 @@
 ﻿{
   "version": "1.0.0-*",
-  "summary": "Fluent wrapper over HttpClient",
   "description": "Fluent wrapper over HttpClient to make REST calls easier",
-  "authors": [ "LoreSoft" ],
-  "tags": [ "HTTP", "HttpClient", " REST", "Fluent" ],
-  "projectUrl": "https://github.com/loresoft/FluentRest",
-  "licenseUrl": "https://raw.githubusercontent.com/loresoft/FluentRest/master/LICENSE",
-  "copyright": "Copyright (c) 2015, LoreSoft",
   "language": "en-US",
-  "requireLicenseAcceptance": false,
-  "compile": [ "..\\GlobalAssemblyInfo.cs" ],
+  "authors": [ "LoreSoft" ],
+  "packOptions": {
+    "copyright": "Copyright (c) 2015, LoreSoft",
+    "owners": [ "LoreSoft" ],
+    "projectUrl": "https://github.com/loresoft/FluentRest",
+    "licenseUrl": "https://raw.githubusercontent.com/loresoft/FluentRest/master/LICENSE",
+    "requireLicenseAcceptance": false,
+    "summary": "Fluent wrapper over HttpClient",
+    "tags": [ "HTTP", "HttpClient", " REST", "Fluent" ]
+  },
+  "buildOptions": {
+    "compile": [ "..\\GlobalAssemblyInfo.cs" ]
+  },
+  "dependencies": {
+    "Newtonsoft.Json": "9.0.1"
+  },
   "frameworks": {
-    ".NETPortable,Version=v4.5,Profile=Profile259": {
-      "dependencies": {
-        "Newtonsoft.Json": "7.0.1",
-        "Microsoft.Bcl": "1.1.10",
-        "Microsoft.Bcl.Async": "1.0.168",
-        "Microsoft.Bcl.Build": "1.0.21",
-        "Microsoft.Net.Http": "2.2.29"
-      },
-      "frameworkAssemblies": {
-        "System.Collections": "",
-        "System.Diagnostics.Debug": "",
-        "System.Linq": "",
-        "System.Linq.Expressions": "",
-        "System.Linq.Queryable": "",
-        "System.ObjectModel": "",
-        "System.Reflection": "",
-        "System.Reflection.Extensions": "",
-        "System.Runtime": "",
-        "System.Runtime.Extensions": "",
-        "System.Text.RegularExpressions": "",
-        "System.Threading": ""
-      },
-      "compilationOptions": {
-        "define": [ "PORTABLE" ]
-      }
-    },
     "net45": {
-      "dependencies": {
-        "Newtonsoft.Json": "7.0.1",
-        "Microsoft.Net.Http": "2.2.29"
+      "frameworkAssemblies": {
+        "Microsoft.CSharp": "",
+        "System.Core": "",
+        "System.Net.Http": ""
       },
-      "compilationOptions": {
+      "buildOptions": {
         "define": [ "NET45" ]
       }
     },
     "net40": {
+      "frameworkAssemblies": {
+        "Microsoft.CSharp": "",
+        "System.Core": ""
+      },
       "dependencies": {
         "Microsoft.Bcl": "1.1.10",
         "Microsoft.Bcl.Async": "1.0.168",
         "Microsoft.Bcl.Build": "1.0.21",
-        "Microsoft.Net.Http": "2.2.29",
-        "Newtonsoft.Json": "7.0.1"
+        "Microsoft.Net.Http": "2.2.29"
       },
-      "compilationOptions": {
+      "buildOptions": {
         "define": [ "NET40" ]
+      }
+    },
+    "netstandard1.6": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      },
+      "buildOptions": {
+        "define": [
+          "NETSTANDARD16",
+          "PORTABLE"
+        ]
+      }
+    },
+    ".NETPortable,Version=v4.0,Profile=Profile328": {
+      "frameworkAssemblies": {
+        "System": "",
+        "System.Core": ""
+      },
+      "dependencies": {
+        "Microsoft.Bcl": "1.1.10",
+        "Microsoft.Bcl.Async": "1.0.168",
+        "Microsoft.Bcl.Build": "1.0.21",
+        "Microsoft.Net.Http": "2.2.29"
+      },
+      "buildOptions": {
+        "define": [
+          "PORTABLE"
+        ]
       }
     }
   }
