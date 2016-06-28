@@ -371,19 +371,33 @@ namespace FluentRest
             var headerValue = new ProductInfoHeaderValue(ThisAssembly.AssemblyProduct, ThisAssembly.AssemblyVersion);
             httpClient.DefaultRequestHeaders.UserAgent.Add(headerValue);
 
+            Exception exception = null;
+            HttpResponseMessage httpResponse = null;
             FluentResponse fluentResponse;
+
             int count = 0;
 
             do
             {
                 var httpRequest = await TransformRequest(fluentRequest).ConfigureAwait(false);
 
-                var httpResponse = await httpClient
-                    .SendAsync(httpRequest, fluentRequest.CompletionOption, fluentRequest.CancellationToken)
-                    .ConfigureAwait(false);
+                try
+                {
+                    httpResponse = await httpClient
+                        .SendAsync(httpRequest, fluentRequest.CompletionOption, fluentRequest.CancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
 
-                fluentResponse = await TransformResponse(fluentRequest, httpResponse).ConfigureAwait(false);
-                
+                fluentResponse = await TransformResponse(fluentRequest, httpResponse, exception).ConfigureAwait(false);
+
+                // throw if error not handled
+                if (exception != null && !fluentResponse.ShouldRetry)
+                    throw exception;
+
                 // track call count to prevent infinite loop
                 count++;
 
@@ -440,11 +454,11 @@ namespace FluentRest
             return context.HttpRequest ?? httpRequest;
         }
 
-        private async Task<FluentResponse> TransformResponse(FluentRequest fluentRequest, HttpResponseMessage httpResponse)
+        private async Task<FluentResponse> TransformResponse(FluentRequest fluentRequest, HttpResponseMessage httpResponse, Exception exception)
         {
             var fluentResponse = new FluentResponse(Serializer, httpResponse.Content);
-            fluentResponse.ReasonPhrase = httpResponse.ReasonPhrase;
-            fluentResponse.StatusCode = httpResponse.StatusCode;
+            fluentResponse.ReasonPhrase = httpResponse?.ReasonPhrase;
+            fluentResponse.StatusCode = httpResponse?.StatusCode ?? System.Net.HttpStatusCode.InternalServerError;
             fluentResponse.Request = fluentRequest;
 
             var headers = new Dictionary<string, ICollection<string>>();
@@ -454,7 +468,7 @@ namespace FluentRest
             fluentResponse.Headers = headers;
 
             // run response interceptors
-            var context = new InterceptorResponseContext(this, httpResponse) { Response = fluentResponse };
+            var context = new InterceptorResponseContext(this, httpResponse, exception) { Response = fluentResponse };
             foreach (var interceptor in Interceptors)
                 await interceptor.ResponseAsync(context).ConfigureAwait(false);
 

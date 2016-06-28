@@ -9,14 +9,16 @@ namespace FluentRest
     public class InterceptorResponseContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InterceptorResponseContext"/> class.
+        /// Initializes a new instance of the <see cref="InterceptorResponseContext" /> class.
         /// </summary>
-        /// <param name="client">The current <see cref="FluentClient"/> that called the interceptor.</param>
-        /// <param name="httpResponse">The <see cref="HttpResponseMessage"/> received from the HTTP call.</param>
-        public InterceptorResponseContext(FluentClient client, HttpResponseMessage httpResponse)
+        /// <param name="client">The current <see cref="FluentClient" /> that called the interceptor.</param>
+        /// <param name="httpResponse">The <see cref="HttpResponseMessage" /> received from the HTTP call.</param>
+        /// <param name="exception">The exception that occurred during the HTTP request.</param>
+        public InterceptorResponseContext(FluentClient client, HttpResponseMessage httpResponse, Exception exception)
         {
             Client = client;
             HttpResponse = httpResponse;
+            Exception = exception;
         }
 
         /// <summary>
@@ -37,11 +39,19 @@ namespace FluentRest
         public FluentResponse Response { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="HttpResponseMessage"/> received from the HTTP call.
+        /// Gets the <see cref="HttpResponseMessage"/> received from the HTTP request.
         /// </summary>
         /// <value>
-        /// The <see cref="HttpResponseMessage"/> received from the HTTP call.
+        /// The <see cref="HttpResponseMessage"/> received from the HTTP request.
         /// </value>
         public HttpResponseMessage HttpResponse { get; }
+
+        /// <summary>
+        /// Gets the exception that occurred during the HTTP request.
+        /// </summary>
+        /// <value>
+        /// The exception the occurred during the HTTP request.
+        /// </value>
+        public Exception Exception { get; }
     }
 }
