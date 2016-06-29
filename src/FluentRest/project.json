@@ -1,0 +1,77 @@
+﻿{
+  "version": "2.0.0.0",
+  "description": "Fluent wrapper over HttpClient to make REST calls easier",
+  "language": "en-US",
+  "authors": [ "LoreSoft" ],
+  "packOptions": {
+    "copyright": "Copyright (c) 2016, LoreSoft",
+    "owners": [ "LoreSoft" ],
+    "projectUrl": "https://github.com/loresoft/FluentRest",
+    "licenseUrl": "https://raw.githubusercontent.com/loresoft/FluentRest/master/LICENSE",
+    "requireLicenseAcceptance": false,
+    "summary": "Fluent wrapper over HttpClient",
+    "tags": [ "HTTP", "HttpClient", " REST", "Fluent" ]
+  },
+  "buildOptions": {
+    "compile": [ "..\\GlobalAssemblyInfo.cs" ],
+    "xmlDoc": true
+  },
+  "dependencies": {
+    "Newtonsoft.Json": "9.0.1"
+  },
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "Microsoft.CSharp": "",
+        "System.Core": "",
+        "System.Net.Http": ""
+      },
+      "buildOptions": {
+        "define": [ "NET45" ]
+      }
+    },
+    "net40": {
+      "frameworkAssemblies": {
+        "Microsoft.CSharp": "",
+        "System.Core": ""
+      },
+      "dependencies": {
+        "Microsoft.Bcl": "1.1.10",
+        "Microsoft.Bcl.Async": "1.0.168",
+        "Microsoft.Bcl.Build": "1.0.21",
+        "Microsoft.Net.Http": "2.2.29"
+      },
+      "buildOptions": {
+        "define": [ "NET40" ]
+      }
+    },
+    "netstandard1.6": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      },
+      "buildOptions": {
+        "define": [
+          "NETSTANDARD16",
+          "PORTABLE"
+        ]
+      }
+    },
+    ".NETPortable,Version=v4.0,Profile=Profile328": {
+      "frameworkAssemblies": {
+        "System": "",
+        "System.Core": ""
+      },
+      "dependencies": {
+        "Microsoft.Bcl": "1.1.10",
+        "Microsoft.Bcl.Async": "1.0.168",
+        "Microsoft.Bcl.Build": "1.0.21",
+        "Microsoft.Net.Http": "2.2.29"
+      },
+      "buildOptions": {
+        "define": [
+          "PORTABLE"
+        ]
+      }
+    }
+  }
+}

@@ -4,10 +4,10 @@
   <PropertyGroup>
     <BuildFolder>$(MSBuildProjectDirectory)\Build</BuildFolder>
     <ToolFolder>$(MSBuildProjectDirectory)\Tools</ToolFolder>
-    <SourceFolder>$(MSBuildProjectDirectory)\Source</SourceFolder>
+    <SourceFolder>$(MSBuildProjectDirectory)\src</SourceFolder>
+    <TestFolder>$(MSBuildProjectDirectory)\test</TestFolder>
 
     <MSBuildCommunityTasksPath>$(ToolFolder)\MSBuildTasks\tools</MSBuildCommunityTasksPath>
-    <XUnitTasksPath>$(ToolFolder)\xunit.runner.console\tools</XUnitTasksPath>
   </PropertyGroup>
 
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.targets"/>
@@ -20,8 +20,8 @@
     
     <BuildConfiguration  Condition=" '$(BuildConfiguration)' == '' ">Release</BuildConfiguration>
 
-    <Major Condition=" '$(Major)' == '' ">1</Major>
-    <Minor Condition=" '$(Minor)' == '' ">5</Minor>
+    <Major Condition=" '$(Major)' == '' ">2</Major>
+    <Minor Condition=" '$(Minor)' == '' ">0</Minor>
     <Revision Condition=" '$(Revision)' == '' ">0</Revision>
 
     <AssemblyVersion>$(Major).$(Minor).0.0</AssemblyVersion>
@@ -32,7 +32,7 @@
 
 
   <Target Name="Clean">
-    <DeleteTree Directories="**\obj\**;**\bin\**" />
+    <DeleteTree Directories="$(SourceFolder)\**\obj\**;$(SourceFolder)\**\bin\**" />
     <DeleteTree Directories="$(BuildFolder)" ContinueOnError="true" />
   </Target>
 
@@ -55,56 +55,43 @@
                   AssemblyFileVersion="$(AssemblyFileVersion)"
                   AssemblyInformationalVersion="$(AssemblyInformationalVersion)"
                   AssemblyTrademark=""/>
+    <ItemGroup>
+      <VersionFiles Include="$(SourceFolder)\**\project.json"/>
+    </ItemGroup>
+
+    <FileUpdate Files="%(VersionFiles.Identity)"
+                Regex="&quot;version&quot;: &quot;$(AssemblyVersion)&quot;,"
+                ReplacementText="&quot;version&quot;: &quot;$(PackageVersion)&quot;," />
+
+    <FileUpdate Files="%(VersionFiles.Identity)"
+                Regex="&quot;FluentRest&quot;: &quot;$(AssemblyVersion)&quot;,"
+                ReplacementText="&quot;FluentRest&quot;: &quot;$(PackageVersion)&quot;," />
   </Target>
 
   <Target Name="Compile" DependsOnTargets="Clean;Version">
-    <MSBuild Projects="$(SourceFolder)\FluentRest.sln"
+    <MSBuild Projects="FluentRest.sln"
              Properties="Configuration=$(BuildConfiguration)"/>
   </Target>
 
   <Target Name="Test" DependsOnTargets="Compile">
     <ItemGroup>
-      <TestAssemblies Include="$(SourceFolder)\**\*.Tests\bin\$(BuildConfiguration)\*.Tests.dll"/>
+      <TestAssemblies Include="$(TestFolder)\**\project.json"/>
     </ItemGroup>
 
-    <exec Command="$(XUnitTasksPath)\xunit.console.exe &quot;%(TestAssemblies.Identity)&quot; -appveyor"/>
+    <exec Command="dotnet test &quot;%(TestAssemblies.Identity)&quot;"
+          WorkingDirectory="$(TestFolder)\%(TestAssemblies.RecursiveDir)"/>
   </Target>
-
 
   <Target Name="Package" DependsOnTargets="Test">
     <MakeDir Directories="$(BuildFolder)" Condition="!EXISTS($(BuildFolder))" />
 
     <ItemGroup>
-      <NuGetFiles Include="$(SourceFolder)\**\*.nuspec"/>
+      <ProjectFiles Include="$(SourceFolder)\**\project.json"/>
     </ItemGroup>
 
-    <NuGetPack File="%(NuGetFiles.Identity)"
-               OutputDirectory="$(BuildFolder)"
-               Version="$(PackageVersion)"
-               Symbols="true"  />
-
-  </Target>
-
-  <Target Name="Publish" DependsOnTargets="Package">
-
-    <!-- 
-      Requires API key to be set ...
-      nuget.exe setapikey <myget-key> -Source https://www.myget.org/F/loresoft/
-    -->
-
-    <ItemGroup>
-      <NuGetPackages Include="$(BuildFolder)\*.nupkg" Exclude="$(BuildFolder)\*.symbols.nupkg"/>
-      <NuGetSymbols Include="$(BuildFolder)\*.symbols.nupkg" />
-    </ItemGroup>
-
-    <!-- Push to MyGet on Build -->
-    <NuGetPush File="%(NuGetPackages.Identity)"
-               Source="https://www.myget.org/F/loresoft/" />
-
-    <!-- Push to Symbols on Build -->
-    <NuGetPush File="%(NuGetSymbols.Identity)"
-               Source="https://nuget.symbolsource.org/MyGet/loresoft" />
-
+    <exec Command="dotnet pack --output &quot;$(BuildFolder)&quot; &quot;%(ProjectFiles.Identity)&quot; "
+          WorkingDirectory="$(SourceFolder)\%(ProjectFiles.RecursiveDir)"/>
+    
   </Target>
 
   <Target Name="Build" DependsOnTargets="Package">

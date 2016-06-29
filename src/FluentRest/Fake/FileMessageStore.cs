@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 namespace FluentRest.Fake
 {
+#if !PORTABLE || NETSTANDARD16
     /// <summary>
     /// A file based fake message store.  The fake response messages are saved and loaded from the StorePath directory.
     /// </summary>
@@ -154,7 +155,7 @@ namespace FluentRest.Fake
 
             byte[] hashBytes;
 
-            using (var sha1 = new System.Security.Cryptography.SHA1Managed())
+            using (var sha1 = System.Security.Cryptography.SHA1.Create())
                 hashBytes = sha1.ComputeHash(inputBytes);
 
             var sb = new StringBuilder();
@@ -165,4 +166,5 @@ namespace FluentRest.Fake
         }
 
     }
+#endif
 }
