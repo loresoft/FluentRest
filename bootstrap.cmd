@@ -1,3 +1,3 @@
 @echo off
-Nuget.exe restore "FluentRest.sln"
+dotnet restore
 NuGet.exe install MSBuildTasks -OutputDirectory .\Tools\ -ExcludeVersion -NonInteractive
