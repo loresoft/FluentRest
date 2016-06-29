@@ -6,8 +6,6 @@ Lightweight fluent wrapper over HttpClient to make REST calls easier
 
 [![NuGet Version](https://img.shields.io/nuget/v/FluentRest.svg?style=flat-square)](https://www.nuget.org/packages/FluentRest/)
 
-[![NuGet Version](https://img.shields.io/nuget/dt/FluentRest.svg?style=flat-square)](https://www.nuget.org/packages/FluentRest/)
-
 ## Download
 
 The FluentRest library is available on nuget.org via package name `FluentRest`.
