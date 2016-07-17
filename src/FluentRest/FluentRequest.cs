@@ -11,7 +11,7 @@ namespace FluentRest
     /// Represents a Fluent HTTP request message.
     /// </summary>
     public class FluentRequest
-#if !PORTABLE
+#if !NETSTANDARD1_3 && !NETSTANDARD1_6 && !PORTABLE
         : ICloneable
 #endif
     {
@@ -179,7 +179,7 @@ namespace FluentRest
             return request;
         }
 
-#if !PORTABLE
+#if !NETSTANDARD1_3 && !NETSTANDARD1_6 && !PORTABLE
         /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
