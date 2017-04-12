@@ -29,7 +29,7 @@ namespace FluentRest
         public FluentClient Client { get; }
 
         /// <summary>
-        /// Gets the <see cref="FluentRequest"/> used to build the current request. 
+        /// Gets the <see cref="FluentRequest"/> used to build the current request.
         /// Any change to <see cref="FluentRequest"/> will not be apply to the <see cref="HttpRequest"/> instance.
         /// </summary>
         /// <value>
@@ -38,7 +38,7 @@ namespace FluentRest
         public FluentRequest Request { get; }
 
         /// <summary>
-        /// Gets or sets the <see cref="HttpRequestMessage"/> transformed from <see cref="Request"/> to send. 
+        /// Gets or sets the <see cref="HttpRequestMessage"/> transformed from <see cref="Request"/> to send.
         /// Any change to HttpRequest will be sent.
         /// </summary>
         /// <value>

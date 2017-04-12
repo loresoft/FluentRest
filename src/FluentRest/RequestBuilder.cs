@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 
@@ -43,7 +42,7 @@ namespace FluentRest
         /// <summary>
         /// Sets when the operation should complete (as soon as a response is available or after reading the whole response content).
         /// </summary>
-        /// <param name="completionOption">Hhen the operation should complete.</param>
+        /// <param name="completionOption">When the operation should complete.</param>
         /// <returns>A fluent request builder.</returns>
         public TBuilder CompletionOption(HttpCompletionOption completionOption)
         {
@@ -53,7 +52,7 @@ namespace FluentRest
 
 
         /// <summary>
-        /// Sets a state value on the request. 
+        /// Sets a state value on the request.
         /// </summary>
         /// <param name="key">The state key .</param>
         /// <param name="value">The status value.</param>

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace FluentRest
 {
@@ -302,7 +300,7 @@ namespace FluentRest
 
             while (i < l)
             {
-                // find next & while noting first = on the way (and if there are more) 
+                // find next & while noting first = on the way (and if there are more)
                 int si = i;
                 int ti = -1;
 

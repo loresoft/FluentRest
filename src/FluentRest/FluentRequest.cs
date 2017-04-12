@@ -11,9 +11,6 @@ namespace FluentRest
     /// Represents a Fluent HTTP request message.
     /// </summary>
     public class FluentRequest
-#if !NETSTANDARD1_3 && !NETSTANDARD1_6 && !PORTABLE
-        : ICloneable
-#endif
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FluentRequest"/> class.
@@ -179,18 +176,6 @@ namespace FluentRest
             return request;
         }
 
-#if !NETSTANDARD1_3 && !NETSTANDARD1_6 && !PORTABLE
-        /// <summary>
-        /// Creates a new object that is a copy of the current instance.
-        /// </summary>
-        /// <returns>
-        /// A new object that is a copy of this instance.
-        /// </returns>
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-#endif
 
         private Uri BuildRequestPath()
         {

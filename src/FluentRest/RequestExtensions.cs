@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FluentRest
 {
     /// <summary>
-    /// Extension methtods for requests
+    /// Extension methods for requests
     /// </summary>
     public static class RequestExtensions
     {

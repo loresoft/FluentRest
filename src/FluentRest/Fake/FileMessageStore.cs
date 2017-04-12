@@ -8,13 +8,12 @@ using Newtonsoft.Json;
 
 namespace FluentRest.Fake
 {
-#if !PORTABLE || NETSTANDARD16
     /// <summary>
     /// A file based fake message store.  The fake response messages are saved and loaded from the StorePath directory.
     /// </summary>
     public class FileMessageStore : FakeMessageStore
     {
-        private const int bufferSize = 4096;
+        private const int _bufferSize = 4096;
 
         /// <summary>
         /// Gets or sets the directory location to store response files.
@@ -100,8 +99,8 @@ namespace FluentRest.Fake
                 return null;
 
             // need to leave stream open
-            var fileStream = new FileStream(contentPath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize);
-            var httpContent = new StreamContent(fileStream, bufferSize);
+            var fileStream = new FileStream(contentPath, FileMode.Open, FileAccess.Read, FileShare.Read, _bufferSize);
+            var httpContent = new StreamContent(fileStream, _bufferSize);
 
             return httpContent;
         }
@@ -143,7 +142,7 @@ namespace FluentRest.Fake
             responsePath = Path.Combine(rootPath, responseFile);
         }
 
-        
+
         /// <summary>
         /// Generates a hash for the specified <paramref name="text"/>.
         /// </summary>
@@ -166,5 +165,4 @@ namespace FluentRest.Fake
         }
 
     }
-#endif
 }

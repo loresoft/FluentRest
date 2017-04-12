@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace FluentRest
 {
     /// <summary>
-    /// Provides a fluent class for sending HTTP requests and receiving HTTP responses from a resource identified by a URI. 
+    /// Provides a fluent class for sending HTTP requests and receiving HTTP responses from a resource identified by a URI.
     /// </summary>
     public class FluentClient
     {
@@ -39,7 +39,7 @@ namespace FluentRest
         /// <param name="serializer">The serializer to convert to and from HttpContent.</param>
         /// <param name="httpHandler">The HTTP handler stack to use for sending requests.</param>
         /// <param name="disposeHandler">
-        /// <c>true</c> if the inner handler should be disposed of by the Dispose method, 
+        /// <c>true</c> if the inner handler should be disposed of by the Dispose method,
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
         public FluentClient(IContentSerializer serializer, HttpMessageHandler httpHandler, bool disposeHandler)
@@ -53,7 +53,7 @@ namespace FluentRest
         /// <param name="serializer">The serializer to convert to and from HttpContent.</param>
         /// <param name="httpHandler">The HTTP handler stack to use for sending requests.</param>
         /// <param name="disposeHandler">
-        /// <c>true</c> if the inner handler should be disposed of by the Dispose method, 
+        /// <c>true</c> if the inner handler should be disposed of by the Dispose method,
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
         /// <param name="interceptors">The list of <see cref="IFluentClientInterceptor"/> for this client..</param>
@@ -112,7 +112,7 @@ namespace FluentRest
         /// Gets a value indicating whether the inner handler should be disposed.
         /// </summary>
         /// <value>
-        /// <c>true</c> if the inner handler should be disposed of by the Dispose method, 
+        /// <c>true</c> if the inner handler should be disposed of by the Dispose method,
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </value>
         public bool DisposeHandler { get; }
@@ -469,6 +469,7 @@ namespace FluentRest
 
             // run response interceptors
             var context = new InterceptorResponseContext(this, httpResponse, exception) { Response = fluentResponse };
+            //TODO consider reversing
             foreach (var interceptor in Interceptors)
                 await interceptor.ResponseAsync(context).ConfigureAwait(false);
 

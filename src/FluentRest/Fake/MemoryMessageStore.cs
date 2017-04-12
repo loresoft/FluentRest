@@ -18,12 +18,7 @@ namespace FluentRest.Fake
         /// <value>The current singleton instance <see cref="MemoryMessageStore"/>.</value>
         public static MemoryMessageStore Current => _current.Value;
 
-#if PORTABLE
-        private readonly object _storeLock = new object();
-        private readonly System.Collections.Generic.Dictionary<string, FakeResponseContainer> _responseStore = new System.Collections.Generic.Dictionary<string, FakeResponseContainer>();
-#else
         private readonly System.Collections.Concurrent.ConcurrentDictionary<string, FakeResponseContainer> _responseStore = new System.Collections.Concurrent.ConcurrentDictionary<string, FakeResponseContainer>();
-#endif
 
         /// <summary>
         /// Gets the response store.
@@ -59,12 +54,7 @@ namespace FluentRest.Fake
 
 
             // save to store
-#if PORTABLE
-            lock(_storeLock)
-                _responseStore[key] = container;
-#else
             _responseStore.AddOrUpdate(key, container, (k, o) => container);
-#endif
         }
 
         /// <summary>
@@ -80,15 +70,8 @@ namespace FluentRest.Fake
             var key = GenerateKey(request);
 
             FakeResponseContainer container;
-            bool found = false;
 
-#if PORTABLE
-            lock(_storeLock)
-                found = _responseStore.TryGetValue(key, out container);
-#else
-            found = _responseStore.TryGetValue(key, out container);
-#endif
-
+            var found = _responseStore.TryGetValue(key, out container);
             if (!found)
             {
                 var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
@@ -137,12 +120,7 @@ namespace FluentRest.Fake
             // save to store
             var key = container.RequestUri.ToString();
 
-#if PORTABLE
-            lock(_storeLock)
-                _responseStore[key] = container;
-#else
             _responseStore.AddOrUpdate(key, container, (k, o) => container);
-#endif
         }
     }
 }

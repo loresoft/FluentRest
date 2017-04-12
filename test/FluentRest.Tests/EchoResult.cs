@@ -22,7 +22,7 @@ namespace FluentRest.Tests
 
         [JsonProperty("form")]
         public Dictionary<string, string> Form { get; set; }
-        
+
         [JsonProperty("data")]
         public string Data { get; set; }
 

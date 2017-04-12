@@ -17,10 +17,10 @@
     <BuildNumber Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' ">$(APPVEYOR_BUILD_NUMBER)</BuildNumber>
     <BuildNumber Condition=" '$(BUILD_NUMBER)' != '' ">$(BUILD_NUMBER)</BuildNumber>
     <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
-    
+
     <BuildConfiguration  Condition=" '$(BuildConfiguration)' == '' ">Release</BuildConfiguration>
 
-    <Major Condition=" '$(Major)' == '' ">2</Major>
+    <Major Condition=" '$(Major)' == '' ">3</Major>
     <Minor Condition=" '$(Minor)' == '' ">0</Minor>
     <Revision Condition=" '$(Revision)' == '' ">0</Revision>
 
@@ -30,9 +30,13 @@
     <PackageVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</PackageVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <SolutionFiles Include="*.sln"/>
+  </ItemGroup>
+
 
   <Target Name="Clean">
-    <DeleteTree Directories="$(SourceFolder)\**\obj\**;$(SourceFolder)\**\bin\**" />
+    <DeleteTree Directories="**\obj\**;**\bin\**" />
     <DeleteTree Directories="$(BuildFolder)" ContinueOnError="true" />
   </Target>
 
@@ -55,43 +59,37 @@
                   AssemblyFileVersion="$(AssemblyFileVersion)"
                   AssemblyInformationalVersion="$(AssemblyInformationalVersion)"
                   AssemblyTrademark=""/>
-    <ItemGroup>
-      <VersionFiles Include="$(SourceFolder)\**\project.json"/>
-    </ItemGroup>
 
-    <FileUpdate Files="%(VersionFiles.Identity)"
-                Regex="&quot;version&quot;: &quot;$(AssemblyVersion)&quot;,"
-                ReplacementText="&quot;version&quot;: &quot;$(PackageVersion)&quot;," />
+    <exec Command="dotnet restore &quot;%(SolutionFiles.Identity)&quot;"
+          WorkingDirectory="$(MSBuildProjectDirectory)"/>
 
-    <FileUpdate Files="%(VersionFiles.Identity)"
-                Regex="&quot;FluentRest&quot;: &quot;$(AssemblyVersion)&quot;,"
-                ReplacementText="&quot;FluentRest&quot;: &quot;$(PackageVersion)&quot;," />
   </Target>
 
   <Target Name="Compile" DependsOnTargets="Clean;Version">
-    <MSBuild Projects="FluentRest.sln"
+    <MSBuild Projects="%(SolutionFiles.Identity)"
              Properties="Configuration=$(BuildConfiguration)"/>
   </Target>
 
   <Target Name="Test" DependsOnTargets="Compile">
     <ItemGroup>
-      <TestAssemblies Include="$(TestFolder)\**\project.json"/>
+      <TestAssemblies Include="$(TestFolder)\**\*.Tests.csproj"/>
     </ItemGroup>
 
-    <exec Command="dotnet test &quot;%(TestAssemblies.Identity)&quot;"
+    <exec Command="dotnet test &quot;%(TestAssemblies.Identity)&quot; --configuration $(BuildConfiguration)"
           WorkingDirectory="$(TestFolder)\%(TestAssemblies.RecursiveDir)"/>
   </Target>
+
 
   <Target Name="Package" DependsOnTargets="Test">
     <MakeDir Directories="$(BuildFolder)" Condition="!EXISTS($(BuildFolder))" />
 
     <ItemGroup>
-      <ProjectFiles Include="$(SourceFolder)\**\project.json"/>
+      <ProjectFiles Include="$(SourceFolder)\**\*.csproj"/>
     </ItemGroup>
 
-    <exec Command="dotnet pack --output &quot;$(BuildFolder)&quot; &quot;%(ProjectFiles.Identity)&quot; "
+    <exec Command="dotnet pack &quot;%(ProjectFiles.Identity)&quot; --output &quot;$(BuildFolder)&quot; --include-symbols --include-source --configuration $(BuildConfiguration) -p:Version=$(PackageVersion)"
           WorkingDirectory="$(SourceFolder)\%(ProjectFiles.RecursiveDir)"/>
-    
+
   </Target>
 
   <Target Name="Build" DependsOnTargets="Package">

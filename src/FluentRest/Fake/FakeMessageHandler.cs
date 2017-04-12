@@ -13,7 +13,7 @@ namespace FluentRest.Fake
         /// <summary>
         /// Initializes a new instance of the <see cref="FakeMessageHandler"/> class.
         /// </summary>
-        public FakeMessageHandler() 
+        public FakeMessageHandler()
             : this(MemoryMessageStore.Current, FakeResponseMode.Fake)
         {
 
@@ -23,7 +23,7 @@ namespace FluentRest.Fake
         /// Initializes a new instance of the <see cref="FakeMessageHandler"/> with the specified fake message store.
         /// </summary>
         /// <param name="messageStore">The fake message store.</param>
-        public FakeMessageHandler(IFakeMessageStore messageStore) 
+        public FakeMessageHandler(IFakeMessageStore messageStore)
             : this(messageStore, FakeResponseMode.Fake)
         {
         }

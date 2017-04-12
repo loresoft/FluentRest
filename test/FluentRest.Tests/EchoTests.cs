@@ -125,6 +125,7 @@ namespace FluentRest.Tests
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
+
             var result = await response.DeserializeAsync<EchoResult>();
 
             Assert.NotNull(result);

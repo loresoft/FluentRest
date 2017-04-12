@@ -31,7 +31,7 @@ namespace FluentRest
         /// Serializes the specified <paramref name="data"/> object asynchronous.
         /// </summary>
         /// <param name="data">The data object to serialize.</param>
-        /// <returns>The <see cref="HttpContent"/> that the data object searilzed to.</returns>
+        /// <returns>The <see cref="HttpContent"/> that the data object serialized to.</returns>
         public async Task<HttpContent> SerializeAsync(object data)
         {
             if (data == null)

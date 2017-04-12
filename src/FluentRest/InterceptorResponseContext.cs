@@ -31,7 +31,7 @@ namespace FluentRest
 
         /// <summary>
         /// Gets or sets the <see cref="FluentResponse"/> transformed from the <see cref="HttpResponse"/> received.
-        /// Changes to the resonse instance will be returned to the acive <see cref="FluentClient"/> call.
+        /// Changes to the response instance will be returned to the active <see cref="FluentClient"/> call.
         /// </summary>
         /// <value>
         /// The <see cref="FluentResponse"/> transformed from the <see cref="HttpResponse"/>.
