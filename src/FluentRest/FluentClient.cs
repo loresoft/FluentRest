@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace FluentRest
@@ -274,6 +273,44 @@ namespace FluentRest
             return data;
         }
 
+        /// <summary>
+        /// Sends a PATCH request using specified fluent builder as an asynchronous operation.
+        /// </summary>
+        /// <param name="builder">The fluent builder factory.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        public async Task<FluentResponse> PatchAsync(Action<FormBuilder> builder)
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            var fluentRequest = _defaultRequest.Clone();
+            fluentRequest.Method = FormBuilder.HttpPatch;
+
+            var fluentBuilder = new FormBuilder(fluentRequest);
+            builder(fluentBuilder);
+
+            var response = await SendAsync(fluentRequest).ConfigureAwait(false);
+
+            return response;
+        }
+
+
+        /// <summary>
+        /// Sends a PATCH request using specified fluent builder as an asynchronous operation.
+        /// </summary>
+        /// <typeparam name="TResponse">The type of the response.</typeparam>
+        /// <param name="builder">The fluent builder factory.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        public async Task<TResponse> PatchAsync<TResponse>(Action<FormBuilder> builder)
+        {
+            var response = await PutAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
+
+            return data;
+        }
+
 
         /// <summary>
         /// Sends a DELETE request using specified fluent builder as an asynchronous operation.
@@ -402,6 +439,9 @@ namespace FluentRest
                 count++;
 
             } while (fluentResponse.ShouldRetry && count <= MaxRetry);
+
+            if (fluentRequest.ExpectedStatusCode.HasValue && fluentResponse.StatusCode != fluentRequest.ExpectedStatusCode.Value)
+                throw new HttpRequestException($"Expected status code {fluentRequest.ExpectedStatusCode.Value} but recieved status code {fluentResponse.StatusCode}.");
 
             return fluentResponse;
         }

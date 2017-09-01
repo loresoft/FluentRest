@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.IO;
+using System.Text;
 
 namespace FluentRest
 {
@@ -11,13 +12,25 @@ namespace FluentRest
     /// </summary>
     public class JsonContentSerializer : IContentSerializer
     {
+        private readonly JsonSerializer _serializer;
+
+        /// <summary>
+        /// Create a new JSON content serializer with the specified settings.
+        /// </summary>
+        /// <param name="settings"></param>
+        public JsonContentSerializer(JsonSerializerSettings settings = null)
+        {
+            Settings = settings;
+            _serializer = JsonSerializer.Create(settings);
+        }
+
         /// <summary>
         /// Gets or sets the JSON serializer settings.
         /// </summary>
         /// <value>
         /// The JSON serializer settings.
         /// </value>
-        public JsonSerializerSettings Settings { get; set; }
+        public JsonSerializerSettings Settings { get; }
 
         /// <summary>
         /// Gets the content-type the serializer supports.
@@ -32,15 +45,18 @@ namespace FluentRest
         /// </summary>
         /// <param name="data">The data object to serialize.</param>
         /// <returns>The <see cref="HttpContent"/> that the data object serialized to.</returns>
-        public async Task<HttpContent> SerializeAsync(object data)
+        public Task<HttpContent> SerializeAsync(object data)
         {
             if (data == null)
                 return null;
 
-            var json = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(data, Settings)).ConfigureAwait(false);
-            var stringContent = new StringContent(json, Encoding.UTF8, ContentType);
+            using (var writer = new StringWriter())
+            using (var jsonWriter = new JsonTextWriter(writer))
+            {
+                _serializer.Serialize(jsonWriter, data);
 
-            return stringContent;
+                return Task.FromResult<HttpContent>(new StringContent(writer.ToString(), Encoding.UTF8, ContentType));
+            }
         }
 
         /// <summary>
@@ -51,10 +67,12 @@ namespace FluentRest
         /// <returns>The data object deserialized from the HttpContent.</returns>
         public async Task<TData> DeserializeAsync<TData>(HttpContent content)
         {
-            var json = await content.ReadAsStringAsync().ConfigureAwait(false);
-            var data = await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<TData>(json, Settings)).ConfigureAwait(false);
-
-            return data;
+            using (var s = await content.ReadAsStreamAsync().ConfigureAwait(false))
+            using (var sr = new StreamReader(s))
+            using (var reader = new JsonTextReader(sr))
+            {
+                return _serializer.Deserialize<TData>(reader);
+            }
         }
     }
 }

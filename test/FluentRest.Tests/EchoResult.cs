@@ -34,7 +34,11 @@ namespace FluentRest.Tests
 
         [JsonProperty("url")]
         public string Url { get; set; }
+
+        [JsonProperty("authenticated")]
+        public string Authenticated { get; set; }
+
+        [JsonProperty("user")]
+        public string User { get; set; }
     }
-
-
 }

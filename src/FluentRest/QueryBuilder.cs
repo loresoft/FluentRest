@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 
 namespace FluentRest
 {
@@ -33,6 +35,17 @@ namespace FluentRest
         {
         }
 
+        /// <summary>
+        /// Sets the expected HTTP status code of the response. If set and the status code does not match, an <exception cref="HttpRequestException">exception</exception> will be thrown.
+        /// </summary>
+        /// <param name="status">The expected status.</param>
+        /// <returns>A fluent request builder.</returns>
+        public TBuilder ExpectedStatus(HttpStatusCode status)
+        {
+            Request.ExpectedStatusCode = status;
+
+            return this as TBuilder;
+        }
 
         /// <summary>
         /// Start a fluent header builder.

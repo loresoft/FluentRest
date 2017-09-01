@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace FluentRest.Tests
@@ -49,6 +44,22 @@ namespace FluentRest.Tests
             Assert.Equal("10", result.QueryString["size"]);
 
             Assert.Equal("Bearer abcdef", result.Headers["Authorization"]);
+        }
+
+        [Fact]
+        public async void EchoBasicAuthorization()
+        {
+            var client = CreateClient();
+
+            var result = await client.GetAsync<EchoResult>(b =>
+            {
+                b.AppendPath("basic-auth/ejsmith/password")
+                    .BasicAuthorization("ejsmith", "password");
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("true", result.Authenticated);
+            Assert.Equal("ejsmith", result.User);
         }
 
         [Fact]
@@ -194,7 +205,7 @@ namespace FluentRest.Tests
         {
             var client = CreateClient();
 
-            await Assert.ThrowsAsync<HttpRequestException>(async() =>
+            await Assert.ThrowsAsync<HttpRequestException>(async () =>
             {
                 var result = await client.PostAsync<EchoResult>(b => b
                     .AppendPath("status/500")
@@ -229,6 +240,34 @@ namespace FluentRest.Tests
             Assert.Equal("Token abc-def-123", result.Headers["Authorization"]);
 
 
+        }
+
+        [Fact]
+        public async void EchoExpectedStatus()
+        {
+            var client = CreateClient();
+
+            var result = await client.GetAsync<EchoResult>(b => b
+                .AppendPath("get")
+                .ExpectedStatus(HttpStatusCode.OK)
+            );
+
+            Assert.NotNull(result);
+            Assert.Equal("http://httpbin.org/get", result.Url);
+        }
+
+        [Fact]
+        public async void EchoUnexpectedStatus()
+        {
+            var client = CreateClient();
+
+            await Assert.ThrowsAsync<HttpRequestException>(async () =>
+            {
+                await client.GetAsync(b => b
+                    .AppendPath("not-found")
+                    .ExpectedStatus(HttpStatusCode.OK)
+                );
+            });
         }
 
         private static FluentClient CreateClient()

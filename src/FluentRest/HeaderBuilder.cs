@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace FluentRest
@@ -257,6 +258,16 @@ namespace FluentRest
             return this as TBuilder;
         }
 
+        /// <summary>
+        /// Sets the value of the X-HTTP-Method-Override header for an HTTP request.
+        /// </summary>
+        /// <param name="method">The HTTP method.</param>
+        /// <returns>A fluent header builder.</returns>
+        public TBuilder MethodOverride(HttpMethod method)
+        {
+            SetHeader(HttpRequestHeaders.MethodOverride, method.ToString());
+            return this as TBuilder;
+        }
 
         private void SetHeader(string name, string value)
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -74,6 +75,14 @@ namespace FluentRest
         /// The HTTP method used by the HTTP request message.
         /// </value>
         public HttpMethod Method { get; set; }
+
+        /// <summary>
+        /// Gets or sets the expected HTTP status code of the response. If set and the status code does not match, an <exception cref="HttpRequestException">exception</exception> will be thrown.
+        /// </summary>
+        /// <value>
+        /// The expected HTTP status code that will be returned.
+        /// </value>
+        public HttpStatusCode? ExpectedStatusCode { get; set; }
 
         /// <summary>
         /// Gets or sets the base URI address used when sending requests.
@@ -176,6 +185,21 @@ namespace FluentRest
             return request;
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append(Method);
+            sb.Append(' ');
+            var uri = BuildQueryString(BuildRequestPath());
+            sb.Append(uri);
+            sb.AppendLine();
+
+            foreach (var header in Headers)
+                sb.Append(header.Key).Append(' ').AppendLine(String.Join(",", header.Value));
+
+            return sb.ToString();
+        }
 
         private Uri BuildRequestPath()
         {

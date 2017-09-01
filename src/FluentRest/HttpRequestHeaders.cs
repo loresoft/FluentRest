@@ -69,6 +69,7 @@ namespace FluentRest
         public const string Via = "Via";
         ///<summary>A general warning about possible problems with the entity body.</summary>
         public const string Warning = "Warning";
-
+        ///<summary>Used to specify an HTTP method override value.</summary>
+        public const string MethodOverride = "X-HTTP-Method-Override";
     }
 }
