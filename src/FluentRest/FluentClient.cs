@@ -357,7 +357,7 @@ namespace FluentRest
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
-        public async Task<FluentResponse> SendAsync(Action<FormBuilder> builder)
+        public async Task<FluentResponse> SendAsync(Action<SendBuilder> builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
@@ -365,7 +365,7 @@ namespace FluentRest
             // build request
             var fluentRequest = _defaultRequest.Clone();
 
-            var fluentBuilder = new FormBuilder(fluentRequest);
+            var fluentBuilder = new SendBuilder(fluentRequest);
             builder(fluentBuilder);
 
             var response = await SendAsync(fluentRequest).ConfigureAwait(false);
@@ -380,7 +380,7 @@ namespace FluentRest
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
-        public async Task<TResponse> SendAsync<TResponse>(Action<FormBuilder> builder)
+        public async Task<TResponse> SendAsync<TResponse>(Action<SendBuilder> builder)
         {
             var response = await SendAsync(builder).ConfigureAwait(false);
             var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);

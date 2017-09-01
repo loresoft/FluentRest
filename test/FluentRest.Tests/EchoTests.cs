@@ -238,8 +238,21 @@ namespace FluentRest.Tests
             Assert.Equal("Value", result.Form["Test"]);
             Assert.Equal("value", result.Form["key"]);
             Assert.Equal("Token abc-def-123", result.Headers["Authorization"]);
+        }
 
+        [Fact]
+        public async void SendRequest()
+        {
+            var client = CreateClient();
 
+            var result = await client.SendAsync<EchoResult>(b => b
+                .Post()
+                .AppendPath("post")
+                .ExpectedStatus(HttpStatusCode.OK)
+            );
+
+            Assert.NotNull(result);
+            Assert.Equal("http://httpbin.org/post", result.Url);
         }
 
         [Fact]

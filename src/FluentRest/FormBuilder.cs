@@ -37,58 +37,6 @@ namespace FluentRest
 
 
         /// <summary>
-        /// Sets HTTP request method.
-        /// </summary>
-        /// <param name="method">The header request method.</param>
-        /// <returns>A fluent request builder.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
-        public TBuilder Method(HttpMethod method)
-        {
-            if (method == null)
-                throw new ArgumentNullException(nameof(method));
-
-            Request.Method = method;
-
-            return this as TBuilder;
-        }
-
-        /// <summary>
-        /// Sets HTTP request method to POST.
-        /// </summary>
-        /// <returns>A fluent request builder.</returns>
-        public TBuilder Post()
-        {
-            return Method(HttpMethod.Post);
-        }
-
-        /// <summary>
-        /// Sets HTTP request method to PUT.
-        /// </summary>
-        /// <returns>A fluent request builder.</returns>
-        public TBuilder Put()
-        {
-            return Method(HttpMethod.Put);
-        }
-
-        /// <summary>
-        /// Sets HTTP request method to PATCH.
-        /// </summary>
-        /// <returns>A fluent request builder.</returns>
-        public TBuilder Patch()
-        {
-            return Method(HttpPatch);
-        }
-
-        /// <summary>
-        /// Sets HTTP request method to DELETE.
-        /// </summary>
-        /// <returns>A fluent request builder.</returns>
-        public TBuilder Delete()
-        {
-            return Method(HttpMethod.Delete);
-        }
-
-        /// <summary>
         /// Appends the specified <paramref name="name"/> and <paramref name="value"/> to the form post body.
         /// </summary>
         /// <param name="name">The form parameter name.</param>
