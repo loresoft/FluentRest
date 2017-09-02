@@ -159,6 +159,9 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(data));
 
             Request.ContentData = data;
+            if (Request.Method == HttpMethod.Get)
+                Request.Method = HttpMethod.Post;
+            
             return this as TBuilder;
         }
     }
