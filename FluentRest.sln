@@ -1,16 +1,16 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26114.2
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{A4E004F2-9E26-4A47-A509-F8DA024A8436}"
 	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
 		Master.proj = Master.proj
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentRest", "src\FluentRest\FluentRest.csproj", "{392B3B57-8EEA-4B15-845E-6A4402364989}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentRest", "src\FluentRest\FluentRest.csproj", "{392B3B57-8EEA-4B15-845E-6A4402364989}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentRest.Tests", "test\FluentRest.Tests\FluentRest.Tests.csproj", "{0A4137F3-5EE0-4228-9D7D-04230BC02B36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentRest.Tests", "test\FluentRest.Tests\FluentRest.Tests.csproj", "{0A4137F3-5EE0-4228-9D7D-04230BC02B36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,5 +29,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {66730C92-2305-44F9-957C-8369CA0FF6B1}
 	EndGlobalSection
 EndGlobal
