@@ -44,7 +44,7 @@ namespace FluentRest
         public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
             if (dictionary.ContainsKey(key))
                 return false;
@@ -66,7 +66,7 @@ namespace FluentRest
         public static bool TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
             if (!dictionary.TryGetValue(key, out value))
                 return false;
@@ -88,7 +88,7 @@ namespace FluentRest
         public static bool TryUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue newValue, TValue comparisonValue)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
             TValue value;
             if (!dictionary.TryGetValue(key, out value))
