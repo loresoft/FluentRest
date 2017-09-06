@@ -11,9 +11,6 @@ namespace FluentRest
     /// </summary>
     public class FluentResponse
     {
-        private readonly IContentSerializer _serializer;
-        private readonly HttpContent _httpContent;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FluentResponse"/> class.
         /// </summary>
@@ -21,8 +18,8 @@ namespace FluentRest
         /// <param name="httpContent">Content of the HTTP.</param>
         public FluentResponse(IContentSerializer serializer, HttpContent httpContent)
         {
-            _serializer = serializer;
-            _httpContent = httpContent;
+            Serializer = serializer;
+            HttpContent = httpContent;
         }
 
         /// <summary>
@@ -34,10 +31,10 @@ namespace FluentRest
         public IDictionary<string, ICollection<string>> Headers { get; set; }
 
         /// <summary>
-        /// Gets or sets the reason phrase which typically is sent by servers together with the status code. 
+        /// Gets or sets the reason phrase which typically is sent by servers together with the status code.
         /// </summary>
         /// <value>
-        /// The reason phrase which typically is sent by servers together with the status code. 
+        /// The reason phrase which typically is sent by servers together with the status code.
         /// </value>
         public string ReasonPhrase { get; set; }
 
@@ -71,7 +68,7 @@ namespace FluentRest
         /// <value>
         /// The response HttpContent.
         /// </value>
-        public HttpContent HttpContent => _httpContent;
+        public HttpContent HttpContent { get; }
 
         /// <summary>
         /// Gets the response serializer.
@@ -79,7 +76,7 @@ namespace FluentRest
         /// <value>
         /// The response serializer.
         /// </value>
-        public IContentSerializer Serializer => _serializer;
+        public IContentSerializer Serializer { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the request should be retried.
@@ -102,8 +99,7 @@ namespace FluentRest
             if (IsSuccessStatusCode)
                 return this;
 
-            if (HttpContent != null)
-                HttpContent.Dispose();
+            HttpContent?.Dispose();
 
             int statusCode = (int)StatusCode;
             throw new HttpRequestException($"Response status code does not indicate success: {statusCode} ({ReasonPhrase}).");

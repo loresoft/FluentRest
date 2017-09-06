@@ -139,8 +139,7 @@ namespace FluentRest
         /// <returns>The value for the specified <paramref name="key"/> if found; otherwise null.</returns>
         public T GetState<T>(string key)
         {
-            object value = null;
-            if (!State.TryGetValue(key, out value))
+            if (!State.TryGetValue(key, out var value))
                 return default(T);
 
             if (value == null)

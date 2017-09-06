@@ -13,7 +13,7 @@ namespace FluentRest
         /// Gets a value indicating whether the inner handler should be disposed.
         /// </summary>
         /// <value>
-        /// <c>true</c> if the inner handler should be disposed of by the Dispose method, 
+        /// <c>true</c> if the inner handler should be disposed of by the Dispose method,
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </value>
         public bool ShouldDisposeHandler { get; private set; } = true;
@@ -270,7 +270,7 @@ namespace FluentRest
         /// Sets a value indicating whether the inner handler should be disposed.
         /// </summary>
         /// <param name="value">
-        /// <c>true</c> if the inner handler should be disposed of by the Dispose method, 
+        /// <c>true</c> if the inner handler should be disposed of by the Dispose method,
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
         /// <returns>

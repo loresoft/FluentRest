@@ -1,7 +1,7 @@
-version: 3.0.0.{build}
+version: 4.0.0.{build}
 os: Visual Studio 2017
 environment:
-  Major: 3
+  Major: 4
   Minor: 0
   Revision: 0
 configuration: Release

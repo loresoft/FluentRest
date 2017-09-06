@@ -33,7 +33,7 @@ namespace FluentRest
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FluentClient"/> class.
+        /// Initializes a new instance of the <see cref="T:FluentRest.FluentClient" /> class.
         /// </summary>
         /// <param name="serializer">The serializer to convert to and from HttpContent.</param>
         /// <param name="httpHandler">The HTTP handler stack to use for sending requests.</param>
@@ -87,8 +87,8 @@ namespace FluentRest
         /// </value>
         public Uri BaseUri
         {
-            get { return _defaultRequest.BaseUri; }
-            set { _defaultRequest.BaseUri = value; }
+            get => _defaultRequest.BaseUri;
+            set => _defaultRequest.BaseUri = value;
         }
 
         /// <summary>
@@ -433,7 +433,7 @@ namespace FluentRest
 
                 // throw if error not handled
                 if (exception != null && !fluentResponse.ShouldRetry)
-                    throw exception;
+                    throw new FluentException(exception.Message, exception);
 
                 // track call count to prevent infinite loop
                 count++;
