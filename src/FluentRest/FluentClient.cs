@@ -440,8 +440,15 @@ namespace FluentRest
 
             } while (fluentResponse.ShouldRetry && count <= MaxRetry);
 
-            if (fluentRequest.ExpectedStatusCode.HasValue && fluentResponse.StatusCode != fluentRequest.ExpectedStatusCode.Value)
-                throw new HttpRequestException($"Expected status code {fluentRequest.ExpectedStatusCode.Value} but recieved status code {fluentResponse.StatusCode}.");
+            if (fluentRequest.ExpectedStatusCode.HasValue &&
+                fluentResponse.StatusCode != fluentRequest.ExpectedStatusCode.Value)
+            {
+                var content = await fluentResponse.HttpContent.ReadAsStringAsync();
+                if (content.Length > 1000)
+                    content = content.Substring(0, 1000);
+
+                throw new HttpRequestException($"Expected status code {fluentRequest.ExpectedStatusCode.Value} but recieved status code {fluentResponse.StatusCode} ({fluentResponse.ReasonPhrase}).\n" + content);
+            }
 
             return fluentResponse;
         }
