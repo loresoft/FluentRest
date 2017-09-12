@@ -101,6 +101,14 @@ namespace FluentRest
         public object ContentData { get; set; }
 
         /// <summary>
+        /// Gets or sets the data content type.
+        /// </summary>
+        /// <value>
+        /// The content type.
+        /// </value>
+        public string ContentType { get; set; }
+
+        /// <summary>
         /// Gets or sets when the operation should complete (as soon as a response is available or after reading the whole response content).
         /// </summary>
         /// <value>

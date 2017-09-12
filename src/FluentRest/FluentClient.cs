@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FluentRest
@@ -453,14 +454,24 @@ namespace FluentRest
             return fluentResponse;
         }
 
-
         private async Task<HttpContent> GetContent(FluentRequest fluentRequest)
         {
             if (fluentRequest.Method == HttpMethod.Get)
                 return null;
 
+            if (fluentRequest.ContentData == null && fluentRequest.FormData == null)
+                return new StringContent(String.Empty, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
+
             if (fluentRequest.ContentData != null)
+            {
+                if (fluentRequest.ContentData is byte[] byteData)
+                    return new ByteArrayContent(byteData);
+
+                if (fluentRequest.ContentData is string stringData)
+                    return new StringContent(stringData, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
+
                 return await Serializer.SerializeAsync(fluentRequest.ContentData).ConfigureAwait(false);
+            }
 
             // convert NameValue to KeyValuePair
             var formData = new List<KeyValuePair<string, string>>();
@@ -492,6 +503,13 @@ namespace FluentRest
             }
 
             httpRequest.Content = await GetContent(fluentRequest).ConfigureAwait(false);
+            if (!String.IsNullOrEmpty(fluentRequest.ContentType))
+            {
+                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(fluentRequest.ContentType)
+                {
+                    CharSet = Encoding.UTF8.WebName
+                };
+            }
 
             // run request interceptors
             var context = new InterceptorRequestContext(this, fluentRequest) { HttpRequest = httpRequest };
@@ -503,14 +521,15 @@ namespace FluentRest
 
         private async Task<FluentResponse> TransformResponse(FluentRequest fluentRequest, HttpResponseMessage httpResponse, Exception exception)
         {
-            var fluentResponse = new FluentResponse(Serializer, httpResponse.Content);
+            var fluentResponse = new FluentResponse(Serializer, httpResponse?.Content);
             fluentResponse.ReasonPhrase = httpResponse?.ReasonPhrase;
             fluentResponse.StatusCode = httpResponse?.StatusCode ?? System.Net.HttpStatusCode.InternalServerError;
             fluentResponse.Request = fluentRequest;
 
             var headers = new Dictionary<string, ICollection<string>>();
-            foreach (var header in httpResponse.Headers)
-                headers.Add(header.Key, header.Value.ToList());
+            if (httpResponse != null)
+                foreach (var header in httpResponse.Headers)
+                    headers.Add(header.Key, header.Value.ToList());
 
             fluentResponse.Headers = headers;
 
