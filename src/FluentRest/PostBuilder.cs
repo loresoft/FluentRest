@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
@@ -153,17 +154,44 @@ namespace FluentRest
         }
 
         /// <summary>
-        /// Sets the raw post body to the contents of the byte array.
+        /// Sets the raw post body to the contents of the stream.
         /// </summary>
         /// <param name="data">The data to be used for the post body.</param>
-        /// <param name="contentType"></param>
+        /// <param name="contentType">The content media type.</param>
         /// <returns>A fluent request builder.</returns>
         /// <remarks>Setting the content of the request overrides any calls to FormValue.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="data"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="contentType"/> is <see langword="null" />.</exception>
+        public TBuilder Content(Stream data, string contentType)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+            if (contentType == null)
+                throw new ArgumentNullException(nameof(contentType));
+
+            Request.ContentType = contentType;
+            Request.ContentData = data;
+            if (Request.Method == HttpMethod.Get)
+                Request.Method = HttpMethod.Post;
+
+            return this as TBuilder;
+        }
+
+        /// <summary>
+        /// Sets the raw post body to the contents of the byte array.
+        /// </summary>
+        /// <param name="data">The data to be used for the post body.</param>
+        /// <param name="contentType">The content media type.</param>
+        /// <returns>A fluent request builder.</returns>
+        /// <remarks>Setting the content of the request overrides any calls to FormValue.</remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="data"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="contentType"/> is <see langword="null" />.</exception>
         public TBuilder Content(byte[] data, string contentType)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
+            if (contentType == null)
+                throw new ArgumentNullException(nameof(contentType));
 
             Request.ContentType = contentType;
             Request.ContentData = data;
@@ -177,14 +205,17 @@ namespace FluentRest
         /// Sets the raw post body to the contents of the string value.
         /// </summary>
         /// <param name="data">The string value to be used for the post body.</param>
-        /// <param name="contentType"></param>
+        /// <param name="contentType">The content media type.</param>
         /// <returns>A fluent request builder.</returns>
         /// <remarks>Setting the content of the request overrides any calls to FormValue.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="data"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="contentType"/> is <see langword="null" />.</exception>
         public TBuilder Content(string data, string contentType)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
+            if (contentType == null)
+                throw new ArgumentNullException(nameof(contentType));
 
             Request.ContentType = contentType;
             Request.ContentData = data;

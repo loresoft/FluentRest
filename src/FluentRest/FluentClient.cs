@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -465,7 +466,16 @@ namespace FluentRest
             if (fluentRequest.ContentData != null)
             {
                 if (fluentRequest.ContentData is byte[] byteData)
-                    return new ByteArrayContent(byteData);
+                    return new ByteArrayContent(byteData)
+                    {
+                        Headers = { ContentType = new MediaTypeHeaderValue(fluentRequest.ContentType) }
+                    };
+
+                if (fluentRequest.ContentData is Stream streamData)
+                    return new StreamContent(streamData)
+                    {
+                        Headers = { ContentType = new MediaTypeHeaderValue(fluentRequest.ContentType) }
+                    };
 
                 if (fluentRequest.ContentData is string stringData)
                     return new StringContent(stringData, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
@@ -503,13 +513,6 @@ namespace FluentRest
             }
 
             httpRequest.Content = await GetContent(fluentRequest).ConfigureAwait(false);
-            if (!String.IsNullOrEmpty(fluentRequest.ContentType))
-            {
-                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(fluentRequest.ContentType)
-                {
-                    CharSet = Encoding.UTF8.WebName
-                };
-            }
 
             // run request interceptors
             var context = new InterceptorRequestContext(this, fluentRequest) { HttpRequest = httpRequest };

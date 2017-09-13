@@ -50,13 +50,19 @@ namespace FluentRest
             if (data == null)
                 return null;
 
+            string json;
+
             using (var writer = new StringWriter())
             using (var jsonWriter = new JsonTextWriter(writer))
             {
                 _serializer.Serialize(jsonWriter, data);
+                jsonWriter.Flush();
 
-                return Task.FromResult<HttpContent>(new StringContent(writer.ToString(), Encoding.UTF8, ContentType));
+                json = writer.ToString();
             }
+
+            var httpContent = new StringContent(json, Encoding.UTF8, ContentType);
+            return Task.FromResult<HttpContent>(httpContent);
         }
 
         /// <summary>
