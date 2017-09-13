@@ -208,7 +208,7 @@ namespace FluentRest
         /// <param name="paths">The paths to append.</param>
         /// <param name="encode">if <see langword="true"/>, URL encode the specified <paramref name="paths"/>.</param>
         /// <returns>A fluent request builder.</returns>
-        public TBuilder AppendPath(IEnumerable<string> paths, bool encode = false)
+        public TBuilder AppendPath(IEnumerable<string> paths, bool encode)
         {
             if (paths == null)
                 return this as TBuilder;
@@ -222,6 +222,15 @@ namespace FluentRest
             return this as TBuilder;
         }
 
+        /// <summary>
+        /// Appends the specified <paramref name="paths"/> to the BaseUri of the request.
+        /// </summary>
+        /// <param name="paths">The paths to append.</param>
+        /// <returns>A fluent request builder.</returns>
+        public TBuilder AppendPath(params string[] paths)
+        {
+            return AppendPath(paths, false);
+        }
 
         /// <summary>
         /// Appends the specified <paramref name="name"/> and <paramref name="value"/> to the request Uri.
