@@ -468,7 +468,7 @@ namespace FluentRest
             if (fluentRequest.Method == HttpMethod.Get)
                 return null;
 
-            if (fluentRequest.ContentData == null && fluentRequest.FormData == null)
+            if (fluentRequest.ContentData == null && (fluentRequest.FormData == null || fluentRequest.FormData.Count == 0))
                 return new StringContent(String.Empty, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
 
             if (fluentRequest.ContentData != null)
