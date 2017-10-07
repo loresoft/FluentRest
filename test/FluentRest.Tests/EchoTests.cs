@@ -1,7 +1,12 @@
 ﻿using System;
+using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace FluentRest.Tests
@@ -23,7 +28,6 @@ namespace FluentRest.Tests
             Assert.Equal("http://httpbin.org/get?page=1&size=10", result.Url);
             Assert.Equal("1", result.QueryString["page"]);
             Assert.Equal("10", result.QueryString["size"]);
-
         }
 
         [Fact]
@@ -100,7 +104,6 @@ namespace FluentRest.Tests
             Assert.Equal("http://httpbin.org/get?page=10", result.Url);
             Assert.Equal("application/json, text/xml, application/bson", result.Headers[HttpRequestHeaders.Accept]);
             Assert.Equal("testing header", result.Headers["x-blah"]);
-
         }
 
         [Fact]
@@ -198,8 +201,45 @@ namespace FluentRest.Tests
             Assert.Equal("application/json; charset=utf-8", result.Headers[HttpRequestHeaders.ContentType]);
 
             dynamic data = result.Json;
-            Assert.Equal(user.Id, (long)data.Id);
-            Assert.Equal(user.FirstName, (string)data.FirstName);
+            Assert.Equal(user.Id, (long) data.Id);
+            Assert.Equal(user.FirstName, (string) data.FirstName);
+        }
+
+        [Fact]
+        public async void EchoPostDataCustomCompressedContent()
+        {
+            var user = UserData.Create();
+            var client = CreateClient();
+
+            var result = await client.PostAsync<EchoResult>(b => b
+                .AppendPath("post")
+                .QueryString("page", 10)
+                .Content(JsonCompress(user))
+            );
+
+            Assert.NotNull(result);
+            Assert.True(result.Headers.ContainsKey("Content-Length"));
+            int contentLength = Int32.Parse(result.Headers["Content-Length"]);
+            Assert.True(contentLength > 0);
+            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("application/json; charset=utf-8", result.Headers[HttpRequestHeaders.ContentType]);
+            Assert.Equal("gzip", result.Headers[HttpRequestHeaders.ContentEncoding]);
+        }
+
+        private static ByteArrayContent JsonCompress(object data)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
+            using (var stream = new MemoryStream())
+            {
+                using (var zipper = new GZipStream(stream, CompressionMode.Compress, true))
+                    zipper.Write(bytes, 0, bytes.Length);
+                
+                var content = new ByteArrayContent(stream.ToArray());
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentType.CharSet = "utf-8";
+                content.Headers.ContentEncoding.Add("gzip");
+                return content;
+            }
         }
 
         [Fact]
@@ -292,6 +332,5 @@ namespace FluentRest.Tests
             client.BaseUri = new Uri("http://httpbin.org/", UriKind.Absolute);
             return client;
         }
-
     }
 }

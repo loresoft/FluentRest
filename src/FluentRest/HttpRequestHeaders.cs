@@ -31,6 +31,8 @@ namespace FluentRest
         public const string ContentM5 = "Content-MD5";
         ///<summary>The MIME type of the body of the request (used with POST and PUT requests)</summary>
         public const string ContentType = "Content-Type";
+        ///<summary>The content encoding</summary>
+        public const string ContentEncoding = "Content-Encoding";
         ///<summary>The date and time that the message was sent</summary>
         public const string Date = "Date";
         ///<summary>Indicates that particular server behaviors are required by the client</summary>
@@ -57,7 +59,7 @@ namespace FluentRest
         public const string ProxyAuthorization = "Proxy-Authorization";
         ///<summary>Request only part of an entity. Bytes are numbered from 0.</summary>
         public const string Range = "Range";
-        ///<summary>This is the address of the previous web page from which a link to the currently requested page was followed. (The word “referrer” is misspelled in the RFC as well as in most implementations.)</summary>
+        ///<summary>This is the address of the previous web page from which a link to the currently requested page was followed. (The word ï¿½referrerï¿½ is misspelled in the RFC as well as in most implementations.)</summary>
         public const string Referer = "Referer";
         ///<summary>The transfer encodings the user agent is willing to accept: the same values as for the response header Transfer-Encoding can be used, plus the trailers value (related to the chunked transfer method) to notify the server it expects to receive additional headers (the trailers) after the last, zero-sized, chunk.</summary>
         public const string TE = "TE";
