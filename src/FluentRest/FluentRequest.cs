@@ -26,6 +26,7 @@ namespace FluentRest
             Method = HttpMethod.Get;
             CompletionOption = HttpCompletionOption.ResponseContentRead;
             CancellationToken = CancellationToken.None;
+            RequestBuilders = new List<Func<HttpRequestMessage, HttpRequestMessage>>();
         }
 
         /// <summary>
@@ -35,6 +36,11 @@ namespace FluentRest
         /// The state dictionary.
         /// </value>
         public IDictionary<string, object> State { get; set; }
+
+        /// <summary>
+        /// Collection of request builders that allow modifying the HttpRequestMessage before it is sent.
+        /// </summary>
+        public ICollection<Func<HttpRequestMessage, HttpRequestMessage>> RequestBuilders { get; }
 
         /// <summary>
         /// Gets or sets the collection of HTTP request headers.

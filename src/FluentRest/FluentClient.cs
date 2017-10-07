@@ -447,7 +447,6 @@ namespace FluentRest
 
                 // track call count to prevent infinite loop
                 count++;
-
             } while (fluentResponse.ShouldRetry && count <= MaxRetry);
 
             if (fluentRequest.ExpectedStatusCode.HasValue &&
@@ -468,40 +467,41 @@ namespace FluentRest
             if (fluentRequest.Method == HttpMethod.Get)
                 return null;
 
-            if (fluentRequest.ContentData == null && (fluentRequest.FormData == null || fluentRequest.FormData.Count == 0))
-                return new StringContent(String.Empty, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
-
-            if (fluentRequest.ContentData != null)
+            switch (fluentRequest.ContentData)
             {
-                if (fluentRequest.ContentData is byte[] byteData)
+                case HttpContent content:
+                    return content;
+                case byte[] byteData:
                     return new ByteArrayContent(byteData)
                     {
                         Headers = { ContentType = new MediaTypeHeaderValue(fluentRequest.ContentType) }
                     };
-
-                if (fluentRequest.ContentData is Stream streamData)
+                case Stream streamData:
                     return new StreamContent(streamData)
                     {
                         Headers = { ContentType = new MediaTypeHeaderValue(fluentRequest.ContentType) }
                     };
-
-                if (fluentRequest.ContentData is string stringData)
+                case string stringData:
                     return new StringContent(stringData, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
+                case null when (fluentRequest.FormData == null || fluentRequest.FormData.Count == 0):
+                    return new StringContent(String.Empty, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
+                case null:
+                {
+                    // convert NameValue to KeyValuePair
+                    var formData = new List<KeyValuePair<string, string>>();
+                    foreach (var pair in fluentRequest.FormData)
+                    {
+                        var key = pair.Key;
+                        var values = pair.Value.ToList();
+                        formData.AddRange(values.Select(value => new KeyValuePair<string, string>(key, value)));
+                    }
 
-                return await Serializer.SerializeAsync(fluentRequest.ContentData).ConfigureAwait(false);
+                    var httpContent = new FormUrlEncodedContent(formData);
+                    return httpContent;
+                }
+                default:
+                    return await Serializer.SerializeAsync(fluentRequest.ContentData).ConfigureAwait(false);
             }
-
-            // convert NameValue to KeyValuePair
-            var formData = new List<KeyValuePair<string, string>>();
-            foreach (var pair in fluentRequest.FormData)
-            {
-                var key = pair.Key;
-                var values = pair.Value.ToList();
-                formData.AddRange(values.Select(value => new KeyValuePair<string, string>(key, value)));
-            }
-
-            var httpContent = new FormUrlEncodedContent(formData);
-            return httpContent;
         }
 
         private async Task<HttpRequestMessage> TransformRequest(FluentRequest fluentRequest)
@@ -521,6 +521,9 @@ namespace FluentRest
             }
 
             httpRequest.Content = await GetContent(fluentRequest).ConfigureAwait(false);
+
+            foreach (var builder in fluentRequest.RequestBuilders)
+                httpRequest = builder(httpRequest);
 
             // run request interceptors
             var context = new InterceptorRequestContext(this, fluentRequest) { HttpRequest = httpRequest };

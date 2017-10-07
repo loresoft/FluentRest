@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,7 +64,7 @@ namespace FluentRest.Tests.GitHub
             var serializer = new JsonContentSerializer();
 
             var fakeStore = new FileMessageStore();
-            fakeStore.StorePath = @".\GitHub\Responses";
+            fakeStore.StorePath = Path.Combine(AppContext.BaseDirectory, "GitHub", "Responses");
 
             var fakeHttp = new FakeMessageHandler(fakeStore, FakeResponseMode.Fake);
 

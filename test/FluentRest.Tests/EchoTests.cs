@@ -136,7 +136,6 @@ namespace FluentRest.Tests
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-
             var result = await response.DeserializeAsync<EchoResult>();
 
             Assert.NotNull(result);
@@ -192,6 +191,9 @@ namespace FluentRest.Tests
             );
 
             Assert.NotNull(result);
+            Assert.True(result.Headers.ContainsKey("Content-Length"));
+            int contentLength = Int32.Parse(result.Headers["Content-Length"]);
+            Assert.True(contentLength > 0);
             Assert.Equal("http://httpbin.org/post?page=10", result.Url);
             Assert.Equal("application/json; charset=utf-8", result.Headers[HttpRequestHeaders.ContentType]);
 
@@ -252,6 +254,7 @@ namespace FluentRest.Tests
             );
 
             Assert.NotNull(result);
+            Assert.True(result.Headers.ContainsKey("Content-Length"));
             Assert.Equal("http://httpbin.org/post", result.Url);
         }
 

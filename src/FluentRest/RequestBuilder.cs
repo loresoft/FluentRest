@@ -65,5 +65,20 @@ namespace FluentRest
             Request.State[key] = value;
             return this as TBuilder;
         }
+
+        /// <summary>
+        /// Adds a request builder.
+        /// </summary>
+        /// <param name="builder">The request builder.</param>
+        /// <returns>A fluent request builder.</returns>
+        public TBuilder Builder(Func<HttpRequestMessage, HttpRequestMessage> builder)
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            Request.RequestBuilders.Add(builder);
+            
+            return this as TBuilder;
+        }
     }
 }

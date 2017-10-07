@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "taskName": "build",
+      "command": "dotnet build FluentRest.sln",
+      "options": {
+        "cwd": "${workspaceRoot}"
+      },
+      "type": "shell",
+      "group": {
+        "isDefault": true,
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    }
+  ]
+}
