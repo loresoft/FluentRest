@@ -106,7 +106,7 @@ namespace FluentRest
         }
 
         /// <summary>
-        /// Deserializes the the <see cref="System.Net.Http.HttpContent" /> asynchronous.
+        /// Deserialize the <see cref="System.Net.Http.HttpContent" /> asynchronously.
         /// </summary>
         /// <typeparam name="TData">The type of the data.</typeparam>
         /// <param name="ensureSuccess">Throw an exception if the <see cref="IsSuccessStatusCode"/> property for the HTTP response is false.</param>

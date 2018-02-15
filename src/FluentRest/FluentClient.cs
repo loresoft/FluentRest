@@ -456,7 +456,7 @@ namespace FluentRest
                 if (content.Length > 1000)
                     content = content.Substring(0, 1000);
 
-                throw new HttpRequestException($"Expected status code {fluentRequest.ExpectedStatusCode.Value} but recieved status code {fluentResponse.StatusCode} ({fluentResponse.ReasonPhrase}).\n" + content);
+                throw new HttpRequestException($"Expected status code {fluentRequest.ExpectedStatusCode.Value} but received status code {fluentResponse.StatusCode} ({fluentResponse.ReasonPhrase}).\n" + content);
             }
 
             return fluentResponse;

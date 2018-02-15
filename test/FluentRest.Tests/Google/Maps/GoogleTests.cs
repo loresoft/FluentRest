@@ -25,7 +25,7 @@ namespace FluentRest.Tests
 
             Assert.NotNull(result);
             Assert.Equal("OK", result.Status);
-            Assert.Equal(1, result.Results.Length);
+            Assert.Single(result.Results);
 
             // reload captured fake response
             var fakeClient = CreateClient(FakeResponseMode.Fake);
@@ -38,7 +38,7 @@ namespace FluentRest.Tests
 
             Assert.NotNull(fakeResult);
             Assert.Equal("OK", fakeResult.Status);
-            Assert.Equal(1, fakeResult.Results.Length);
+            Assert.Single(fakeResult.Results);
 
         }
 

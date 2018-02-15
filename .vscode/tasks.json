@@ -2,19 +2,34 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "taskName": "build",
-      "command": "dotnet build FluentRest.sln",
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
       "options": {
-        "cwd": "${workspaceRoot}"
+        "cwd": "${workspaceFolder}"
       },
-      "type": "shell",
       "group": {
-        "isDefault": true,
-        "kind": "build"
+        "kind": "build",
+        "isDefault": true
       },
-      "presentation": {
-        "reveal": "silent"
+      "args": [
+        "build",
+        "FluentRest.sln"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "test",
+      "command": "dotnet",
+      "type": "process",
+      "group": {
+        "kind": "test",
+        "isDefault": true
       },
+      "args": [
+        "test",
+        "${workspaceFolder}/test/FluentRest.Tests/FluentRest.Tests.csproj"
+      ],
       "problemMatcher": "$msCompile"
     }
   ]

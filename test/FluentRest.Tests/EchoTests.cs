@@ -206,6 +206,20 @@ namespace FluentRest.Tests
         }
 
         [Fact]
+        public async void EchoPostRawJsonContent()
+        {
+            var user = UserData.Create();
+            var client = CreateClient();
+
+            var result = await client.PostAsync(b => b
+                .FullUri("https://requestb.in/1fpgdz31")
+                .Content(JsonConvert.SerializeObject(user))
+            );
+
+            Assert.NotNull(result);
+        }
+
+        [Fact]
         public async void EchoPostDataCustomCompressedContent()
         {
             var user = UserData.Create();

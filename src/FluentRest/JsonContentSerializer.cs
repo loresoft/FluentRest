@@ -66,7 +66,7 @@ namespace FluentRest
         }
 
         /// <summary>
-        /// Deserializes the the <see cref="HttpContent"/> asynchronous.
+        /// Deserialize the <see cref="HttpContent"/> asynchronously.
         /// </summary>
         /// <typeparam name="TData">The type of the data.</typeparam>
         /// <param name="content">The content to deserialize.</param>
