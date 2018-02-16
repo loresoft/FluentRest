@@ -21,11 +21,11 @@ namespace FluentRest
         /// Serializes the specified <paramref name="data"/> object asynchronous.
         /// </summary>
         /// <param name="data">The data object to serialize.</param>
-        /// <returns>The <see cref="HttpContent"/> that the data object searilzed to.</returns>
+        /// <returns>The <see cref="HttpContent"/> that the data object serialized to.</returns>
         Task<HttpContent> SerializeAsync(object data);
 
         /// <summary>
-        /// Deserializes the the <see cref="HttpContent"/> asynchronous.
+        /// Deserialize the <see cref="HttpContent"/> asynchronously.
         /// </summary>
         /// <typeparam name="TData">The type of the data.</typeparam>
         /// <param name="content">The content to deserialize.</param>
