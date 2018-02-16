@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
@@ -13,14 +13,15 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\FluentRest\FluentRest.csproj"/>
+    <ProjectReference Include="..\..\src\FluentRest\FluentRest.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20170923-02"/>
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0"/>
-    <PackageReference Include="xunit" Version="2.3.0"/>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3"/>
-    <PackageReference Include="System.Net.Http" Version="4.3.2"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="System.Net.Http" Version="4.3.3" />
+    <PackageReference Include="FluentAssertions" Version="5.1.1" />
   </ItemGroup>
   <ItemGroup>
     <None Update="GitHub\Responses\**\*">

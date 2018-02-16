@@ -201,8 +201,8 @@ namespace FluentRest.Tests
             Assert.Equal("application/json; charset=utf-8", result.Headers[HttpRequestHeaders.ContentType]);
 
             dynamic data = result.Json;
-            Assert.Equal(user.Id, (long) data.Id);
-            Assert.Equal(user.FirstName, (string) data.FirstName);
+            Assert.Equal(user.Id, (long)data.Id);
+            Assert.Equal(user.FirstName, (string)data.FirstName);
         }
 
         [Fact]
@@ -233,7 +233,7 @@ namespace FluentRest.Tests
             {
                 using (var zipper = new GZipStream(stream, CompressionMode.Compress, true))
                     zipper.Write(bytes, 0, bytes.Length);
-                
+
                 var content = new ByteArrayContent(stream.ToArray());
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 content.Headers.ContentType.CharSet = "utf-8";

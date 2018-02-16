@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace FluentRest
 {
@@ -132,6 +133,24 @@ namespace FluentRest
             return FormValue(name, value);
         }
 
+        /// <summary>
+        /// Sets the contents of the HTTP message with the <see cref="HttpContent"/> value.
+        /// </summary>
+        /// <param name="content">The <see cref="HttpContent"/> to be sent.</param>
+        /// <returns>A fluent request builder.</returns>
+        /// <remarks>Setting the content of the request overrides any calls to FormValue.</remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="content"/> is <see langword="null" />.</exception>
+        public TBuilder Content(HttpContent content)
+        {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            Request.ContentData = content;
+            if (Request.Method == HttpMethod.Get)
+                Request.Method = HttpMethod.Post;
+
+            return this as TBuilder;
+        }
 
         /// <summary>
         /// Sets the raw post body to the serialized content of the specified <paramref name="data"/> object.
@@ -170,7 +189,12 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(contentType));
 
             Request.ContentType = contentType;
-            Request.ContentData = data;
+
+            var content = new StreamContent(data);
+            content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+            Request.ContentData = content;
+
             if (Request.Method == HttpMethod.Get)
                 Request.Method = HttpMethod.Post;
 
@@ -194,7 +218,12 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(contentType));
 
             Request.ContentType = contentType;
-            Request.ContentData = data;
+
+            var content = new ByteArrayContent(data);
+            content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+            Request.ContentData = content;
+
             if (Request.Method == HttpMethod.Get)
                 Request.Method = HttpMethod.Post;
 
@@ -206,11 +235,12 @@ namespace FluentRest
         /// </summary>
         /// <param name="data">The string value to be used for the post body.</param>
         /// <param name="contentType">The content media type.</param>
+        /// <param name="encoding">The encoding to use for the content.</param>
         /// <returns>A fluent request builder.</returns>
         /// <remarks>Setting the content of the request overrides any calls to FormValue.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="data"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="contentType"/> is <see langword="null" />.</exception>
-        public TBuilder Content(string data, string contentType)
+        public TBuilder Content(string data, string contentType, Encoding encoding = null)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
@@ -218,7 +248,12 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(contentType));
 
             Request.ContentType = contentType;
-            Request.ContentData = data;
+
+            var stringContent = new StringContent(data, encoding ?? Encoding.UTF8, contentType);
+
+            Request.ContentData = stringContent;
+
+
             if (Request.Method == HttpMethod.Get)
                 Request.Method = HttpMethod.Post;
 

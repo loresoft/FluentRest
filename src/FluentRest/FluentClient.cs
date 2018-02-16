@@ -467,41 +467,27 @@ namespace FluentRest
             if (fluentRequest.Method == HttpMethod.Get)
                 return null;
 
-            switch (fluentRequest.ContentData)
-            {
-                case HttpContent content:
-                    return content;
-                case byte[] byteData:
-                    return new ByteArrayContent(byteData)
-                    {
-                        Headers = { ContentType = new MediaTypeHeaderValue(fluentRequest.ContentType) }
-                    };
-                case Stream streamData:
-                    return new StreamContent(streamData)
-                    {
-                        Headers = { ContentType = new MediaTypeHeaderValue(fluentRequest.ContentType) }
-                    };
-                case string stringData:
-                    return new StringContent(stringData, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
-                case null when (fluentRequest.FormData == null || fluentRequest.FormData.Count == 0):
-                    return new StringContent(String.Empty, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
-                case null:
-                {
-                    // convert NameValue to KeyValuePair
-                    var formData = new List<KeyValuePair<string, string>>();
-                    foreach (var pair in fluentRequest.FormData)
-                    {
-                        var key = pair.Key;
-                        var values = pair.Value.ToList();
-                        formData.AddRange(values.Select(value => new KeyValuePair<string, string>(key, value)));
-                    }
+            if (fluentRequest.ContentData is HttpContent content)
+                return content;
 
-                    var httpContent = new FormUrlEncodedContent(formData);
-                    return httpContent;
-                }
-                default:
-                    return await Serializer.SerializeAsync(fluentRequest.ContentData).ConfigureAwait(false);
+            if (fluentRequest.ContentData != null)
+                return await Serializer.SerializeAsync(fluentRequest.ContentData).ConfigureAwait(false);
+
+            if (fluentRequest.ContentData == null && (fluentRequest.FormData == null || fluentRequest.FormData.Count == 0))
+                return new StringContent(String.Empty, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
+
+            // convert NameValue to KeyValuePair
+            var formData = new List<KeyValuePair<string, string>>();
+            foreach (var pair in fluentRequest.FormData)
+            {
+                var key = pair.Key;
+                var values = pair.Value.ToList();
+                formData.AddRange(values.Select(value => new KeyValuePair<string, string>(key, value)));
             }
+
+            var httpContent = new FormUrlEncodedContent(formData);
+            return httpContent;
+
         }
 
         private async Task<HttpRequestMessage> TransformRequest(FluentRequest fluentRequest)

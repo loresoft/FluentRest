@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using FluentRest.Fake;
 using Xunit;
 
@@ -41,7 +37,7 @@ namespace FluentRest.Tests
                 .FormValue("Test", "Value")
                 .FormValue("key", "value")
                 .QueryString("page", 10)
-            );
+            ).ConfigureAwait(false);
 
             Assert.NotNull(result);
             Assert.Equal("http://httpbin.org/post?page=10", result.Url);
