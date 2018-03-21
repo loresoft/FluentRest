@@ -201,7 +201,7 @@ namespace FluentRest.Tests
             Assert.Equal("application/json; charset=utf-8", result.Headers[HttpRequestHeaders.ContentType]);
             Assert.True(result.Headers.ContainsKey("Content-Type"));
             var contentType = result.Headers["Content-Type"];
-            Assert.Equal("application/json", contentType);
+            Assert.Equal("application/json; charset=utf-8", contentType);
 
             dynamic data = result.Json;
             Assert.Equal(user.Id, (long)data.Id);
@@ -225,7 +225,7 @@ namespace FluentRest.Tests
             Assert.Equal(json, result.Data);
             Assert.True(result.Headers.ContainsKey("Content-Type"));
             var contentType = result.Headers["Content-Type"];
-            Assert.Equal("application/json;", contentType);
+            Assert.Equal("application/json; charset=utf-8", contentType);
         }
 
         [Fact]
@@ -247,7 +247,7 @@ namespace FluentRest.Tests
             Assert.Equal(json, result.Data);
             Assert.True(result.Headers.ContainsKey("Content-Type"));
             var contentType = result.Headers["Content-Type"];
-            Assert.Equal("application/json;", contentType);
+            Assert.Equal("application/json; charset=utf-8", contentType);
         }
 
         [Fact]
