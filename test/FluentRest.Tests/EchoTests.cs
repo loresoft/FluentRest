@@ -199,6 +199,9 @@ namespace FluentRest.Tests
             Assert.True(contentLength > 0);
             Assert.Equal("http://httpbin.org/post?page=10", result.Url);
             Assert.Equal("application/json; charset=utf-8", result.Headers[HttpRequestHeaders.ContentType]);
+            Assert.True(result.Headers.ContainsKey("Content-Type"));
+            var contentType = result.Headers["Content-Type"];
+            Assert.Equal("application/json", contentType);
 
             dynamic data = result.Json;
             Assert.Equal(user.Id, (long)data.Id);
@@ -220,6 +223,59 @@ namespace FluentRest.Tests
 
             Assert.NotNull(result);
             Assert.Equal(json, result.Data);
+            Assert.True(result.Headers.ContainsKey("Content-Type"));
+            var contentType = result.Headers["Content-Type"];
+            Assert.Equal("application/json;", contentType);
+        }
+
+        [Fact]
+        public async void Echo2PostRawJsonContent()
+        {
+            var user = UserData.Create();
+            var json = JsonConvert.SerializeObject(user);
+            var client = CreateClient();
+
+            var request = client.CreateRequest();
+            var builder = new SendBuilder(request).AppendPath("post").Post();
+
+            request.ContentData = json;
+            request.ContentType = "application/json";
+            var response = client.SendAsync(request);
+            var result = await response.Result.DeserializeAsync<EchoResult>();
+
+            Assert.NotNull(result);
+            Assert.Equal(json, result.Data);
+            Assert.True(result.Headers.ContainsKey("Content-Type"));
+            var contentType = result.Headers["Content-Type"];
+            Assert.Equal("application/json;", contentType);
+        }
+
+        [Fact]
+        public async void EchoPostRawTextContent()
+        {
+            var client = CreateClient();
+
+            var result = await client.PostAsync<EchoResult>(b => b
+                .AppendPath("post")
+                .Content("test", "text/plain", Encoding.UTF8)
+            );
+
+            Assert.NotNull(result);
+            Assert.Equal("test", result.Data);
+            Assert.True(result.Headers.ContainsKey("Content-Type"));
+            var contentType = result.Headers["Content-Type"];
+            Assert.Equal("text/plain; charset=utf-8", contentType);
+
+            result = await client.PostAsync<EchoResult>(b => b
+                .AppendPath("post")
+                .Content("test", "text/plain")
+            );
+
+            Assert.NotNull(result);
+            Assert.Equal("test", result.Data);
+            Assert.True(result.Headers.ContainsKey("Content-Type"));
+            contentType = result.Headers["Content-Type"];
+            Assert.Equal("text/plain; charset=utf-8", contentType);
         }
 
         [Fact]
