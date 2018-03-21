@@ -406,7 +406,6 @@ namespace FluentRest
         /// <returns>
         /// The task object representing the asynchronous operation.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="ArgumentNullException"><paramref name="fluentRequest" /> is <see langword="null" />.</exception>
         public async Task<FluentResponse> SendAsync(FluentRequest fluentRequest)
         {
@@ -467,8 +466,11 @@ namespace FluentRest
             if (fluentRequest.Method == HttpMethod.Get)
                 return null;
 
-            if (fluentRequest.ContentData is HttpContent content)
-                return content;
+            if (fluentRequest.ContentData is HttpContent httpContent)
+                return httpContent;
+
+            if (fluentRequest.ContentData is string stringContent)
+                return new StringContent(stringContent, Encoding.UTF8, fluentRequest.ContentType ?? "application/json");
 
             if (fluentRequest.ContentData != null)
                 return await Serializer.SerializeAsync(fluentRequest.ContentData).ConfigureAwait(false);
@@ -485,8 +487,8 @@ namespace FluentRest
                 formData.AddRange(values.Select(value => new KeyValuePair<string, string>(key, value)));
             }
 
-            var httpContent = new FormUrlEncodedContent(formData);
-            return httpContent;
+            var formContent = new FormUrlEncodedContent(formData);
+            return formContent;
 
         }
 

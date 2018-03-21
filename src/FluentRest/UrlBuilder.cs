@@ -5,10 +5,15 @@ using System.Text;
 
 namespace FluentRest
 {
+    /// <summary>
+    /// Build and modify uniform resource locator (URL)
+    /// </summary>
     public class UrlBuilder
     {
-        private static readonly Dictionary<string, int?> _schemePorts;
         //scheme:[//[user[:password]@]host[:port]][/path][?query][#fragment]
+
+        private static readonly Dictionary<string, int?> _schemePorts;
+
         private readonly IDictionary<string, ICollection<string>> _query;
         private readonly IList<string> _path;
         private readonly string _schemeDelimiter;
@@ -72,6 +77,9 @@ namespace FluentRest
             };
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UrlBuilder"/> class.
+        /// </summary>
         public UrlBuilder()
         {
             _query = new Dictionary<string, ICollection<string>>();
@@ -84,6 +92,11 @@ namespace FluentRest
             _username = string.Empty;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UrlBuilder"/> with the specified <paramref name="uri"/>.
+        /// </summary>
+        /// <param name="uri">A URI string.</param>
+        /// <exception cref="ArgumentNullException">uri is null</exception>
         public UrlBuilder(string uri) : this()
         {
             if (uri == null)
@@ -103,6 +116,11 @@ namespace FluentRest
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UrlBuilder"/> with the specified <paramref name="uri"/>.
+        /// </summary>
+        /// <param name="uri">An instance of the <see cref="Uri"/> class</param>
+        /// <exception cref="ArgumentNullException">uri is null</exception>
         public UrlBuilder(Uri uri) : this()
         {
             if (uri == null)
@@ -112,23 +130,76 @@ namespace FluentRest
         }
 
 
+        /// <summary>
+        /// Gets the scheme name of the Url.
+        /// </summary>
+        /// <value>
+        /// The scheme name of the Url.
+        /// </value>
         public string Scheme => _scheme;
 
+        /// <summary>
+        /// Gets the user name associated with the user that accesses the Url.
+        /// </summary>
+        /// <value>
+        /// The user name associated with the user that accesses the Url.
+        /// </value>
         public string UserName => _username;
 
+        /// <summary>
+        /// Gets the password associated with the user that accesses the Url.
+        /// </summary>
+        /// <value>
+        /// The password associated with the user that accesses the Url.
+        /// </value>
         public string Password => _password;
 
+        /// <summary>
+        /// Gets the Domain Name System (DNS) host name or IP address of a server.
+        /// </summary>
+        /// <value>
+        /// The Domain Name System (DNS) host name or IP address of a server.
+        /// </value>
         public string Host => _host;
 
+        /// <summary>
+        /// Gets the port number of the Url.
+        /// </summary>
+        /// <value>
+        /// The port number of the Url.
+        /// </value>
         public int? Port => GetStandardPort();
 
+        /// <summary>
+        /// Gets the path segment collection to the resource referenced by the Url.
+        /// </summary>
+        /// <value>
+        /// The path segment collection to the resource referenced by the Url.
+        /// </value>
         public IList<string> Path => _path;
 
+        /// <summary>
+        /// Gets the query string dictionary information included in the Url.
+        /// </summary>
+        /// <value>
+        /// The query string dictionary information included in the Url.
+        /// </value>
         public IDictionary<string, ICollection<string>> Query => _query;
 
+        /// <summary>
+        /// Gets the fragment portion of the Url.
+        /// </summary>
+        /// <value>
+        /// The fragment portion of the Url.
+        /// </value>
         public string Fragment => _fragment;
 
 
+        /// <summary>
+        /// Replace the schema name for the current Url.
+        /// </summary>
+        /// <param name="value">The schema name.</param>
+        /// <returns></returns>
         public UrlBuilder SetScheme(string value)
         {
             if (value == null)
@@ -150,6 +221,11 @@ namespace FluentRest
             return this;
         }
 
+        /// <summary>
+        /// Replace the user name for the current Url.
+        /// </summary>
+        /// <param name="value">The user name associated with the user that access the Url.</param>
+        /// <returns></returns>
         public UrlBuilder SetUserName(string value)
         {
             if (value == null)
@@ -159,6 +235,11 @@ namespace FluentRest
             return this;
         }
 
+        /// <summary>
+        /// Replace the password for the current Url.
+        /// </summary>
+        /// <param name="value">The password associated with the user that access the Url.</param>
+        /// <returns></returns>
         public UrlBuilder SetPassword(string value)
         {
             if (value == null)
@@ -168,6 +249,11 @@ namespace FluentRest
             return this;
         }
 
+        /// <summary>
+        /// Replace the Domain Name System (DNS) host name or IP address for the current Url.
+        /// </summary>
+        /// <param name="value">The Domain Name System (DNS) host name or IP address.</param>
+        /// <returns></returns>
         public UrlBuilder SetHost(string value)
         {
             if (value == null)
@@ -185,6 +271,11 @@ namespace FluentRest
             return this;
         }
 
+        /// <summary>
+        /// Replace the port number for the current Url.
+        /// </summary>
+        /// <param name="value">The port number.</param>
+        /// <returns></returns>
         public UrlBuilder SetPort(int value)
         {
             if (value < -1 || value > 0xFFFF)
@@ -194,6 +285,11 @@ namespace FluentRest
             return this;
         }
 
+        /// <summary>
+        /// Replace the port number for the current Url.
+        /// </summary>
+        /// <param name="value">The port number.</param>
+        /// <returns></returns>
         public UrlBuilder SetPort(string value)
         {
             if (!string.IsNullOrEmpty(value) && int.TryParse(value, out int port))
@@ -203,6 +299,11 @@ namespace FluentRest
             return this;
         }
 
+        /// <summary>
+        /// Replace the fragment portion for the current Url.
+        /// </summary>
+        /// <param name="value">The fragment portion.</param>
+        /// <returns></returns>
         public UrlBuilder SetFragment(string value)
         {
             if (value == null)
@@ -216,6 +317,11 @@ namespace FluentRest
         }
 
 
+        /// <summary>
+        /// Appends a path segment to the current Url.
+        /// </summary>
+        /// <param name="path">The path segment to append.</param>
+        /// <returns></returns>
         public UrlBuilder AppendPath(Uri path)
         {
             if (path == null)
@@ -226,6 +332,11 @@ namespace FluentRest
             return this;
         }
 
+        /// <summary>
+        /// Appends a path segment to the current Url.
+        /// </summary>
+        /// <param name="path">The path segment to append.</param>
+        /// <returns></returns>
         public UrlBuilder AppendPath(string path)
         {
             if (path == null)
@@ -236,7 +347,12 @@ namespace FluentRest
             return this;
         }
 
-        public UrlBuilder AppendPath(IEnumerable<string> paths, bool encode)
+        /// <summary>
+        /// Appends the path segments to the current Url.
+        /// </summary>
+        /// <param name="paths">The path segments to append.</param>
+        /// <returns></returns>
+        public UrlBuilder AppendPath(IEnumerable<string> paths)
         {
             if (paths == null)
                 return this;
@@ -247,12 +363,22 @@ namespace FluentRest
             return this;
         }
 
-        public UrlBuilder AppendPath(params string[] paths)
+        /// <summary>
+        /// Appends the path segments to the current Url.
+        /// </summary>
+        /// <param name="paths">The path segments to append.</param>
+        /// <returns></returns>
+        public UrlBuilder AppendPaths(params string[] paths)
         {
-            return AppendPath(paths, false);
+            return AppendPath(paths);
         }
-
-
+        
+        /// <summary>
+        /// Appends a string formatted path segment to the current Url.
+        /// </summary>
+        /// <param name="format">A composite format string.</param>
+        /// <param name="arguments">An array that contains zero or more objects to format.</param>
+        /// <returns></returns>
         public UrlBuilder AppendPathFormat(string format, params object[] arguments)
         {
             var p = string.Format(format, arguments);
@@ -261,6 +387,11 @@ namespace FluentRest
         }
 
 
+        /// <summary>
+        /// Replace the entire path for the current Url.  The <see cref="Path"/> collection is replaced with this path.
+        /// </summary>
+        /// <param name="path">The path segment to set.</param>
+        /// <returns></returns>
         public UrlBuilder SetPath(string path)
         {
             Path.Clear();
@@ -272,6 +403,13 @@ namespace FluentRest
         }
 
 
+        /// <summary>
+        /// Appends the query string name and value to the current url.
+        /// </summary>
+        /// <param name="name">The query string name.</param>
+        /// <param name="value">The query string value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
         public UrlBuilder AppendQuery(string name, string value)
         {
             if (name == null)
@@ -285,6 +423,14 @@ namespace FluentRest
             return this;
         }
 
+        /// <summary>
+        /// Appends the query string name and value to the current url.
+        /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="name">The query string name.</param>
+        /// <param name="value">The query string value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
         public UrlBuilder AppendQuery<TValue>(string name, TValue value)
         {
             if (name == null)
@@ -294,6 +440,14 @@ namespace FluentRest
             return AppendQuery(name, v);
         }
 
+        /// <summary>
+        /// Conditionally appends the query string name and value to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+        /// </summary>
+        /// <param name="condition">The condition on weather the query string is appended.</param>
+        /// <param name="name">The query string name.</param>
+        /// <param name="value">The query string value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
         public UrlBuilder AppendQueryIf(Func<bool> condition, string name, string value)
         {
             if (condition == null || !condition())
@@ -302,6 +456,15 @@ namespace FluentRest
             return AppendQuery(name, value);
         }
 
+        /// <summary>
+        /// Conditionally appends the query string name and value to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+        /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="condition">The condition on weather the query string is appended.</param>
+        /// <param name="name">The query string name.</param>
+        /// <param name="value">The query string value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
         public UrlBuilder AppendQueryIf<TValue>(Func<bool> condition, string name, TValue value)
         {
             if (condition == null || !condition())
@@ -310,6 +473,11 @@ namespace FluentRest
             return AppendQuery(name, value);
         }
 
+        /// <summary>
+        /// Appends the query string to the current url.
+        /// </summary>
+        /// <param name="queryString">The query string to append.</param>
+        /// <returns></returns>
         public UrlBuilder AppendQuery(string queryString)
         {
             if (queryString == null)
@@ -320,6 +488,11 @@ namespace FluentRest
         }
 
 
+        /// <summary>
+        /// Replace the entire query string for the current Url.  The <see cref="Query"/> dictionary is replaced with this query string.
+        /// </summary>
+        /// <param name="queryString">The query string to set.</param>
+        /// <returns></returns>
         public UrlBuilder SetQuery(string queryString)
         {
             Query.Clear();
@@ -332,6 +505,12 @@ namespace FluentRest
         }
 
 
+        /// <summary>
+        /// Returns a <see cref="System.Uri" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.Uri" /> that represents this instance.
+        /// </returns>
         public Uri ToUri()
         {
             var url = ToString();
@@ -340,6 +519,12 @@ namespace FluentRest
             return uri;
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             var builder = new StringBuilder();
