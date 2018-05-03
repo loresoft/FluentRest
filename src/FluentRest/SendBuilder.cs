@@ -6,7 +6,7 @@ namespace FluentRest
     /// <summary>
     /// A fluent send request builder.
     /// </summary>
-    public sealed class SendBuilder : PostBuilder<SendBuilder>
+    public class SendBuilder : PostBuilder<SendBuilder>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SendBuilder"/> class.

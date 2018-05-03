@@ -8,7 +8,7 @@ namespace FluentRest
     /// <summary>
     /// A fluent query builder.
     /// </summary>
-    public sealed class QueryBuilder : QueryBuilder<QueryBuilder>
+    public class QueryBuilder : QueryBuilder<QueryBuilder>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryBuilder" /> class.
@@ -17,7 +17,6 @@ namespace FluentRest
         public QueryBuilder(FluentRequest request) : base(request)
         {
         }
-
     }
 
     /// <summary>
