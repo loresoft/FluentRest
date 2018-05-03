@@ -6,8 +6,27 @@
     "Repos",
     "Xamasoft",
     "Xunit",
+    "acap",
     "bson",
     "ejsmith",
-    "gravatar"
+    "gravatar",
+    "inet",
+    "ipps",
+    "ircs",
+    "ldaps",
+    "msrp",
+    "msrps",
+    "mtqp",
+    "nntp",
+    "nntps",
+    "prospero",
+    "rsync",
+    "rtsp",
+    "rtsps",
+    "rtspu",
+    "snmp",
+    "ventrilo",
+    "wais",
+    "xmpp"
   ]
 }
