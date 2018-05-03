@@ -115,29 +115,5 @@ namespace FluentRest.Tests
 
             Assert.Throws<FluentException>(() => request.RequestUri());
         }
-
-        [Fact]
-        public void RequestUriInvalid()
-        {
-            var request = new FluentRequest();
-            var builder = new QueryBuilder(request);
-
-            Assert.Throws<UriFormatException>(() => builder.BaseUri("/api/").AppendPath("v1"));
-        }
-
-        [Fact]
-        public void RequestUriInvalidUri()
-        {
-            var request = new FluentRequest();
-            var builder = new QueryBuilder(request);
-            var baseUri = new Uri("/api", UriKind.Relative);
-
-            Assert.Throws<UriFormatException>(() =>
-            {
-                builder.BaseUri(baseUri).AppendPath("v1");
-                var uri = request.RequestUri();
-            });
-        }
-
     }
 }
