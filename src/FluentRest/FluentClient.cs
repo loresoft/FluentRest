@@ -30,7 +30,7 @@ namespace FluentRest
         public FluentClient(HttpClient httpClient, IContentSerializer contentSerializer)
         {
             HttpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            ContentSerializer = contentSerializer ?? new JsonContentSerializer();
+            ContentSerializer = contentSerializer ?? FluentRest.ContentSerializer.Current;
         }
 
         /// <summary>

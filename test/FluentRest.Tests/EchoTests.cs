@@ -55,11 +55,10 @@ namespace FluentRest.Tests
         {
             var client = CreateClient();
 
-            var result = await client.GetAsync<EchoResult>(b =>
-            {
-                b.AppendPath("basic-auth/ejsmith/password")
-                    .BasicAuthorization("ejsmith", "password");
-            });
+            var result = await client.GetAsync<EchoResult>(b => b
+                .AppendPath("basic-auth/ejsmith/password")
+                .BasicAuthorization("ejsmith", "password")
+            );
 
             Assert.NotNull(result);
             Assert.Equal("true", result.Authenticated);
@@ -102,7 +101,7 @@ namespace FluentRest.Tests
 
             Assert.NotNull(result);
             Assert.Equal("http://httpbin.org/get?page=10", result.Url);
-            Assert.Equal("application/json, text/xml, application/bson", result.Headers[HttpRequestHeaders.Accept]);
+            Assert.Equal("text/xml, application/bson, application/json", result.Headers[HttpRequestHeaders.Accept]);
             Assert.Equal("testing header", result.Headers["x-blah"]);
         }
 
@@ -139,12 +138,12 @@ namespace FluentRest.Tests
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            //var result = await response.DeserializeAsync<EchoResult>();
+            var result = await response.DeserializeAsync<EchoResult>();
 
-            //Assert.NotNull(result);
-            //Assert.Equal("http://httpbin.org/post?page=10", result.Url);
-            //Assert.Equal("Value", result.Form["Test"]);
-            //Assert.Equal("value", result.Form["key"]);
+            Assert.NotNull(result);
+            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("Value", result.Form["Test"]);
+            Assert.Equal("value", result.Form["key"]);
         }
 
         [Fact]
@@ -235,23 +234,22 @@ namespace FluentRest.Tests
             var json = JsonConvert.SerializeObject(user);
             var client = CreateClient();
 
-            var request = new HttpRequestMessage();
+            var request = new HttpRequestMessage(HttpMethod.Post, client.HttpClient.BaseAddress);
             var builder = new SendBuilder(request).AppendPath("post").Post();
 
-            //request.ContentData = json;
-            //request.ContentType = "application/json";
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            //var response = client.SendAsync(request);
-            //Assert.NotNull(response);
+            var response = client.SendAsync(request);
+            Assert.NotNull(response);
 
-            //var result = await response.Result.DeserializeAsync<EchoResult>();
+            var result = await response.Result.DeserializeAsync<EchoResult>();
 
-            //Assert.NotNull(result);
-            //Assert.Equal(json, result.Data);
-            //Assert.True(result.Headers.ContainsKey("Content-Type"));
+            Assert.NotNull(result);
+            Assert.Equal(json, result.Data);
+            Assert.True(result.Headers.ContainsKey("Content-Type"));
 
-            //var contentType = result.Headers["Content-Type"];
-            //Assert.Equal("application/json; charset=utf-8", contentType);
+            var contentType = result.Headers["Content-Type"];
+            Assert.Equal("application/json; charset=utf-8", contentType);
         }
 
         [Fact]
@@ -349,6 +347,7 @@ namespace FluentRest.Tests
             //);
 
             var result = await client.PostAsync<EchoResult>(b => b
+                .Header(h => h.Authorization("Token", "abc-def-123"))
                 .AppendPath("post")
                 .FormValue("Test", "Value")
                 .FormValue("key", "value")

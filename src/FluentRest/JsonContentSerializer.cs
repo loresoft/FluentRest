@@ -80,5 +80,22 @@ namespace FluentRest
                 return _serializer.Deserialize<TData>(reader);
             }
         }
+
+        #region Singleton
+
+        private static readonly Lazy<JsonContentSerializer> _current = new Lazy<JsonContentSerializer>(() => new JsonContentSerializer());
+
+        /// <summary>
+        /// Gets the current singleton instance of JsonContentSerializer.
+        /// </summary>
+        /// <value>The current singleton instance.</value>
+        /// <remarks>
+        /// An instance of JsonContentSerializer wont be created until the very first
+        /// call to the sealed class. This is a CLR optimization that
+        /// provides a properly lazy-loading singleton.
+        /// </remarks>
+        public static JsonContentSerializer Default => _current.Value;
+
+        #endregion
     }
 }

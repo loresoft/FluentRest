@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace FluentRest
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public static class FluentClientExtensions
     {
@@ -26,7 +26,15 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response =  await fluentClient.HttpClient.GetAsync(builder).ConfigureAwait(false);
+            var httpClient = fluentClient.HttpClient;
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, httpClient.BaseAddress);
+            requestMessage.SetContentSerializer(fluentClient.ContentSerializer);
+
+            var fluentBuilder = new QueryBuilder(requestMessage);
+            builder(fluentBuilder);
+
+            var response = await FluentDispatcher.SendAsync(httpClient, requestMessage).ConfigureAwait(false);
+
             return response;
         }
 
@@ -46,8 +54,8 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.GetAsync(builder).ConfigureAwait(false);
-            var data = await DeserializeAsync<TResponse>(fluentClient, response).ConfigureAwait(false);
+            var response = await fluentClient.GetAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
 
             return data;
         }
@@ -68,7 +76,15 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.PostAsync(builder).ConfigureAwait(false);
+            var httpClient = fluentClient.HttpClient;
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, httpClient.BaseAddress);
+            requestMessage.SetContentSerializer(fluentClient.ContentSerializer);
+
+            var fluentBuilder = new FormBuilder(requestMessage);
+            builder(fluentBuilder);
+
+            var response = await FluentDispatcher.SendAsync(httpClient, requestMessage).ConfigureAwait(false);
+
             return response;
         }
 
@@ -88,8 +104,8 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.PostAsync(builder).ConfigureAwait(false);
-            var data = await DeserializeAsync<TResponse>(fluentClient, response).ConfigureAwait(false);
+            var response = await fluentClient.PostAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
 
             return data;
         }
@@ -110,7 +126,15 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.PutAsync(builder).ConfigureAwait(false);
+            var httpClient = fluentClient.HttpClient;
+            var requestMessage = new HttpRequestMessage(HttpMethod.Put, httpClient.BaseAddress);
+            requestMessage.SetContentSerializer(fluentClient.ContentSerializer);
+
+            var fluentBuilder = new FormBuilder(requestMessage);
+            builder(fluentBuilder);
+
+            var response = await FluentDispatcher.SendAsync(httpClient, requestMessage).ConfigureAwait(false);
+
             return response;
         }
 
@@ -130,8 +154,8 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.PutAsync(builder).ConfigureAwait(false);
-            var data = await DeserializeAsync<TResponse>(fluentClient, response).ConfigureAwait(false);
+            var response = await fluentClient.PutAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
 
             return data;
         }
@@ -152,7 +176,15 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.PatchAsync(builder).ConfigureAwait(false);
+            var httpClient = fluentClient.HttpClient;
+            var requestMessage = new HttpRequestMessage(FormBuilder.HttpPatch, httpClient.BaseAddress);
+            requestMessage.SetContentSerializer(fluentClient.ContentSerializer);
+
+            var fluentBuilder = new FormBuilder(requestMessage);
+            builder(fluentBuilder);
+
+            var response = await FluentDispatcher.SendAsync(httpClient, requestMessage).ConfigureAwait(false);
+
             return response;
         }
 
@@ -172,8 +204,8 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.PatchAsync(builder).ConfigureAwait(false);
-            var data = await DeserializeAsync<TResponse>(fluentClient, response).ConfigureAwait(false);
+            var response = await fluentClient.PatchAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
 
             return data;
         }
@@ -194,7 +226,15 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.DeleteAsync(builder).ConfigureAwait(false);
+            var httpClient = fluentClient.HttpClient;
+            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, httpClient.BaseAddress);
+            requestMessage.SetContentSerializer(fluentClient.ContentSerializer);
+
+            var fluentBuilder = new FormBuilder(requestMessage);
+            builder(fluentBuilder);
+
+            var response = await FluentDispatcher.SendAsync(httpClient, requestMessage).ConfigureAwait(false);
+
             return response;
         }
 
@@ -214,8 +254,8 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.DeleteAsync(builder).ConfigureAwait(false);
-            var data = await DeserializeAsync<TResponse>(fluentClient, response).ConfigureAwait(false);
+            var response = await fluentClient.DeleteAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
 
             return data;
         }
@@ -237,7 +277,15 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.SendAsync(builder).ConfigureAwait(false);
+            var httpClient = fluentClient.HttpClient;
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, httpClient.BaseAddress);
+            requestMessage.SetContentSerializer(fluentClient.ContentSerializer);
+
+            var fluentBuilder = new SendBuilder(requestMessage);
+            builder(fluentBuilder);
+
+            var response = await FluentDispatcher.SendAsync(httpClient, requestMessage).ConfigureAwait(false);
+
             return response;
         }
 
@@ -257,28 +305,35 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var response = await fluentClient.HttpClient.SendAsync(builder).ConfigureAwait(false);
-            var data = await DeserializeAsync<TResponse>(fluentClient, response).ConfigureAwait(false);
+            var response = await fluentClient.SendAsync(builder).ConfigureAwait(false);
+            var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
 
             return data;
         }
 
 
-        private static async Task<TData> DeserializeAsync<TData>(IFluentClient fluentClient, HttpResponseMessage responseMessage, bool ensureSuccess = true)
+        /// <summary>
+        /// Sends a request using specified request message as an asynchronous operation.
+        /// </summary>
+        /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
+        /// <param name="requestMessage">The request message to send.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null" />.</exception>
+        public static async Task<HttpResponseMessage> SendAsync(this IFluentClient fluentClient, HttpRequestMessage requestMessage)
         {
-            if (responseMessage == null)
-                throw new ArgumentNullException(nameof(responseMessage));
+            if (fluentClient == null)
+                throw new ArgumentNullException(nameof(fluentClient));
 
-            var serializer = fluentClient.ContentSerializer;
+            if (requestMessage == null)
+                throw new ArgumentNullException(nameof(requestMessage));
 
-            if (ensureSuccess)
-                responseMessage.EnsureSuccessStatusCode();
+            var httpClient = fluentClient.HttpClient;
 
-            var data = await serializer
-                .DeserializeAsync<TData>(responseMessage.Content)
-                .ConfigureAwait(false);
+            requestMessage.SetContentSerializer(fluentClient.ContentSerializer);
 
-            return data;
+            var response = await FluentDispatcher.SendAsync(httpClient, requestMessage).ConfigureAwait(false);
+
+            return response;
         }
 
     }

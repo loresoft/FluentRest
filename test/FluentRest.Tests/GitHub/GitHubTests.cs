@@ -17,7 +17,7 @@ namespace FluentRest.Tests.GitHub
                 .AppendPath("repos")
                 .AppendPath("loresoft")
                 .AppendPath("FluentRest")
-                .Header(h => h.Authorization("token", "7ca..."))
+                //.Header(h => h.Authorization("token", "7ca..."))
             );
 
             Assert.NotNull(result);
@@ -33,7 +33,7 @@ namespace FluentRest.Tests.GitHub
                 .AppendPath("loresoft")
                 .AppendPath("FluentRest")
                 .AppendPath("issues")
-                .Header(h => h.Authorization("token", "7ca..."))
+                //.Header(h => h.Authorization("token", "7ca..."))
             );
 
             Assert.NotNull(result);
@@ -49,7 +49,7 @@ namespace FluentRest.Tests.GitHub
                 .AppendPath("FluentRest")
                 .AppendPath("issues")
                 .AppendPath("1")
-                .Header(h => h.Authorization("token", "7ca..."))
+                //.Header(h => h.Authorization("token", "7ca..."))
             );
 
             Assert.NotNull(result);

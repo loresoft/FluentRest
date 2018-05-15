@@ -17,9 +17,9 @@ namespace FluentRest.Tests
             builder.BaseUri("http://test.com/");
             builder.QueryString("Test", value);
 
-            //var uri = request.RequestUri();
+            var uri = request.GetUrlBuilder();
 
-            //Assert.Equal("http://test.com/?Test=", uri.ToString());
+            Assert.Equal("http://test.com/?Test=", uri.ToString());
         }
 
         [Fact]
@@ -32,9 +32,9 @@ namespace FluentRest.Tests
             builder.QueryString("Test", "Test1");
             builder.QueryString("Test", "Test2");
 
-            //var uri = request.RequestUri();
+            var uri = request.GetUrlBuilder();
 
-            //Assert.Equal("http://test.com/?Test=Test1&Test=Test2", uri.ToString());
+            Assert.Equal("http://test.com/?Test=Test1&Test=Test2", uri.ToString());
         }
 
         [Fact]
@@ -46,8 +46,8 @@ namespace FluentRest.Tests
             builder.BaseUri("http://test.com/");
             builder.Header("Test", "Test");
 
-            //Assert.True(builder.RequestMessage.Headers.ContainsKey("Test"));
-            //Assert.True(builder.RequestMessage.Headers["Test"].First() == "Test");
+            Assert.True(builder.RequestMessage.Headers.Contains("Test"));
+            Assert.True(builder.RequestMessage.Headers.GetValues("Test").First() == "Test");
         }
 
         [Fact]
@@ -60,24 +60,23 @@ namespace FluentRest.Tests
             builder.BaseUri("http://test.com/");
             builder.Header("Test", "Test");
 
-            //Assert.True(builder.RequestMessage.Headers.ContainsKey("Test"));
+            Assert.True(builder.RequestMessage.Headers.Contains("Test"));
 
-            //builder.Header("Test", value);
-            //Assert.False(builder.RequestMessage.Headers.ContainsKey("Test"));
+            builder.Header("Test", value);
+            Assert.False(builder.RequestMessage.Headers.Contains("Test"));
         }
 
         [Fact]
         public void QueryStringFullUri()
         {
-            var request = new HttpRequestMessage();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://blah.com");
             var builder = new QueryBuilder(request);
 
             builder.FullUri("http://test.com/path?q=testing&size=10");
 
+            var urlBuilder = request.GetUrlBuilder().ToUri();
 
-            //Assert.Equal("http://test.com/path", request.BaseUri.ToString());
-            //Assert.Equal(2, request.QueryString.Count);
-            //Assert.Equal("testing", request.QueryString["q"].FirstOrDefault());
+            Assert.Equal("http://test.com/path?q=testing&size=10", urlBuilder.ToString());
         }
 
         [Fact]
@@ -88,9 +87,9 @@ namespace FluentRest.Tests
 
             builder.BaseUri("http://test.com/api").AppendPath("v1");
 
-            //var url = request.RequestUri();
+            var urlBuilder = request.GetUrlBuilder();
 
-            //Assert.Equal("http://test.com/api/v1", url.ToString());
+            Assert.Equal("http://test.com/api/v1", urlBuilder.ToString());
         }
 
         [Fact]
@@ -101,9 +100,9 @@ namespace FluentRest.Tests
 
             builder.BaseUri("http://test.com/api/").AppendPath("v1");
 
-            //var url = request.RequestUri();
+            var urlBuilder = request.GetUrlBuilder();
 
-            //Assert.Equal("http://test.com/api/v1", url.ToString());
+            Assert.Equal("http://test.com/api/v1", urlBuilder.ToString());
         }
 
         [Fact]
@@ -114,7 +113,7 @@ namespace FluentRest.Tests
 
             builder.AppendPath("http://test.com/api/v1");
 
-            //Assert.Throws<FluentException>(() => request.RequestUri());
+            var urlBuilder = request.GetUrlBuilder();
         }
     }
 }
