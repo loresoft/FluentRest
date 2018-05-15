@@ -45,7 +45,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<TResponse> GetAsync<TResponse>(this IFluentClient fluentClient, Action<QueryBuilder> builder)
         {
             if (fluentClient == null)
@@ -67,7 +67,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<HttpResponseMessage> PostAsync(this IFluentClient fluentClient, Action<FormBuilder> builder)
         {
             if (fluentClient == null)
@@ -95,7 +95,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<TResponse> PostAsync<TResponse>(this IFluentClient fluentClient, Action<FormBuilder> builder)
         {
             if (fluentClient == null)
@@ -117,7 +117,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<HttpResponseMessage> PutAsync(this IFluentClient fluentClient, Action<FormBuilder> builder)
         {
             if (fluentClient == null)
@@ -145,7 +145,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<TResponse> PutAsync<TResponse>(this IFluentClient fluentClient, Action<FormBuilder> builder)
         {
             if (fluentClient == null)
@@ -167,7 +167,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<HttpResponseMessage> PatchAsync(this IFluentClient fluentClient, Action<FormBuilder> builder)
         {
             if (fluentClient == null)
@@ -195,7 +195,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<TResponse> PatchAsync<TResponse>(this IFluentClient fluentClient, Action<FormBuilder> builder)
         {
             if (fluentClient == null)
@@ -217,7 +217,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<HttpResponseMessage> DeleteAsync(this IFluentClient fluentClient, Action<FormBuilder> builder)
         {
             if (fluentClient == null)
@@ -245,7 +245,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<TResponse> DeleteAsync<TResponse>(this IFluentClient fluentClient, Action<FormBuilder> builder)
         {
             if (fluentClient == null)
@@ -267,8 +267,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="System.ArgumentNullException"></exception>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<HttpResponseMessage> SendAsync(this IFluentClient fluentClient, Action<SendBuilder> builder)
         {
             if (fluentClient == null)
@@ -296,7 +295,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="builder">The fluent builder factory.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
         public static async Task<TResponse> SendAsync<TResponse>(this IFluentClient fluentClient, Action<SendBuilder> builder)
         {
             if (fluentClient == null)
@@ -318,7 +317,7 @@ namespace FluentRest
         /// <param name="fluentClient">The <see cref="IFluentClient"/> used to send request.</param>
         /// <param name="requestMessage">The request message to send.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="fluentClient" /> or <paramref name="requestMessage" /> is <see langword="null" />.</exception>
         public static async Task<HttpResponseMessage> SendAsync(this IFluentClient fluentClient, HttpRequestMessage requestMessage)
         {
             if (fluentClient == null)

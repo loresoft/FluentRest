@@ -101,6 +101,8 @@ namespace FluentRest
             var urlBuilder = new UrlBuilder(path);
             RequestMessage.SetUrlBuilder(urlBuilder);
 
+            RequestMessage.Synchronize();
+
 
             return this as TBuilder;
         }
@@ -164,6 +166,8 @@ namespace FluentRest
             var urlBuilder = RequestMessage.GetUrlBuilder();
             urlBuilder.AppendPath(path);
 
+            RequestMessage.Synchronize();
+
             return this as TBuilder;
         }
 
@@ -182,6 +186,8 @@ namespace FluentRest
             var urlBuilder = RequestMessage.GetUrlBuilder();
             urlBuilder.AppendPath(path);
 
+            RequestMessage.Synchronize();
+
             return this as TBuilder;
         }
 
@@ -198,6 +204,8 @@ namespace FluentRest
             var urlBuilder = RequestMessage.GetUrlBuilder();
             urlBuilder.AppendPath(paths);
 
+            RequestMessage.Synchronize();
+
             return this as TBuilder;
         }
 
@@ -213,6 +221,8 @@ namespace FluentRest
 
             var urlBuilder = RequestMessage.GetUrlBuilder();
             urlBuilder.AppendPath(paths);
+
+            RequestMessage.Synchronize();
 
             return this as TBuilder;
         }
@@ -234,6 +244,8 @@ namespace FluentRest
 
             var urlBuilder = RequestMessage.GetUrlBuilder();
             urlBuilder.AppendQuery(name, value);
+
+            RequestMessage.Synchronize();
 
             return this as TBuilder;
 

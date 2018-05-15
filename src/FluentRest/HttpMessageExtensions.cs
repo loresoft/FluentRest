@@ -195,6 +195,17 @@ namespace FluentRest
 
 
         /// <summary>
+        /// Synchronizes the specified request message with the fluent properties.
+        /// </summary>
+        /// <param name="requestMessage">The request message.</param>
+        public static void Synchronize(this HttpRequestMessage requestMessage)
+        {
+            var urlBuilder = requestMessage.GetUrlBuilder();
+            requestMessage.RequestUri = urlBuilder.ToUri();
+        }
+
+
+        /// <summary>
         /// Deserialize the HTTP response message asynchronously.
         /// </summary>
         /// <typeparam name="TData">The type of the data.</typeparam>
