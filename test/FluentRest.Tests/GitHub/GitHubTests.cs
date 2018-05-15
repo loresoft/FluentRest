@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentRest.Fake;
+using System.Net.Http;
 using FluentRest.Tests.GitHub.Models;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace FluentRest.Tests.GitHub
@@ -61,17 +57,13 @@ namespace FluentRest.Tests.GitHub
 
         private static FluentClient CreateClient()
         {
-            var serializer = new JsonContentSerializer();
+            var contentSerializer = new JsonContentSerializer();
 
-            var fakeStore = new FileMessageStore();
-            fakeStore.StorePath = Path.Combine(AppContext.BaseDirectory, "GitHub", "Responses");
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("https://api.github.com/", UriKind.Absolute);
 
-            var fakeHttp = new FakeMessageHandler(fakeStore, FakeResponseMode.Fake);
-
-            var client = new FluentClient(serializer, fakeHttp);
-            client.BaseUri = new Uri("https://api.github.com/", UriKind.Absolute);
-
-            return client;
+            var fluentClient = new FluentClient(httpClient, contentSerializer);
+            return fluentClient;
         }
 
     }

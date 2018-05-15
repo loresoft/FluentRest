@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentRest.Fake;
+using System.Net.Http;
 using FluentRest.Tests.Google.Maps.Models;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace FluentRest.Tests
@@ -17,7 +12,6 @@ namespace FluentRest.Tests
         {
             var client = CreateClient();
             var result = await client.GetAsync<GeocodeResponse>(b => b
-                .BaseUri("https://maps.googleapis.com/maps/api/")
                 .AppendPath("geocode")
                 .AppendPath("json")
                 .QueryString("address", "1600 Amphitheatre Parkway, Mountain View, CA")
@@ -27,30 +21,19 @@ namespace FluentRest.Tests
             Assert.Equal("OK", result.Status);
             Assert.Single(result.Results);
 
-            // reload captured fake response
-            var fakeClient = CreateClient(FakeResponseMode.Fake);
-            var fakeResult = await fakeClient.GetAsync<GeocodeResponse>(b => b
-                .BaseUri("https://maps.googleapis.com/maps/api/")
-                .AppendPath("geocode")
-                .AppendPath("json")
-                .QueryString("address", "1600 Amphitheatre Parkway, Mountain View, CA")
-            );
-
-            Assert.NotNull(fakeResult);
-            Assert.Equal("OK", fakeResult.Status);
-            Assert.Single(fakeResult.Results);
-
         }
 
 
 
-        private static FluentClient CreateClient(FakeResponseMode mode = FakeResponseMode.Capture)
+        private static IFluentClient CreateClient()
         {
             var serializer = new JsonContentSerializer();
-            var fakeHttp = new FakeMessageHandler { Mode = mode };
 
-            var client = new FluentClient(serializer, fakeHttp);
-            return client;
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("https://maps.googleapis.com/maps/api/", UriKind.Absolute);
+
+            var fluentClient = new FluentClient(httpClient, serializer);
+            return fluentClient;
         }
     }
 

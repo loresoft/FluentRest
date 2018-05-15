@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 
 namespace FluentRest
 {
@@ -10,8 +11,8 @@ namespace FluentRest
         /// <summary>
         /// Initializes a new instance of the <see cref="FormBuilder"/> class.
         /// </summary>
-        /// <param name="request">The fluent HTTP request being built.</param>
-        public FormBuilder(FluentRequest request) : base(request)
+        /// <param name="requestMessage">The fluent HTTP request being built.</param>
+        public FormBuilder(HttpRequestMessage requestMessage) : base(requestMessage)
         {
         }
     }

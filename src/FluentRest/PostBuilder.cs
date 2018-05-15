@@ -19,8 +19,8 @@ namespace FluentRest
         /// <summary>
         /// Initializes a new instance of the <see cref="PostBuilder{TBuilder}"/> class.
         /// </summary>
-        /// <param name="request">The fluent HTTP request being built.</param>
-        protected PostBuilder(FluentRequest request) : base(request)
+        /// <param name="requestMessage">The fluent HTTP request being built.</param>
+        protected PostBuilder(HttpRequestMessage requestMessage) : base(requestMessage)
         {
         }
 
@@ -39,7 +39,8 @@ namespace FluentRest
 
             var v = value ?? string.Empty;
 
-            var list = Request.FormData.GetOrAdd(name, n => new List<string>());
+            var formData = RequestMessage.GetFormData();
+            var list = formData.GetOrAdd(name, n => new List<string>());
             list.Add(v);
 
             return this as TBuilder;
@@ -145,9 +146,9 @@ namespace FluentRest
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
-            Request.ContentData = content;
-            if (Request.Method == HttpMethod.Get)
-                Request.Method = HttpMethod.Post;
+            RequestMessage.Content = content;
+            if (RequestMessage.Method == HttpMethod.Get)
+                RequestMessage.Method = HttpMethod.Post;
 
             return this as TBuilder;
         }
@@ -165,9 +166,21 @@ namespace FluentRest
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
 
-            Request.ContentData = data;
-            if (Request.Method == HttpMethod.Get)
-                Request.Method = HttpMethod.Post;
+            // handle special case where string gets sent here
+            var stringContent = data as string;
+            if (stringContent != null)
+                return Content(stringContent, null, Encoding.UTF8);
+
+            // handle case where HttpContent get here
+            var httpContent = data as HttpContent;
+            if (httpContent != null)
+                return Content(httpContent);
+
+            // save for later serialization
+            RequestMessage.Properties[FluentProperties.RequestContentData] = data;
+
+            if (RequestMessage.Method == HttpMethod.Get)
+                RequestMessage.Method = HttpMethod.Post;
 
             return this as TBuilder;
         }
@@ -188,15 +201,12 @@ namespace FluentRest
             if (contentType == null)
                 throw new ArgumentNullException(nameof(contentType));
 
-            Request.ContentType = contentType;
-
             var content = new StreamContent(data);
             content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
-            Request.ContentData = content;
-
-            if (Request.Method == HttpMethod.Get)
-                Request.Method = HttpMethod.Post;
+            RequestMessage.Content = content;
+            if (RequestMessage.Method == HttpMethod.Get)
+                RequestMessage.Method = HttpMethod.Post;
 
             return this as TBuilder;
         }
@@ -217,15 +227,12 @@ namespace FluentRest
             if (contentType == null)
                 throw new ArgumentNullException(nameof(contentType));
 
-            Request.ContentType = contentType;
-
             var content = new ByteArrayContent(data);
             content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
-            Request.ContentData = content;
-
-            if (Request.Method == HttpMethod.Get)
-                Request.Method = HttpMethod.Post;
+            RequestMessage.Content = content;
+            if (RequestMessage.Method == HttpMethod.Get)
+                RequestMessage.Method = HttpMethod.Post;
 
             return this as TBuilder;
         }
@@ -247,15 +254,11 @@ namespace FluentRest
             if (contentType == null)
                 throw new ArgumentNullException(nameof(contentType));
 
-            Request.ContentType = contentType;
-
             var stringContent = new StringContent(data, encoding ?? Encoding.UTF8, contentType);
 
-            Request.ContentData = stringContent;
-
-
-            if (Request.Method == HttpMethod.Get)
-                Request.Method = HttpMethod.Post;
+            RequestMessage.Content = stringContent;
+            if (RequestMessage.Method == HttpMethod.Get)
+                RequestMessage.Method = HttpMethod.Post;
 
             return this as TBuilder;
         }

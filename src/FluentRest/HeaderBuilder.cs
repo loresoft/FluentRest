@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
@@ -14,8 +12,8 @@ namespace FluentRest
         /// <summary>
         /// Initializes a new instance of the <see cref="HeaderBuilder"/> class.
         /// </summary>
-        /// <param name="request">The fluent HTTP request being built.</param>
-        public HeaderBuilder(FluentRequest request) : base(request)
+        /// <param name="requestMessage">The fluent HTTP request being built.</param>
+        public HeaderBuilder(HttpRequestMessage requestMessage) : base(requestMessage)
         {
         }
     }
@@ -30,8 +28,8 @@ namespace FluentRest
         /// <summary>
         /// Initializes a new instance of the <see cref="HeaderBuilder{TBuilder}"/> class.
         /// </summary>
-        /// <param name="request">The fluent HTTP request being built.</param>
-        protected HeaderBuilder(FluentRequest request) : base(request)
+        /// <param name="requestMessage">The fluent HTTP request being built.</param>
+        protected HeaderBuilder(HttpRequestMessage requestMessage) : base(requestMessage)
         {
         }
 
@@ -43,11 +41,12 @@ namespace FluentRest
         /// <returns>A fluent header builder.</returns>
         public TBuilder Accept(string mediaType, double? quality = null)
         {
+            
             var header = quality.HasValue
                 ? new MediaTypeWithQualityHeaderValue(mediaType, quality.Value)
                 : new MediaTypeWithQualityHeaderValue(mediaType);
 
-            AppendHeader(HttpRequestHeaders.Accept, header.ToString());
+            RequestMessage.Headers.Accept.Add(header);
 
             return this as TBuilder;
         }
@@ -64,7 +63,7 @@ namespace FluentRest
                 ? new StringWithQualityHeaderValue(value, quality.Value)
                 : new StringWithQualityHeaderValue(value);
 
-            AppendHeader(HttpRequestHeaders.AcceptCharset, header.ToString());
+            RequestMessage.Headers.AcceptCharset.Add(header);
 
             return this as TBuilder;
         }
@@ -81,7 +80,7 @@ namespace FluentRest
                 ? new StringWithQualityHeaderValue(value, quality.Value)
                 : new StringWithQualityHeaderValue(value);
 
-            AppendHeader(HttpRequestHeaders.AcceptEncoding, header.ToString());
+            RequestMessage.Headers.AcceptEncoding.Add(header);
 
             return this as TBuilder;
         }
@@ -98,7 +97,7 @@ namespace FluentRest
                 ? new StringWithQualityHeaderValue(value, quality.Value)
                 : new StringWithQualityHeaderValue(value);
 
-            AppendHeader(HttpRequestHeaders.AcceptLanguage, header.ToString());
+            RequestMessage.Headers.AcceptLanguage.Add(header);
 
             return this as TBuilder;
         }
@@ -116,7 +115,8 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(scheme));
 
             var header = new AuthenticationHeaderValue(scheme, parameter);
-            SetHeader(HttpRequestHeaders.Authorization, header.ToString());
+
+            RequestMessage.Headers.Authorization = header;
 
             return this as TBuilder;
         }
@@ -126,9 +126,16 @@ namespace FluentRest
         /// </summary>
         /// <param name="value">The header value.</param>
         /// <returns>A fluent header builder.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
         public TBuilder CacheControl(string value)
         {
-            SetHeader(HttpRequestHeaders.CacheControl, value);
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
+            var header = CacheControlHeaderValue.Parse(value);
+            
+            RequestMessage.Headers.CacheControl = header;
+
             return this as TBuilder;
         }
 
@@ -142,7 +149,7 @@ namespace FluentRest
         {
             var header = new NameValueWithParametersHeaderValue(name, value);
 
-            AppendHeader(HttpRequestHeaders.Expect, header.ToString());
+            RequestMessage.Headers.Expect.Add(header);
 
             return this as TBuilder;
         }
@@ -154,7 +161,7 @@ namespace FluentRest
         /// <returns>A fluent header builder.</returns>
         public TBuilder From(string value)
         {
-            SetHeader(HttpRequestHeaders.From, value);
+            RequestMessage.Headers.From = value;
             return this as TBuilder;
         }
 
@@ -165,7 +172,7 @@ namespace FluentRest
         /// <returns>A fluent header builder.</returns>
         public TBuilder Host(string value)
         {
-            SetHeader(HttpRequestHeaders.Host, value);
+            RequestMessage.Headers.Host = value;
             return this as TBuilder;
         }
 
@@ -176,8 +183,7 @@ namespace FluentRest
         /// <returns>A fluent header builder.</returns>
         public TBuilder IfModifiedSince(DateTimeOffset? modifiedDate)
         {
-            string value = modifiedDate?.ToUniversalTime().ToString("r", CultureInfo.InvariantCulture);
-            SetHeader(HttpRequestHeaders.From, value);
+            RequestMessage.Headers.IfModifiedSince = modifiedDate;
             return this as TBuilder;
         }
 
@@ -188,8 +194,7 @@ namespace FluentRest
         /// <returns>A fluent header builder.</returns>
         public TBuilder IfUnmodifiedSince(DateTimeOffset? modifiedDate)
         {
-            string value = modifiedDate?.ToUniversalTime().ToString("r", CultureInfo.InvariantCulture);
-            SetHeader(HttpRequestHeaders.IfUnmodifiedSince, value);
+            RequestMessage.Headers.IfUnmodifiedSince = modifiedDate;
             return this as TBuilder;
         }
 
@@ -199,13 +204,14 @@ namespace FluentRest
         /// <param name="scheme">The scheme to use for authorization.</param>
         /// <param name="parameter">The credentials containing the authentication information.</param>
         /// <returns>A fluent header builder.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="scheme"/> is <see langword="null"/></exception>
         public TBuilder ProxyAuthorization(string scheme, string parameter = null)
         {
             if (scheme == null)
                 throw new ArgumentNullException(nameof(scheme));
 
             var header = new AuthenticationHeaderValue(scheme, parameter);
-            SetHeader(HttpRequestHeaders.ProxyAuthorization, header.ToString());
+            RequestMessage.Headers.ProxyAuthorization = header;
 
             return this as TBuilder;
         }
@@ -219,31 +225,35 @@ namespace FluentRest
         public TBuilder Range(long? from, long? to)
         {
             var header = new RangeHeaderValue(from, to);
-            SetHeader(HttpRequestHeaders.Range, header.ToString());
+            RequestMessage.Headers.Range = header;
 
             return this as TBuilder;
         }
 
         /// <summary>
-        /// Sets the value of the Referer header for an HTTP request.
+        /// Sets the value of the Referrer header for an HTTP request.
         /// </summary>
         /// <param name="uri">The header URI.</param>
         /// <returns>A fluent header builder.</returns>
         public TBuilder Referrer(Uri uri)
         {
-            var value = uri?.ToString();
-            SetHeader(HttpRequestHeaders.Referer, value);
+            RequestMessage.Headers.Referrer = uri;
             return this as TBuilder;
         }
 
         /// <summary>
-        /// Sets the value of the Referer header for an HTTP request.
+        /// Sets the value of the Referrer header for an HTTP request.
         /// </summary>
         /// <param name="value">The header value.</param>
         /// <returns>A fluent header builder.</returns>
         public TBuilder Referrer(string value)
         {
-            SetHeader(HttpRequestHeaders.Referer, value);
+            if (string.IsNullOrEmpty(value))
+                return this as TBuilder;
+
+            var uri = new Uri(value);
+            RequestMessage.Headers.Referrer = uri;
+
             return this as TBuilder;
         }
 
@@ -254,7 +264,12 @@ namespace FluentRest
         /// <returns>A fluent header builder.</returns>
         public TBuilder UserAgent(string value)
         {
-            SetHeader(HttpRequestHeaders.UserAgent, value);
+            if (string.IsNullOrEmpty(value))
+                return this as TBuilder;
+
+            var header = ProductInfoHeaderValue.Parse(value);
+            RequestMessage.Headers.UserAgent.Add(header);
+
             return this as TBuilder;
         }
 
@@ -265,28 +280,8 @@ namespace FluentRest
         /// <returns>A fluent header builder.</returns>
         public TBuilder MethodOverride(HttpMethod method)
         {
-            SetHeader(HttpRequestHeaders.MethodOverride, method.ToString());
+            RequestMessage.Headers.Add(HttpRequestHeaders.MethodOverride, method.ToString());
             return this as TBuilder;
-        }
-
-        private void SetHeader(string name, string value)
-        {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
-
-            if (value == null)
-                Request.Headers.Remove(name);
-            else
-                Request.Headers[name] = new List<string>(new[] { value });
-        }
-
-        private void AppendHeader(string name, string value)
-        {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
-
-            var list = Request.Headers.GetOrAdd(name, n => new List<string>());
-            list.Add(value);
         }
     }
 }
