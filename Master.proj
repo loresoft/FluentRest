@@ -2,72 +2,32 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <BuildFolder>$(MSBuildProjectDirectory)\Build</BuildFolder>
-    <ToolFolder>$(MSBuildProjectDirectory)\Tools</ToolFolder>
+    <BuildFolder>$(MSBuildProjectDirectory)\artifacts</BuildFolder>
+    <ToolFolder>$(MSBuildProjectDirectory)\tools</ToolFolder>
     <SourceFolder>$(MSBuildProjectDirectory)\src</SourceFolder>
     <TestFolder>$(MSBuildProjectDirectory)\test</TestFolder>
 
+    <CoverallsPath>$(ToolFolder)\coveralls.net\tools</CoverallsPath>
     <MSBuildCommunityTasksPath>$(ToolFolder)\MSBuildTasks\tools</MSBuildCommunityTasksPath>
   </PropertyGroup>
 
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.targets"/>
 
-  <!-- Version Number -->
   <PropertyGroup>
-    <BuildNumber Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' ">$(APPVEYOR_BUILD_NUMBER)</BuildNumber>
-    <BuildNumber Condition=" '$(BUILD_NUMBER)' != '' ">$(BUILD_NUMBER)</BuildNumber>
-    <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
-
     <BuildConfiguration  Condition=" '$(BuildConfiguration)' == '' ">Release</BuildConfiguration>
-
-    <Major Condition=" '$(Major)' == '' ">5</Major>
-    <Minor Condition=" '$(Minor)' == '' ">0</Minor>
-    <Revision Condition=" '$(Revision)' == '' ">0</Revision>
-
-    <AssemblyVersion>$(Major).$(Minor).0.0</AssemblyVersion>
-    <AssemblyFileVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</AssemblyFileVersion>
-    <AssemblyInformationalVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</AssemblyInformationalVersion>
-    <PackageVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <SolutionFiles Include="*.sln"/>
   </ItemGroup>
 
-
   <Target Name="Clean">
     <DeleteTree Directories="**\obj\**;**\bin\**" />
     <DeleteTree Directories="$(BuildFolder)" ContinueOnError="true" />
   </Target>
 
-  <Target Name="Version">
-    <Time>
-      <Output TaskParameter="Year" PropertyName="Year" />
-    </Time>
-
-    <Message Text="Version: $(AssemblyInformationalVersion)"/>
-
-    <AssemblyInfo CodeLanguage="CS"
-                  OutputFile="$(SourceFolder)\GlobalAssemblyInfo.cs"
-                  GenerateClass="true"
-                  AssemblyProduct="FluentRest"
-                  AssemblyDescription="Fluent wrapper over HttpClient"
-                  AssemblyCompany="LoreSoft"
-                  AssemblyCopyright="Copyright © $(Year) LoreSoft"
-                  AssemblyConfiguration="$(BuildConfiguration)"
-                  AssemblyVersion="$(AssemblyVersion)"
-                  AssemblyFileVersion="$(AssemblyFileVersion)"
-                  AssemblyInformationalVersion="$(AssemblyInformationalVersion)"
-                  AssemblyTrademark=""/>
-
-    <exec Command="dotnet restore &quot;%(SolutionFiles.Identity)&quot;"
-          WorkingDirectory="$(MSBuildProjectDirectory)"/>
-
-  </Target>
-
-  <Target Name="Compile" DependsOnTargets="Clean;Version">
-    <MSBuild Projects="%(SolutionFiles.Identity)"
-             Properties="Configuration=$(BuildConfiguration)"/>
+  <Target Name="Compile" DependsOnTargets="Clean">
+    <exec Command="dotnet build &quot;%(SolutionFiles.Identity)&quot; --configuration $(BuildConfiguration)" />
   </Target>
 
   <Target Name="Test" DependsOnTargets="Compile">
@@ -75,19 +35,30 @@
       <TestAssemblies Include="$(TestFolder)\**\*.Tests.csproj"/>
     </ItemGroup>
 
-    <exec Command="dotnet test &quot;%(TestAssemblies.Identity)&quot; --configuration $(BuildConfiguration)"
+    <exec Command="dotnet test &quot;%(TestAssemblies.Identity)&quot; --configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover"
           WorkingDirectory="$(TestFolder)\%(TestAssemblies.RecursiveDir)"/>
   </Target>
 
+  <Target Name="Coverage" DependsOnTargets="Test">
+    <ItemGroup>
+      <CoverageFiles Include="$(TestFolder)\**\coverage.xml"/>
+    </ItemGroup>
 
-  <Target Name="Package" DependsOnTargets="Test">
+    <Message Text="Coverage File: %(CoverageFiles.Identity)"/>
+
+    <exec Command="$(CoverallsPath)\csmacnz.coveralls.exe --opencover --input &quot;%(CoverageFiles.Identity)&quot; --jobId $(APPVEYOR_JOB_ID)"
+          WorkingDirectory="$(TestFolder)\%(CoverageFiles.RecursiveDir)"
+          Condition=" '$(APPVEYOR)' == 'True' "/>
+  </Target>
+
+  <Target Name="Package" DependsOnTargets="Coverage">
     <MakeDir Directories="$(BuildFolder)" Condition="!EXISTS($(BuildFolder))" />
 
     <ItemGroup>
       <ProjectFiles Include="$(SourceFolder)\**\*.csproj"/>
     </ItemGroup>
 
-    <exec Command="dotnet pack &quot;%(ProjectFiles.Identity)&quot; --output &quot;$(BuildFolder)&quot; --include-symbols --include-source --configuration $(BuildConfiguration) -p:Version=$(PackageVersion)"
+    <exec Command="dotnet pack &quot;%(ProjectFiles.Identity)&quot; --output &quot;$(BuildFolder)&quot; --include-symbols --include-source --configuration $(BuildConfiguration)"
           WorkingDirectory="$(SourceFolder)\%(ProjectFiles.RecursiveDir)"/>
 
   </Target>

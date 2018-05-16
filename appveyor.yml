@@ -1,18 +1,32 @@
 version: 5.0.0.{build}
 os: Visual Studio 2017
 environment:
-  Major: 5
-  Minor: 0
-  Revision: 0
+  ASPNETCORE_ENVIRONMENT: appveyor
+
+init:
+  - git config --global core.autocrlf input
+
+dotnet_csproj:
+  patch: true
+  file: 'build\version.props'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+
 configuration: Release
 before_build:
 - .\bootstrap.cmd
 build:
   project: master.proj
-  verbosity: minimal
+  verbosity: normal
+
 test: off
 artifacts:
-- path: Build\*.nupkg
+- path: artifacts\*.nupkg
+  name: Packages
+
 deploy:
 - provider: Environment
   name: MyGet

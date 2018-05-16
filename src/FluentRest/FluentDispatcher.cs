@@ -52,7 +52,7 @@ namespace FluentRest
             if (requestMessage.Headers.UserAgent.Count == 0)
             {
                 // user-agent header required
-                var headerValue = new ProductInfoHeaderValue(ThisAssembly.AssemblyProduct, ThisAssembly.AssemblyVersion);
+                var headerValue = new ProductInfoHeaderValue("FluentRest", "5.0.0.0");
                 requestMessage.Headers.UserAgent.Add(headerValue);
             }
 
