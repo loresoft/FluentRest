@@ -11,7 +11,7 @@ using Xunit;
 
 namespace FluentRest.Tests
 {
-    public class EchoTests
+    public class HttpClientEchoTests
     {
         [Fact]
         public async void EchoGet()
@@ -234,7 +234,7 @@ namespace FluentRest.Tests
             var json = JsonConvert.SerializeObject(user);
             var client = CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Post, client.HttpClient.BaseAddress);
+            var request = new HttpRequestMessage(HttpMethod.Post, client.BaseAddress);
             var builder = new SendBuilder(request).AppendPath("post").Post();
 
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -376,14 +376,12 @@ namespace FluentRest.Tests
             Assert.Equal("http://httpbin.org/post", result.Url);
         }
 
-        private static IFluentClient CreateClient()
+        private static HttpClient CreateClient()
         {
             var httpClient = new HttpClient();
             httpClient.BaseAddress = new Uri("http://httpbin.org/", UriKind.Absolute);
 
-            var fluentClient = new FluentClient(httpClient);
-
-            return fluentClient;
+            return httpClient;
         }
     }
 }
