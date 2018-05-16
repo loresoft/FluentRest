@@ -2,6 +2,8 @@ version: 5.0.0.{build}
 os: Visual Studio 2017
 environment:
   ASPNETCORE_ENVIRONMENT: appveyor
+  COVERALLS_REPO_TOKEN:
+    secure: vesxKEf1tMzmDCFKpU6UewVlXyXE8QdwJpKP01J/wurGmD6W/RiZd//M4V71g72Y
 
 init:
   - git config --global core.autocrlf input

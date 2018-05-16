@@ -7,7 +7,7 @@ namespace FluentRest.Tests
 {
     public class GoogleMapsTests
     {
-        [Fact]
+        
         public async void GeocodeTest()
         {
             var client = CreateClient();
