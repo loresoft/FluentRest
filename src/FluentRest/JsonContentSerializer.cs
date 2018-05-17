@@ -75,12 +75,11 @@ namespace FluentRest
         {
             using (var s = await content.ReadAsStreamAsync().ConfigureAwait(false))
             using (var sr = new StreamReader(s))
-            using (var reader = new JsonTextReader(sr))
             {
-                return _serializer.Deserialize<TData>(reader);
+                return (TData)_serializer.Deserialize(sr, typeof(TData));
             }
         }
-
+        
         #region Singleton
 
         private static readonly Lazy<JsonContentSerializer> _current = new Lazy<JsonContentSerializer>(() => new JsonContentSerializer());
