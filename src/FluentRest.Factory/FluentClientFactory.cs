@@ -4,13 +4,13 @@ using Microsoft.Extensions.Options;
 
 namespace FluentRest
 {
-    public class FluentClientFactory : IFluentClientFactory
+    internal class FluentClientFactory : IFluentClientFactory
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IOptionsMonitor<FluentClientOptions> _optionsMonitor;
+        private readonly IOptionsMonitor<FluentClientFactoryOptions> _optionsMonitor;
 
-        public FluentClientFactory(IHttpClientFactory clientFactory, IServiceProvider serviceProvider, IOptionsMonitor<FluentClientOptions> optionsMonitor) {
+        public FluentClientFactory(IHttpClientFactory clientFactory, IServiceProvider serviceProvider, IOptionsMonitor<FluentClientFactoryOptions> optionsMonitor) {
             _clientFactory = clientFactory;
             _serviceProvider = serviceProvider;
             _optionsMonitor = optionsMonitor;

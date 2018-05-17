@@ -11,13 +11,13 @@ namespace FluentRest
     {
         private readonly static Func<ObjectFactory> _createActivator = () => ActivatorUtilities.CreateFactory(typeof(TClient), new Type[] { typeof(HttpClient), typeof(IContentSerializer) });
         private readonly IServiceProvider _services;
-        private readonly IOptionsMonitor<FluentClientOptions> _optionsMonitor;
+        private readonly IOptionsMonitor<FluentClientFactoryOptions> _optionsMonitor;
 
         private ObjectFactory _activator;
         private bool _initialized;
         private object _lock;
 
-        public FluentTypedHttpClientFactory(IServiceProvider services, IOptionsMonitor<FluentClientOptions> optionsMonitor)
+        public FluentTypedHttpClientFactory(IServiceProvider services, IOptionsMonitor<FluentClientFactoryOptions> optionsMonitor)
         {
             if (services == null)
             {

@@ -19,7 +19,7 @@ namespace FluentRest.Tests
                 {
                     c.BaseAddress = new Uri("https://sample.com/");
                 })
-                .UseSerializer<MyContentSerializer>();
+                .SetSerializer<MyContentSerializer>();
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -45,7 +45,7 @@ namespace FluentRest.Tests
                 {
                     c.BaseAddress = new Uri("https://sample.com/");
                 })
-                .UseSerializer<MyContentSerializer>();
+                .SetSerializer<MyContentSerializer>();
 
             var serviceProvider = services.BuildServiceProvider();
 
