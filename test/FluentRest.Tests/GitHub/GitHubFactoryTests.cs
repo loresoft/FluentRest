@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using FluentRest.Tests.GitHub.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace FluentRest.Tests.GitHub
@@ -15,16 +17,15 @@ namespace FluentRest.Tests.GitHub
             var services = new ServiceCollection();
 
             services.AddSingleton<IContentSerializer, JsonContentSerializer>();
-
-            services.AddHttpClient("github", c =>
+            
+            services.AddHttpClient<GithubClient>(c =>
                 {
                     c.BaseAddress = new Uri("https://api.github.com/");
 
                     c.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json"); // Github API versioning
                     c.DefaultRequestHeaders.Add("User-Agent", "GitHubFactoryTests"); // Github requires a user-agent
                 })
-                .AddHttpMessageHandler(() => new RetryHandler()) // Retry requests to github using our retry handler
-                .AddTypedClient<GithubClient>();
+                .AddHttpMessageHandler(() => new RetryHandler()); // Retry requests to github using our retry handler
 
             ServiceProvider = services.BuildServiceProvider();
         }
@@ -71,7 +72,9 @@ namespace FluentRest.Tests.GitHub
 
             Assert.NotNull(result);
         }
-
-
     }
+
+    public class MyContentSerializer : JsonContentSerializer { }
+    public class ServicesContentSerializer : JsonContentSerializer { }
+    public class StaticContentSerializer : JsonContentSerializer { }
 }

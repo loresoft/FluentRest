@@ -17,11 +17,11 @@ namespace FluentRest
         HttpClient HttpClient { get; }
 
         /// <summary>
-        /// Gets the serializer to convert to and from <see cref="HttpContent"/>.
+        /// Gets or sets the serializer used to convert to and from <see cref="HttpContent"/>.
         /// </summary>
         /// <value>
-        /// The serializer to convert to and from <see cref="HttpContent"/>.
+        /// The serializer used to convert to and from <see cref="HttpContent"/>.
         /// </value>
-        IContentSerializer ContentSerializer { get; }
+        IContentSerializer ContentSerializer { get; set; }
     }
 }
