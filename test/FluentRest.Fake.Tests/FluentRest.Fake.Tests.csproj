@@ -19,16 +19,11 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0-rc1-final" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.0-rc1-final" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="System.Net.Http" Version="4.3.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\8A26261B3D3E0A1D9169DBA1DA808CC73C0254FD.data">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Data\8A26261B3D3E0A1D9169DBA1DA808CC73C0254FD.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Update="**\*.json" CopyToOutputDirectory="Always" />
+    <None Update="**\*.data" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>
