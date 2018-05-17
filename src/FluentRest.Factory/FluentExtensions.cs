@@ -15,7 +15,8 @@ namespace FluentRest
             return builder;
         }
 
-        public static IServiceCollection AddFluentClientFactory(this IServiceCollection services) {
+        public static IServiceCollection AddFluentClient(this IServiceCollection services) {
+            services.AddHttpClient();
             services.AddSingleton<IFluentClientFactory, FluentClientFactory>();
             services.AddSingleton(typeof(ITypedHttpClientFactory<>), typeof(FluentTypedHttpClientFactory<>));
 
