@@ -33,13 +33,6 @@ namespace FluentRest
             ContentSerializer = contentSerializer ?? FluentRest.ContentSerializer.Current;
         }
 
-        /// <summary>
-        /// Gets the <see cref="HttpClient" /> used to send request.
-        /// </summary>
-        /// <value>
-        /// The <see cref="HttpClient" /> used to send request.
-        /// </value>
-        public HttpClient HttpClient { get; }
 
         /// <summary>
         /// Gets or sets the serializer used to convert to and from <see cref="HttpContent"/>.
@@ -48,5 +41,13 @@ namespace FluentRest
         /// The serializer used to convert to and from <see cref="HttpContent"/>.
         /// </value>
         public IContentSerializer ContentSerializer { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="HttpClient" /> used to send request.
+        /// </summary>
+        /// <value>
+        /// The <see cref="HttpClient" /> used to send request.
+        /// </value>
+        public HttpClient HttpClient { get; }
     }
 }

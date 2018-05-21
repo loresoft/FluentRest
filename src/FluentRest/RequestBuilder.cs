@@ -35,7 +35,7 @@ namespace FluentRest
         /// <returns>A fluent request builder.</returns>
         public TBuilder CancellationToken(CancellationToken cancellationToken)
         {
-            RequestMessage.Properties[FluentProperties.CancellationToken] = cancellationToken;
+            RequestMessage.SetCancellationToken(cancellationToken);
             return this as TBuilder;
         }
 
@@ -46,7 +46,7 @@ namespace FluentRest
         /// <returns>A fluent request builder.</returns>
         public TBuilder CompletionOption(HttpCompletionOption completionOption)
         {
-            RequestMessage.Properties[FluentProperties.HttpCompletionOption] = completionOption;
+            RequestMessage.SetCompletionOption(completionOption);
             return this as TBuilder;
         }
 
