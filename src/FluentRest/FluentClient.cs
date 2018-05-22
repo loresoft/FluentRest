@@ -315,7 +315,7 @@ namespace FluentRest
         /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null" />.</exception>
         public async Task<TResponse> PatchAsync<TResponse>(Action<FormBuilder> builder)
         {
-            var response = await PutAsync(builder).ConfigureAwait(false);
+            var response = await PatchAsync(builder).ConfigureAwait(false);
             var data = await response.DeserializeAsync<TResponse>().ConfigureAwait(false);
 
             return data;
