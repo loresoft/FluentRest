@@ -147,6 +147,44 @@ namespace FluentRest.Tests
         }
 
         [Fact]
+        public async void EchoPatch()
+        {
+            var client = CreateClient();
+
+            var response = await client.PatchAsync<EchoResult>(b => b
+                .AppendPath("patch")
+                .FormValue("Test", "Value")
+                .QueryString("page", 10)
+            );
+
+            Assert.NotNull(response);
+
+            Assert.Equal("http://httpbin.org/patch?page=10", response.Url);
+            Assert.Equal("Value", response.Form["Test"]);
+        }
+
+        [Fact]
+        public async void EchoPatchResponse()
+        {
+            var client = CreateClient();
+
+            var response = await client.PatchAsync(b => b
+                .AppendPath("patch")
+                .FormValue("Test", "Value")
+                .QueryString("page", 10)
+            );
+
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var result = await response.DeserializeAsync<EchoResult>();
+
+            Assert.NotNull(result);
+            Assert.Equal("http://httpbin.org/patch?page=10", result.Url);
+            Assert.Equal("Value", result.Form["Test"]);
+        }
+
+        [Fact]
         public async void EchoPut()
         {
             var client = CreateClient();
