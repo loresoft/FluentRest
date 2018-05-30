@@ -71,15 +71,14 @@ Use with HttpClientFactory and Retry handler
 var services = new ServiceCollection();
 
 services.AddSingleton<IContentSerializer, JsonContentSerializer>();
-services.AddHttpClient("github", c =>
+services.AddHttpClient<GithubClient>(c =>
     {
         c.BaseAddress = new Uri("https://api.github.com/");
 
         c.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
         c.DefaultRequestHeaders.Add("User-Agent", "GitHubClient");
     })
-    .AddHttpMessageHandler(() => new RetryHandler())
-    .AddTypedClient<GithubClient>();
+    .AddHttpMessageHandler(() => new RetryHandler());
 
 var serviceProvider = services.BuildServiceProvider();
 
@@ -93,7 +92,12 @@ var result = await client.GetAsync<Repository>(b => b
 
 ## Fake Response
 
-FluentRest has the ability to fake an HTTP responses by using a custom HttpClientHandler. Faking the HTTP response allows creating unit tests without having to make the actual HTTP call.
+`FluentRest.Fake` package adds the ability to fake an HTTP responses by using a custom HttpClientHandler. Faking the HTTP response allows creating unit tests without having to make the actual HTTP call.
+
+To install FluentRest.Fake, run the following command in the Package Manager Console
+
+    PM> Install-Package FluentRest.Fake
+
 
 ### Fake Response Stores
 
@@ -249,3 +253,4 @@ var result = await client.GetAsync<Repository>(b => b
 * [Breaking] Moved all Fake Response handlers to `FluentRest.Fake` Nuget Package
 * [Breaking] Removed interceptor support in favor of HttpClientFactory middleware handlers
 * Add support for HttpClientFactory typed client and middleware handlers
+* Add `FluentRequest.Factory` to support named FluentClient instances
