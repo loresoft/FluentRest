@@ -1,20 +1,13 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FluentRest
 {
     /// <summary>
     /// The shared default <see cref="IContentSerializer"/>.
     /// </summary>
-    public class ContentSerializer
+    public static class ContentSerializer
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContentSerializer"/> class.
-        /// </summary>
-        protected ContentSerializer()
-        {
-
-        }
-
         /// <summary>
         /// Gets the current singleton instance of <see cref="IContentSerializer"/>.
         /// </summary>
