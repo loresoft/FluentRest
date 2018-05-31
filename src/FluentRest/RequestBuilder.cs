@@ -17,15 +17,15 @@ namespace FluentRest
         /// <value>
         /// The fluent HTTP request being built.
         /// </value>
-        public FluentRequest Request { get; }
+        public HttpRequestMessage RequestMessage { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestBuilder{TBuilder}"/> class.
         /// </summary>
-        /// <param name="request">The fluent HTTP request being built.</param>
-        protected RequestBuilder(FluentRequest request)
+        /// <param name="requestMessage">The fluent HTTP request being built.</param>
+        protected RequestBuilder(HttpRequestMessage requestMessage)
         {
-            Request = request;
+            RequestMessage = requestMessage;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace FluentRest
         /// <returns>A fluent request builder.</returns>
         public TBuilder CancellationToken(CancellationToken cancellationToken)
         {
-            Request.CancellationToken = cancellationToken;
+            RequestMessage.SetCancellationToken(cancellationToken);
             return this as TBuilder;
         }
 
@@ -46,7 +46,7 @@ namespace FluentRest
         /// <returns>A fluent request builder.</returns>
         public TBuilder CompletionOption(HttpCompletionOption completionOption)
         {
-            Request.CompletionOption = completionOption;
+            RequestMessage.SetCompletionOption(completionOption);
             return this as TBuilder;
         }
 
@@ -57,27 +57,13 @@ namespace FluentRest
         /// <param name="key">The state key .</param>
         /// <param name="value">The status value.</param>
         /// <returns>A fluent request builder.</returns>
+        /// <exception cref="ArgumentException">Argument is null or empty</exception>
         public TBuilder State(string key, object value)
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("Argument is null or empty", nameof(key));
 
-            Request.State[key] = value;
-            return this as TBuilder;
-        }
-
-        /// <summary>
-        /// Adds a request builder.
-        /// </summary>
-        /// <param name="builder">The request builder.</param>
-        /// <returns>A fluent request builder.</returns>
-        public TBuilder Builder(Func<HttpRequestMessage, HttpRequestMessage> builder)
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            Request.RequestBuilders.Add(builder);
-            
+            RequestMessage.Properties[key] = value;
             return this as TBuilder;
         }
     }

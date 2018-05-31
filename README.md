@@ -29,8 +29,9 @@ In your Package Manager settings add the following package source for developmen
 * Fluent request building
 * Fluent form data building
 * Automatic deserialization of response content
-* Plugin different serialization 
-* Fake HTTP responses
+* Plugin different serialization
+* Fake HTTP responses for testing
+* Support HttpClientFactory typed client and middleware handlers
 
 
 ## Fluent Request
@@ -38,8 +39,8 @@ In your Package Manager settings add the following package source for developmen
 Create a form post request
 
 ```csharp
-var client = new FluentClient();
-client.BaseUri = new Uri("http://echo.jpillora.com/", UriKind.Absolute);
+var client = new HttpClient();
+client.BaseAddress = new Uri("http://httpbin.org/", UriKind.Absolute);
 
 var result = await client.PostAsync<EchoResult>(b => b
     .AppendPath("Project")
@@ -53,8 +54,8 @@ var result = await client.PostAsync<EchoResult>(b => b
 Custom authorization header
 
 ```csharp
-var client = new FluentClient();
-client.BaseUri = new Uri("https://api.github.com/", UriKind.Absolute);
+var client = new HttpClient();
+client.BaseAddress = new Uri("https://api.github.com/", UriKind.Absolute);
 
 var result = await client.GetAsync<Repository>(b => b
     .AppendPath("repos")
@@ -64,9 +65,39 @@ var result = await client.GetAsync<Repository>(b => b
 );
 ```
 
+Use with HttpClientFactory and Retry handler
+
+```csharp
+var services = new ServiceCollection();
+
+services.AddSingleton<IContentSerializer, JsonContentSerializer>();
+services.AddHttpClient<GithubClient>(c =>
+    {
+        c.BaseAddress = new Uri("https://api.github.com/");
+
+        c.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
+        c.DefaultRequestHeaders.Add("User-Agent", "GitHubClient");
+    })
+    .AddHttpMessageHandler(() => new RetryHandler());
+
+var serviceProvider = services.BuildServiceProvider();
+
+var client = serviceProvider.GetService<GithubClient>();
+var result = await client.GetAsync<Repository>(b => b
+    .AppendPath("repos")
+    .AppendPath("loresoft")
+    .AppendPath("FluentRest")
+);
+```
+
 ## Fake Response
 
-FluentRest has the ability to fake an HTTP responses by using a custom HttpClientHandler. Faking the HTTP response allows creating unit tests without having to make the actual HTTP call.  
+`FluentRest.Fake` package adds the ability to fake an HTTP responses by using a custom HttpClientHandler. Faking the HTTP response allows creating unit tests without having to make the actual HTTP call.
+
+To install FluentRest.Fake, run the following command in the Package Manager Console
+
+    PM> Install-Package FluentRest.Fake
+
 
 ### Fake Response Stores
 
@@ -75,7 +106,6 @@ Fake HTTP responses can be stored in the following message stores.  To create yo
 #### MemoryMessageStore
 
 The memory message store allows composing a JSON response in the unit test.  Register the responses on the start of the unit test.
-
 
 Register a fake response by URL.
 
@@ -99,8 +129,10 @@ var serializer = new JsonContentSerializer();
 // use memory store by default
 var fakeHttp = new FakeMessageHandler();
 
-var client = new FluentClient(serializer, fakeHttp);
-client.BaseUri = new Uri("https://api.github.com/", UriKind.Absolute);
+var httpClient = new HttpClient(fakeHttp, true);
+httpClient.BaseAddress = new Uri("https://api.github.com/", UriKind.Absolute);
+
+var client = new FluentClient(httpClient, serializer);
 
 // make HTTP call
 var result = await client.GetAsync<Repository>(b => b
@@ -109,6 +141,49 @@ var result = await client.GetAsync<Repository>(b => b
     .AppendPath("FluentRest")
     .Header(h => h.Authorization("token", "7ca..."))
 );
+```
+
+Use fake handlers with HttpClientFactory
+
+```csharp
+var services = new ServiceCollection();
+
+services.AddSingleton<IContentSerializer, JsonContentSerializer>();
+services.AddSingleton<IFakeMessageStore>(s => MemoryMessageStore.Current);
+
+services
+    .AddHttpClient<EchoClient>(c => c.BaseAddress = new Uri("http://httpbin.org/"))
+    .AddHttpMessageHandler(s => new FakeMessageHandler(s.GetService<IFakeMessageStore>(), FakeResponseMode.Fake));
+
+var serviceProvider = services.BuildServiceProvider();
+
+// fake response object
+var response = new EchoResult();
+response.Url = "http://httpbin.org/post?page=10";
+response.Headers["Accept"] = "application/json";
+response.QueryString["page"] = "10";
+response.Form["Test"] = "Fake";
+response.Form["key"] = "value";
+
+// setup fake response
+MemoryMessageStore.Current.Register(b => b
+    .Url("http://httpbin.org/post?page=10")
+    .StatusCode(HttpStatusCode.OK)
+    .ReasonPhrase("OK")
+    .Content(c => c
+        .Header("Content-Type", "application/json; charset=utf-8")
+        .Data(response)
+    )
+);
+
+var client = serviceProvider.GetService<EchoClient>();
+
+var result = await client.PostAsync<EchoResult>(b => b
+    .AppendPath("post")
+    .FormValue("Test", "Fake")
+    .FormValue("key", "value")
+    .QueryString("page", 10)
+).ConfigureAwait(false);
 ```
 
 #### FileMessageStore
@@ -127,8 +202,10 @@ fakeStore.StorePath = @".\GitHub\Responses";
 
 var fakeHttp = new FakeMessageHandler(fakeStore, FakeResponseMode.Capture);
 
-var client = new FluentClient(serializer, fakeHttp);
-client.BaseUri = new Uri("https://api.github.com/", UriKind.Absolute);
+var httpClient = new HttpClient(fakeHttp, true);
+httpClient.BaseAddress = new Uri("https://api.github.com/", UriKind.Absolute);
+
+var client = new FluentClient(httpClient, serializer);
 
 var result = await client.GetAsync<Repository>(b => b
     .AppendPath("repos")
@@ -149,8 +226,10 @@ fakeStore.StorePath = @".\GitHub\Responses";
 
 var fakeHttp = new FakeMessageHandler(fakeStore, FakeResponseMode.Fake);
 
-var client = new FluentClient(serializer, fakeHttp);
-client.BaseUri = new Uri("https://api.github.com/", UriKind.Absolute);
+var httpClient = new HttpClient(fakeHttp, true);
+httpClient.BaseAddress = new Uri("https://api.github.com/", UriKind.Absolute);
+
+var client = new FluentClient(httpClient, serializer);
 
 var result = await client.GetAsync<Repository>(b => b
     .AppendPath("repos")
@@ -160,3 +239,18 @@ var result = await client.GetAsync<Repository>(b => b
 );
 ```
 
+## Change Log
+
+### Version 5.0
+
+* [Breaking] Major refactor to support HttpClientFactory
+* [Breaking] `FluentClient` changed to a light wrapper for `HttpClient`
+* [Breaking] Removed `FluentClient.BaseUri` defaults, use `HttpClient.BaseAddress` instead
+* [Breaking] Removed `FluentClient` default headers, use `HttpClient` instead
+* [Breaking] All fluent builder take `HttpRequestMessage` instead of `FluentRequest`
+* [Breaking] Removed `FluentRequest` and `FluentResponse` classes
+* [Breaking] Removed `FluentRequest.Create` fluent builder
+* [Breaking] Moved all Fake Response handlers to `FluentRest.Fake` Nuget Package
+* [Breaking] Removed interceptor support in favor of HttpClientFactory middleware handlers
+* Add support for HttpClientFactory typed client and middleware handlers
+* Add `FluentRequest.Factory` to support named FluentClient instances

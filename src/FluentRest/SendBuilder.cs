@@ -11,8 +11,8 @@ namespace FluentRest
         /// <summary>
         /// Initializes a new instance of the <see cref="SendBuilder"/> class.
         /// </summary>
-        /// <param name="request">The fluent HTTP request being built.</param>
-        public SendBuilder(FluentRequest request) : base(request)
+        /// <param name="requestMessage">The fluent HTTP request being built.</param>
+        public SendBuilder(HttpRequestMessage requestMessage) : base(requestMessage)
         {
         }
 
@@ -27,7 +27,7 @@ namespace FluentRest
             if (method == null)
                 throw new ArgumentNullException(nameof(method));
 
-            Request.Method = method;
+            RequestMessage.Method = method;
 
             return this;
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 
 namespace FluentRest
@@ -13,8 +12,8 @@ namespace FluentRest
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryBuilder" /> class.
         /// </summary>
-        /// <param name="request">The fluent HTTP request being built.</param>
-        public QueryBuilder(FluentRequest request) : base(request)
+        /// <param name="requestMessage">The fluent HTTP request being built.</param>
+        public QueryBuilder(HttpRequestMessage requestMessage) : base(requestMessage)
         {
         }
     }
@@ -29,21 +28,9 @@ namespace FluentRest
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryBuilder{TBuilder}"/> class.
         /// </summary>
-        /// <param name="request">The fluent HTTP request being built.</param>
-        protected QueryBuilder(FluentRequest request) : base(request)
+        /// <param name="requestMessage">The fluent HTTP request being built.</param>
+        protected QueryBuilder(HttpRequestMessage requestMessage) : base(requestMessage)
         {
-        }
-
-        /// <summary>
-        /// Sets the expected HTTP status code of the response. If set and the status code does not match, an <exception cref="HttpRequestException">exception</exception> will be thrown.
-        /// </summary>
-        /// <param name="status">The expected status.</param>
-        /// <returns>A fluent request builder.</returns>
-        public TBuilder ExpectedStatus(HttpStatusCode status)
-        {
-            Request.ExpectedStatusCode = status;
-
-            return this as TBuilder;
         }
 
         /// <summary>
@@ -57,7 +44,7 @@ namespace FluentRest
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var headerBuilder = new HeaderBuilder(Request);
+            var headerBuilder = new HeaderBuilder(RequestMessage);
             builder(headerBuilder);
 
             return this as TBuilder;
@@ -76,9 +63,9 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(name));
 
             if (value == null)
-                Request.Headers.Remove(name);
+                RequestMessage.Headers.Remove(name);
             else
-                Request.Headers[name] = new List<string>(new[] { value });
+                RequestMessage.Headers.Add(name, value);
 
             return this as TBuilder;
         }
@@ -111,7 +98,12 @@ namespace FluentRest
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
-            Request.BaseUri = path;
+            var urlBuilder = new UrlBuilder(path);
+            RequestMessage.SetUrlBuilder(urlBuilder);
+
+            RequestMessage.Synchronize();
+
+
             return this as TBuilder;
         }
 
@@ -126,13 +118,13 @@ namespace FluentRest
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
-            Request.BaseUri = new Uri(path, UriKind.Absolute);
-            return this as TBuilder;
+            var uri = new Uri(path, UriKind.Absolute);
+            return BaseUri(uri);
         }
 
 
         /// <summary>
-        /// Sets the <see cref="P:FluentRest.FluentRequest.BaseUri"/> and the <see cref="P:FluentRest.FluentRequest.QueryString"/> from the specified Uri.
+        /// Sets the base URI from the specified <paramref name="path"/>.
         /// </summary>
         /// <param name="path">The full Uri path.</param>
         /// <returns>A fluent request builder.</returns>
@@ -142,19 +134,11 @@ namespace FluentRest
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
-            var baseBuilder = new UriBuilder(path) { Query = string.Empty };
-
-            // set BaseUri
-            BaseUri(baseBuilder.Uri);
-
-            // Set QueryString
-            ParseQueryString(path.Query);
-
-            return this as TBuilder;
+            return BaseUri(path);
         }
 
         /// <summary>
-        /// Sets the <see cref="P:FluentRest.FluentRequest.BaseUri"/> and the <see cref="P:FluentRest.FluentRequest.QueryString"/> from the specified Uri.
+        /// Sets the base URI from the specified <paramref name="path"/>.
         /// </summary>
         /// <param name="path">The full Uri path.</param>
         /// <returns>A fluent request builder.</returns>
@@ -165,7 +149,7 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(path));
 
             var u = new Uri(path, UriKind.Absolute);
-            return FullUri(u);
+            return BaseUri(u);
         }
 
 
@@ -176,8 +160,13 @@ namespace FluentRest
         /// <returns>A fluent request builder.</returns>
         public TBuilder AppendPath(Uri path)
         {
-            if (path != null)
-                Request.Paths.Add(path.ToString());
+            if (path == null)
+                return this as TBuilder;
+
+            var urlBuilder = RequestMessage.GetUrlBuilder();
+            urlBuilder.AppendPath(path);
+
+            RequestMessage.Synchronize();
 
             return this as TBuilder;
         }
@@ -186,17 +175,18 @@ namespace FluentRest
         /// Appends the specified <paramref name="path" /> to the BaseUri of the request.
         /// </summary>
         /// <param name="path">The path to append.</param>
-        /// <param name="encode">if <see langword="true"/>, URL encode the specified <paramref name="path"/>.</param>
         /// <returns>
         /// A fluent request builder.
         /// </returns>
-        public TBuilder AppendPath(string path, bool encode = false)
+        public TBuilder AppendPath(string path)
         {
             if (path == null)
                 return this as TBuilder;
 
-            var s = encode ? Uri.EscapeUriString(path) : path;
-            Request.Paths.Add(s);
+            var urlBuilder = RequestMessage.GetUrlBuilder();
+            urlBuilder.AppendPath(path);
+
+            RequestMessage.Synchronize();
 
             return this as TBuilder;
         }
@@ -205,18 +195,16 @@ namespace FluentRest
         /// Appends the specified <paramref name="paths"/> to the BaseUri of the request.
         /// </summary>
         /// <param name="paths">The paths to append.</param>
-        /// <param name="encode">if <see langword="true"/>, URL encode the specified <paramref name="paths"/>.</param>
         /// <returns>A fluent request builder.</returns>
-        public TBuilder AppendPath(IEnumerable<string> paths, bool encode)
+        public TBuilder AppendPath(IEnumerable<string> paths)
         {
             if (paths == null)
                 return this as TBuilder;
 
-            foreach (var path in paths)
-            {
-                var s = encode ? Uri.EscapeUriString(path) : path;
-                Request.Paths.Add(s);
-            }
+            var urlBuilder = RequestMessage.GetUrlBuilder();
+            urlBuilder.AppendPath(paths);
+
+            RequestMessage.Synchronize();
 
             return this as TBuilder;
         }
@@ -228,8 +216,17 @@ namespace FluentRest
         /// <returns>A fluent request builder.</returns>
         public TBuilder AppendPath(params string[] paths)
         {
-            return AppendPath(paths, false);
+            if (paths == null)
+                return this as TBuilder;
+
+            var urlBuilder = RequestMessage.GetUrlBuilder();
+            urlBuilder.AppendPath(paths);
+
+            RequestMessage.Synchronize();
+
+            return this as TBuilder;
         }
+
 
         /// <summary>
         /// Appends the specified <paramref name="name"/> and <paramref name="value"/> to the request Uri.
@@ -245,8 +242,10 @@ namespace FluentRest
 
             var v = value ?? string.Empty;
 
-            var list = Request.QueryString.GetOrAdd(name, n => new List<string>());
-            list.Add(v);
+            var urlBuilder = RequestMessage.GetUrlBuilder();
+            urlBuilder.AppendQuery(name, value);
+
+            RequestMessage.Synchronize();
 
             return this as TBuilder;
 
@@ -304,72 +303,6 @@ namespace FluentRest
                 return this as TBuilder;
 
             return QueryString(name, value);
-        }
-
-        // based on HttpUtility.ParseQueryString
-        private void ParseQueryString(string s)
-        {
-            if (string.IsNullOrEmpty(s))
-                return;
-
-            int l = s.Length;
-            int i = 0;
-
-            // remove leading ?
-            if (s[0] == '?')
-                i = 1;
-
-            while (i < l)
-            {
-                // find next & while noting first = on the way (and if there are more)
-                int si = i;
-                int ti = -1;
-
-                while (i < l)
-                {
-                    char ch = s[i];
-
-                    if (ch == '=')
-                    {
-                        if (ti < 0)
-                            ti = i;
-                    }
-                    else if (ch == '&')
-                    {
-                        break;
-                    }
-
-                    i++;
-                }
-
-                // extract the name / value pair
-                string name = null;
-                string value = null;
-
-                if (ti >= 0)
-                {
-                    name = s.Substring(si, ti - si);
-                    value = s.Substring(ti + 1, i - ti - 1);
-                }
-                else
-                {
-                    value = s.Substring(si, i - si);
-                }
-
-                // decode
-                name = string.IsNullOrEmpty(name) ? string.Empty : Uri.UnescapeDataString(name);
-                value = string.IsNullOrEmpty(value) ? string.Empty : Uri.UnescapeDataString(value);
-
-                // add name / value pair to the collection
-                QueryString(name, value);
-
-                // trailing '&'
-
-                //if (i == l-1 && s[i] == '&')
-                //    base.Add(null, String.Empty);
-
-                i++;
-            }
         }
     }
 }
