@@ -28,6 +28,9 @@ build_script:
 test_script:
   - dotnet test FluentRest.sln --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
+after_test:
+  - csmacnz.coveralls --opencover --input "**\coverage.opencover.xml"
+
 artifacts:
 - path: artifacts\*.nupkg
   name: Packages
