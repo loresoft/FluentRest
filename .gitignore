@@ -242,4 +242,4 @@ _Pvt_Extensions
 /xunit.xml
 *.GhostDoc.xml
 *.csv
-coverage.xml
+coverage.opencover.xml

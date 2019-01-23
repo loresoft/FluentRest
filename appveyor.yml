@@ -1,4 +1,4 @@
-version: 5.0.0.{build}
+version: 6.0.0.{build}
 os: Visual Studio 2017
 environment:
   ASPNETCORE_ENVIRONMENT: appveyor
@@ -18,13 +18,16 @@ dotnet_csproj:
   informational_version: '{version}'
 
 configuration: Release
-before_build:
-- .\bootstrap.cmd
-build:
-  project: master.proj
-  verbosity: normal
 
-test: off
+before_build:
+  - dotnet tool install --global coveralls.net
+
+build_script:
+  - dotnet pack FluentRest.sln --configuration Release --include-symbols --include-source 
+
+test_script:
+  - dotnet test FluentRest.sln --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
 artifacts:
 - path: artifacts\*.nupkg
   name: Packages

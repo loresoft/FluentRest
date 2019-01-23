@@ -241,6 +241,11 @@ var result = await client.GetAsync<Repository>(b => b
 
 ## Change Log
 
+### Version 6.0
+
+* Remove netstandard1.3 support
+
+
 ### Version 5.0
 
 * [Breaking] Major refactor to support HttpClientFactory

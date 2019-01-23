@@ -11,12 +11,12 @@
   <PropertyGroup Label="Package">
     <Product>FluentRest</Product>
     <Description>Fluent wrapper over HttpClient to make REST calls easier</Description>
-    <Copyright>Copyright (c) 2018 LoreSoft</Copyright>
+    <Copyright>Copyright (c) 2019 LoreSoft</Copyright>
     <Authors>LoreSoft</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageOutputPath>$(SolutionDir)artifacts</PackageOutputPath>
-    <PackageTags>HTTP;HttpClient; REST;Fluent</PackageTags>
+    <PackageTags>HTTP;HttpClient;REST;Fluent</PackageTags>
     <PackageProjectUrl>https://github.com/loresoft/FluentRest</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/loresoft/FluentRest/blob/master/LICENSE.txt</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
