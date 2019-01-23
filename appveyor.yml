@@ -29,9 +29,7 @@ test_script:
   - dotnet test FluentRest.sln --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
 after_test:
-  - csmacnz.coveralls --opencover --input test\FluentRest.Tests\coverage.opencover.xml
-  - csmacnz.coveralls --opencover --input test\FluentRest.Fake.Tests\coverage.opencover.xml
-  - csmacnz.coveralls --opencover --input test\FluentRest.Factory.Tests\coverage.opencover.xml
+  - csmacnz.coveralls --useRelativePaths --multiple --input "opencover=test\FluentRest.Tests\coverage.opencover.xml;pencover=test\FluentRest.Fake.Tests\coverage.opencover.xml;opencover=test\FluentRest.Factory.Tests\coverage.opencover.xml;"
 
 artifacts:
 - path: artifacts\*.nupkg
