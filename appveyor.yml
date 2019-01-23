@@ -3,7 +3,7 @@ os: Visual Studio 2017
 environment:
   ASPNETCORE_ENVIRONMENT: appveyor
   COVERALLS_REPO_TOKEN:
-    secure: vesxKEf1tMzmDCFKpU6UewVlXyXE8QdwJpKP01J/wurGmD6W/RiZd//M4V71g72Y
+    secure: oEPYnaUYQGp+9WgkI+7wle8XvudDaXznHa/oUEFAoRmNZ2MhBI6ku9IG3aLY4tHa
 
 init:
   - git config --global core.autocrlf input
@@ -26,7 +26,7 @@ build_script:
   - dotnet pack FluentRest.sln --configuration Release --include-symbols --include-source 
 
 test_script:
-  - dotnet test FluentRest.sln --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+  - dotnet test FluentRest.sln --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
 
 after_test:
   - csmacnz.coveralls --useRelativePaths --multiple --input "opencover=test\FluentRest.Tests\coverage.opencover.xml;opencover=test\FluentRest.Fake.Tests\coverage.opencover.xml;opencover=test\FluentRest.Factory.Tests\coverage.opencover.xml"
