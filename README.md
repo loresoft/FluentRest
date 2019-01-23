@@ -243,8 +243,9 @@ var result = await client.GetAsync<Repository>(b => b
 
 ### Version 6.0
 
-* Remove netstandard1.3 support
-
+* [Breaking] Remove netstandard1.3 support
+* add overload for generic AppendPath
+* update dependence packages
 
 ### Version 5.0
 

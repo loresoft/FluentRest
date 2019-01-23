@@ -90,6 +90,19 @@ namespace FluentRest.Tests
         }
 
         [Theory]
+        [InlineData("http://foo.com/", 123, "http://foo.com/123")]
+        [InlineData("http://foo.com/bar", 5, "http://foo.com/bar/5")]
+        public void AppendPathTypeInt(string url, int path, string expected)
+        {
+            var builder = new UrlBuilder(url);
+            builder.Should().NotBeNull();
+
+            builder.AppendPath(path);
+            builder.Path.Should().NotBeEmpty();
+            builder.ToString().Should().Be(expected);
+        }
+        
+        [Theory]
         [InlineData("http://foo.com/", "/bar/baz", "http://foo.com/bar/baz")]
         [InlineData("http://foo.com/bar", "baz", "http://foo.com/baz")]
         [InlineData("http://foo.com/bar", "/baz", "http://foo.com/baz")]

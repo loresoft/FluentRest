@@ -192,6 +192,25 @@ namespace FluentRest
         }
 
         /// <summary>
+        /// Appends the specified <paramref name="path" /> to the BaseUri of the request.
+        /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="path">The path to append.</param>
+        /// <returns>A fluent request builder.</returns>
+        public TBuilder AppendPath<TValue>(TValue path)
+        {
+            if (path == null)
+                return this as TBuilder;
+
+            var urlBuilder = RequestMessage.GetUrlBuilder();
+            urlBuilder.AppendPath(path);
+
+            RequestMessage.Synchronize();
+
+            return this as TBuilder;
+        }
+
+        /// <summary>
         /// Appends the specified <paramref name="paths"/> to the BaseUri of the request.
         /// </summary>
         /// <param name="paths">The paths to append.</param>
@@ -240,7 +259,6 @@ namespace FluentRest
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            var v = value ?? string.Empty;
 
             var urlBuilder = RequestMessage.GetUrlBuilder();
             urlBuilder.AppendQuery(name, value);
