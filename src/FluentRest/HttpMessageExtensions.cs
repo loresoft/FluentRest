@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -224,7 +225,7 @@ namespace FluentRest
             var serializer = responseMessage.RequestMessage.GetContentSerializer();
 
             if (ensureSuccess)
-                responseMessage.EnsureSuccessStatusCode();
+                await responseMessage.EnsureSuccessStatusCode(true);
 
             var data = await serializer
                 .DeserializeAsync<TData>(responseMessage.Content)
@@ -233,5 +234,39 @@ namespace FluentRest
             return data;
         }
 
+        /// <summary>
+        /// Throws an exception if the IsSuccessStatusCode property for the HTTP response is false.
+        /// </summary>
+        /// <param name="responseMessage">The response message.</param>
+        /// <param name="includeContent">if set to <c>true</c> the response content is included in the exception.</param>
+        /// <returns></returns>
+        /// <exception cref="HttpRequestException">The HTTP response is unsuccessful.</exception>
+        public static async Task EnsureSuccessStatusCode(this HttpResponseMessage responseMessage, bool includeContent)
+        {
+            if (responseMessage.IsSuccessStatusCode)
+                return;
+            
+            var message = string.Format(
+                CultureInfo.InvariantCulture,
+                "Response status code does not indicate success: {0} ({1});", 
+                (int) responseMessage.StatusCode, 
+                responseMessage.ReasonPhrase);
+
+            if (!includeContent)
+                throw new HttpRequestException(message);
+            
+            var contentString = await responseMessage.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(contentString))
+                throw new HttpRequestException(message);
+
+
+            // add response content body to message for easier debugging
+            message += Environment.NewLine + contentString;
+
+            var exception = new HttpRequestException(message);
+            exception.Data.Add("Response", contentString);
+            
+            throw exception;
+        }
     }
 }
