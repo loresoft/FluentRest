@@ -54,8 +54,8 @@ namespace FluentRest
         /// <summary>
         /// Sets a state value on the request.
         /// </summary>
-        /// <param name="key">The state key .</param>
-        /// <param name="value">The status value.</param>
+        /// <param name="key">The state key.</param>
+        /// <param name="value">The state value.</param>
         /// <returns>A fluent request builder.</returns>
         /// <exception cref="ArgumentException">Argument is null or empty</exception>
         public TBuilder State(string key, object value)
