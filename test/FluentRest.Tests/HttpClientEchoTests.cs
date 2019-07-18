@@ -25,7 +25,7 @@ namespace FluentRest.Tests
             );
 
             Assert.NotNull(result);
-            Assert.Equal("http://httpbin.org/get?page=1&size=10", result.Url);
+            Assert.Equal("https://httpbin.org/get?page=1&size=10", result.Url);
             Assert.Equal("1", result.QueryString["page"]);
             Assert.Equal("10", result.QueryString["size"]);
         }
@@ -43,7 +43,7 @@ namespace FluentRest.Tests
             );
 
             Assert.NotNull(result);
-            Assert.Equal("http://httpbin.org/get?page=1&size=10", result.Url);
+            Assert.Equal("https://httpbin.org/get?page=1&size=10", result.Url);
             Assert.Equal("1", result.QueryString["page"]);
             Assert.Equal("10", result.QueryString["size"]);
 
@@ -100,7 +100,7 @@ namespace FluentRest.Tests
             );
 
             Assert.NotNull(result);
-            Assert.Equal("http://httpbin.org/get?page=10", result.Url);
+            Assert.Equal("https://httpbin.org/get?page=10", result.Url);
             Assert.Equal("text/xml, application/bson, application/json", result.Headers[HttpRequestHeaders.Accept]);
             Assert.Equal("testing header", result.Headers["x-blah"]);
         }
@@ -118,7 +118,7 @@ namespace FluentRest.Tests
             );
 
             Assert.NotNull(result);
-            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("https://httpbin.org/post?page=10", result.Url);
             Assert.Equal("Value", result.Form["Test"]);
             Assert.Equal("value", result.Form["key"]);
         }
@@ -141,7 +141,7 @@ namespace FluentRest.Tests
             var result = await response.DeserializeAsync<EchoResult>();
 
             Assert.NotNull(result);
-            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("https://httpbin.org/post?page=10", result.Url);
             Assert.Equal("Value", result.Form["Test"]);
             Assert.Equal("value", result.Form["key"]);
         }
@@ -159,7 +159,7 @@ namespace FluentRest.Tests
 
             Assert.NotNull(response);
 
-            Assert.Equal("http://httpbin.org/patch?page=10", response.Url);
+            Assert.Equal("https://httpbin.org/patch?page=10", response.Url);
             Assert.Equal("Value", response.Form["Test"]);
         }
 
@@ -180,7 +180,7 @@ namespace FluentRest.Tests
             var result = await response.DeserializeAsync<EchoResult>();
 
             Assert.NotNull(result);
-            Assert.Equal("http://httpbin.org/patch?page=10", result.Url);
+            Assert.Equal("https://httpbin.org/patch?page=10", result.Url);
             Assert.Equal("Value", result.Form["Test"]);
         }
 
@@ -197,7 +197,7 @@ namespace FluentRest.Tests
             );
 
             Assert.NotNull(result);
-            Assert.Equal("http://httpbin.org/put?page=10", result.Url);
+            Assert.Equal("https://httpbin.org/put?page=10", result.Url);
             Assert.Equal("Value", result.Form["Test"]);
             Assert.Equal("value", result.Form["key"]);
         }
@@ -234,7 +234,7 @@ namespace FluentRest.Tests
             Assert.True(result.Headers.ContainsKey("Content-Length"));
             int contentLength = Int32.Parse(result.Headers["Content-Length"]);
             Assert.True(contentLength > 0);
-            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("https://httpbin.org/post?page=10", result.Url);
             Assert.Equal("application/json; charset=utf-8", result.Headers[HttpRequestHeaders.ContentType]);
             Assert.True(result.Headers.ContainsKey("Content-Type"));
             var contentType = result.Headers["Content-Type"];
@@ -335,7 +335,7 @@ namespace FluentRest.Tests
             Assert.True(result.Headers.ContainsKey("Content-Length"));
             int contentLength = Int32.Parse(result.Headers["Content-Length"]);
             Assert.True(contentLength > 0);
-            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("https://httpbin.org/post?page=10", result.Url);
             Assert.Equal("application/json; charset=utf-8", result.Headers[HttpRequestHeaders.ContentType]);
             Assert.Equal("gzip", result.Headers[HttpRequestHeaders.ContentEncoding]);
         }
@@ -393,7 +393,7 @@ namespace FluentRest.Tests
             );
 
             Assert.NotNull(result);
-            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("https://httpbin.org/post?page=10", result.Url);
             Assert.Equal("Value", result.Form["Test"]);
             Assert.Equal("value", result.Form["key"]);
             Assert.Equal("Token abc-def-123", result.Headers["Authorization"]);
@@ -411,13 +411,15 @@ namespace FluentRest.Tests
 
             Assert.NotNull(result);
             Assert.True(result.Headers.ContainsKey("Content-Length"));
-            Assert.Equal("http://httpbin.org/post", result.Url);
+            Assert.Equal("https://httpbin.org/post", result.Url);
         }
 
         private static HttpClient CreateClient()
         {
-            var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://httpbin.org/", UriKind.Absolute);
+            var httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("https://httpbin.org/", UriKind.Absolute)
+            };
 
             return httpClient;
         }
