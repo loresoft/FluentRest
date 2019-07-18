@@ -89,6 +89,17 @@ namespace FluentRest.Tests
             builder.ToString().Should().Be(expected);
         }
 
+        [Fact]
+        public void AppendParamsPath()
+        {
+            var builder = new UrlBuilder("http://foo.com/");
+            builder.Should().NotBeNull();
+
+            builder.AppendPaths("bar", "baz");
+            builder.Path.Should().NotBeEmpty();
+            builder.ToString().Should().Be("http://foo.com/bar/baz");
+        }
+
         [Theory]
         [InlineData("http://foo.com/", 123, "http://foo.com/123")]
         [InlineData("http://foo.com/bar", 5, "http://foo.com/bar/5")]

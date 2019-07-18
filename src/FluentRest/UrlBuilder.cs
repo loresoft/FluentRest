@@ -381,7 +381,13 @@ namespace FluentRest
         /// <returns></returns>
         public UrlBuilder AppendPaths(params string[] paths)
         {
-            return AppendPath(paths);
+            if (paths == null)
+                return this;
+
+            foreach (var path in paths)
+                ParsePath(path);
+
+            return this;
         }
         
         /// <summary>
