@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using Xunit;
@@ -103,6 +104,33 @@ namespace FluentRest.Tests
             var urlBuilder = request.GetUrlBuilder();
 
             Assert.Equal("http://test.com/api/v1", urlBuilder.ToString());
+        }
+
+        [Fact]
+        public void AppendParamsArrayPaths()
+        {
+            var request = new HttpRequestMessage();
+            var builder = new QueryBuilder(request);
+
+            builder.BaseUri("http://test.com/api/").AppendPath("v1", "bar");
+
+            var urlBuilder = request.GetUrlBuilder();
+
+            Assert.Equal("http://test.com/api/v1/bar", urlBuilder.ToString());
+        }
+
+        [Fact]
+        public void AppendEnumerablePaths()
+        {
+            var request = new HttpRequestMessage();
+            var builder = new QueryBuilder(request);
+
+            IEnumerable<string> enumerablePaths = new List<string>(new[] { "v1", "bar" });
+            builder.BaseUri("http://test.com/api/").AppendPath(enumerablePaths);
+
+            var urlBuilder = request.GetUrlBuilder();
+
+            Assert.Equal("http://test.com/api/v1/bar", urlBuilder.ToString());
         }
 
         [Fact]

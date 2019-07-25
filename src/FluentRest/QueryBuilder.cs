@@ -239,7 +239,7 @@ namespace FluentRest
                 return this as TBuilder;
 
             var urlBuilder = RequestMessage.GetUrlBuilder();
-            urlBuilder.AppendPath(paths);
+            urlBuilder.AppendPaths(paths);
 
             RequestMessage.Synchronize();
 
