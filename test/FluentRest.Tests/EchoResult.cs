@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace FluentRest.Tests
 {
@@ -14,31 +14,31 @@ namespace FluentRest.Tests
             Form = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
-        [JsonProperty("headers")]
+        [JsonPropertyName("headers")]
         public Dictionary<string, string> Headers { get; set; }
 
-        [JsonProperty("args")]
+        [JsonPropertyName("args")]
         public Dictionary<string, string> QueryString { get; set; }
 
-        [JsonProperty("form")]
+        [JsonPropertyName("form")]
         public Dictionary<string, string> Form { get; set; }
 
-        [JsonProperty("data")]
+        [JsonPropertyName("data")]
         public string Data { get; set; }
 
-        [JsonProperty("json")]
-        public JObject Json { get; set; }
+        [JsonPropertyName("json")]
+        public JsonElement? Json { get; set; }
 
-        [JsonProperty("origin")]
+        [JsonPropertyName("origin")]
         public string Origin { get; set; }
 
-        [JsonProperty("url")]
+        [JsonPropertyName("url")]
         public string Url { get; set; }
 
-        [JsonProperty("authenticated")]
-        public string Authenticated { get; set; }
+        [JsonPropertyName("authenticated")]
+        public bool? Authenticated { get; set; }
 
-        [JsonProperty("user")]
+        [JsonPropertyName("user")]
         public string User { get; set; }
     }
 }

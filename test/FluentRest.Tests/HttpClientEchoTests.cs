@@ -61,7 +61,7 @@ namespace FluentRest.Tests
             );
 
             Assert.NotNull(result);
-            Assert.Equal("true", result.Authenticated);
+            Assert.Equal(true, result.Authenticated);
             Assert.Equal("ejsmith", result.User);
         }
 
@@ -102,7 +102,7 @@ namespace FluentRest.Tests
             Assert.NotNull(result);
             Assert.Equal("https://httpbin.org/get?page=10", result.Url);
             Assert.Equal("text/xml, application/bson, application/json", result.Headers[HttpRequestHeaders.Accept]);
-            Assert.Equal("testing header", result.Headers["x-blah"]);
+            Assert.Equal("testing header", result.Headers["X-Blah"]);
         }
 
         [Fact]
@@ -240,9 +240,9 @@ namespace FluentRest.Tests
             var contentType = result.Headers["Content-Type"];
             Assert.Equal("application/json; charset=utf-8", contentType);
 
-            dynamic data = result.Json;
-            Assert.Equal(user.Id, (long)data.Id);
-            Assert.Equal(user.FirstName, (string)data.FirstName);
+            Assert.True(result.Json.HasValue);
+            Assert.Equal(user.Id, result.Json.Value.GetProperty("Id").GetInt64());
+            Assert.Equal(user.FirstName, result.Json.Value.GetProperty("FirstName").GetString());
         }
 
         [Fact]

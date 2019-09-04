@@ -3,8 +3,9 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace FluentRest.Fake
 {
@@ -91,7 +92,8 @@ namespace FluentRest.Fake
             return Task.Factory.StartNew(() =>
             {
                 var fakeResponse = Convert(response);
-                var json = JsonConvert.SerializeObject(fakeResponse, Formatting.Indented);
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                var json = JsonSerializer.Serialize(fakeResponse, options);
                 File.WriteAllText(responsePath, json);
             });
         }
@@ -109,25 +111,24 @@ namespace FluentRest.Fake
             return httpContent;
         }
 
-        private Task<HttpResponseMessage> LoadResponse(HttpContent httpContent, string responsePath)
+        private async Task<HttpResponseMessage> LoadResponse(HttpContent httpContent, string responsePath)
         {
-            return Task.Factory.StartNew(() =>
-            {
-                var json = File.ReadAllText(responsePath);
-                var fakeResponse = JsonConvert.DeserializeObject<FakeResponseMessage>(json);
-                var httpResponse = Convert(fakeResponse);
+            FakeResponseMessage fakeResponse;
+            using (var reader = File.OpenRead(responsePath))
+                fakeResponse = await JsonSerializer.DeserializeAsync<FakeResponseMessage>(reader);
 
-                if (httpContent == null)
-                    return httpResponse;
-
-                // copy headers
-                foreach (var header in fakeResponse.ResponseHeaders)
-                    httpContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
-
-                httpResponse.Content = httpContent;
-
+            var httpResponse = Convert(fakeResponse);
+            if (httpContent == null)
                 return httpResponse;
-            });
+
+            // copy headers
+            foreach (var header in fakeResponse.ResponseHeaders)
+                httpContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
+
+            httpResponse.Content = httpContent;
+
+            return httpResponse;
+
         }
 
 
