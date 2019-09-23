@@ -19,6 +19,9 @@ dotnet_csproj:
 
 configuration: Release
 
+install: 
+  - choco install dotnetcore-sdk
+
 before_build:
   - dotnet tool install --global coveralls.net
 
