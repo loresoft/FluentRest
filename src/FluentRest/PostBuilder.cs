@@ -167,13 +167,11 @@ namespace FluentRest
                 throw new ArgumentNullException(nameof(data));
 
             // handle special case where string gets sent here
-            var stringContent = data as string;
-            if (stringContent != null)
+            if (data is string stringContent)
                 return Content(stringContent, null, Encoding.UTF8);
 
             // handle case where HttpContent get here
-            var httpContent = data as HttpContent;
-            if (httpContent != null)
+            if (data is HttpContent httpContent)
                 return Content(httpContent);
 
             // save for later serialization

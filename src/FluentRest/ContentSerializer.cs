@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace FluentRest
+﻿namespace FluentRest
 {
     /// <summary>
     /// The shared default <see cref="IContentSerializer"/>.

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{A4E004F2-9E26-4A47-A509-F8DA024A8436}"
 	ProjectSection(SolutionItems) = preProject
@@ -24,6 +24,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentRest.Fake.Tests", "test\FluentRest.Fake.Tests\FluentRest.Fake.Tests.csproj", "{7E8B7288-7639-4F5E-81B4-E893025883C1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentRest.Factory.Tests", "test\FluentRest.Factory.Tests\FluentRest.Factory.Tests.csproj", "{18679048-995B-472F-9B21-6139252413DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentRest.NewtonsoftJson", "src\FluentRest.NewtonsoftJson\FluentRest.NewtonsoftJson.csproj", "{5575B4BC-E230-4ECA-9AE9-EEDF22233A87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{18679048-995B-472F-9B21-6139252413DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18679048-995B-472F-9B21-6139252413DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18679048-995B-472F-9B21-6139252413DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5575B4BC-E230-4ECA-9AE9-EEDF22233A87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5575B4BC-E230-4ECA-9AE9-EEDF22233A87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5575B4BC-E230-4ECA-9AE9-EEDF22233A87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5575B4BC-E230-4ECA-9AE9-EEDF22233A87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

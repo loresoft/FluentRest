@@ -5,8 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace FluentRest.Tests
@@ -61,7 +61,7 @@ namespace FluentRest.Tests
             );
 
             Assert.NotNull(result);
-            Assert.Equal("true", result.Authenticated);
+            Assert.Equal(true, result.Authenticated);
             Assert.Equal("ejsmith", result.User);
         }
 
@@ -102,7 +102,7 @@ namespace FluentRest.Tests
             Assert.NotNull(result);
             Assert.Equal("https://httpbin.org/get?page=10", result.Url);
             Assert.Equal("text/xml, application/bson, application/json", result.Headers[HttpRequestHeaders.Accept]);
-            Assert.Equal("testing header", result.Headers["x-blah"]);
+            Assert.Equal("testing header", result.Headers["X-Blah"]);
         }
 
         [Fact]
@@ -240,16 +240,16 @@ namespace FluentRest.Tests
             var contentType = result.Headers["Content-Type"];
             Assert.Equal("application/json; charset=utf-8", contentType);
 
-            dynamic data = result.Json;
-            Assert.Equal(user.Id, (long)data.Id);
-            Assert.Equal(user.FirstName, (string)data.FirstName);
+            Assert.True(result.Json.HasValue);
+            Assert.Equal(user.Id, result.Json.Value.GetProperty("Id").GetInt64());
+            Assert.Equal(user.FirstName, result.Json.Value.GetProperty("FirstName").GetString());
         }
 
         [Fact]
         public async void EchoPostRawJsonContent()
         {
             var user = UserData.Create();
-            var json = JsonConvert.SerializeObject(user);
+            var json = JsonSerializer.Serialize(user);
 
             var client = CreateClient();
 
@@ -269,7 +269,7 @@ namespace FluentRest.Tests
         public async void EchoPostNonFluentRawJsonContent()
         {
             var user = UserData.Create();
-            var json = JsonConvert.SerializeObject(user);
+            var json = JsonSerializer.Serialize(user);
             var client = CreateClient();
 
             var request = new HttpRequestMessage(HttpMethod.Post, client.BaseAddress);
@@ -342,8 +342,7 @@ namespace FluentRest.Tests
 
         private static ByteArrayContent JsonCompress(object data)
         {
-            var json = JsonConvert.SerializeObject(data);
-            byte[] bytes = Encoding.UTF8.GetBytes(json);
+            byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(data);
 
             using (var stream = new MemoryStream())
             {

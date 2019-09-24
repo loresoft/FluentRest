@@ -25,8 +25,7 @@ namespace FluentRest
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
-            TValue value;
-            if (dictionary.TryGetValue(key, out value))
+            if (dictionary.TryGetValue(key, out var value))
                 return value;
 
             value = valueFactory(key);
