@@ -5,8 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace FluentRest.Tests
@@ -249,7 +249,7 @@ namespace FluentRest.Tests
         public async void EchoPostRawJsonContent()
         {
             var user = UserData.Create();
-            var json = JsonConvert.SerializeObject(user);
+            var json = JsonSerializer.Serialize(user);
 
             var client = CreateClient();
 
@@ -269,7 +269,7 @@ namespace FluentRest.Tests
         public async void EchoPostNonFluentRawJsonContent()
         {
             var user = UserData.Create();
-            var json = JsonConvert.SerializeObject(user);
+            var json = JsonSerializer.Serialize(user);
             var client = CreateClient();
 
             var request = new HttpRequestMessage(HttpMethod.Post, client.BaseAddress);
@@ -342,8 +342,7 @@ namespace FluentRest.Tests
 
         private static ByteArrayContent JsonCompress(object data)
         {
-            var json = JsonConvert.SerializeObject(data);
-            byte[] bytes = Encoding.UTF8.GetBytes(json);
+            byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(data);
 
             using (var stream = new MemoryStream())
             {
