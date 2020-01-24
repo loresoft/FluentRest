@@ -418,7 +418,7 @@ namespace FluentRest.Tests
         private static IFluentClient CreateClient()
         {
             var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://httpbin.org/", UriKind.Absolute);
+            httpClient.BaseAddress = new Uri("https://httpbin.org/", UriKind.Absolute);
 
             var fluentClient = new FluentClient(httpClient);
 
