@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -60,5 +61,53 @@ namespace FluentRest.Fake.Tests
             Assert.Equal("value", result.Form["key"]);
         }
 
+        [Fact]
+        public async void PostWithStringContentTest()
+        {
+            string json = "{ \"url\": \"http://httpbin.org/post\", \"data\": \"test\" }";
+
+            MemoryMessageStore.Current.Register(b => b
+                .Url("http://httpbin.org/post")
+                .StatusCode(HttpStatusCode.OK)
+                .ReasonPhrase("OK")
+                .Content(c => c
+                    .Header("Content-Type", "application/json; charset=utf-8")
+                    .Data(json)
+                )
+            );
+
+            var client = ServiceProvider.GetService<EchoClient>();
+            var result = await client.PostAsync<EchoResult>(b => b
+                .AppendPath("post")
+            ).ConfigureAwait(false);
+
+            Assert.NotNull(result);
+            Assert.Equal("http://httpbin.org/post", result.Url);
+        }
+
+        [Fact]
+        public async void PostWithByteArrayContentTest()
+        {
+            string json = "{ \"url\": \"http://httpbin.org/post\", \"data\": \"test\" }";
+            var data = Encoding.UTF8.GetBytes(json);
+
+            MemoryMessageStore.Current.Register(b => b
+                .Url("http://httpbin.org/post")
+                .StatusCode(HttpStatusCode.OK)
+                .ReasonPhrase("OK")
+                .Content(c => c
+                    .Header("Content-Type", "application/json; charset=utf-8")
+                    .Data(data)
+                )
+            );
+
+            var client = ServiceProvider.GetService<EchoClient>();
+            var result = await client.PostAsync<EchoResult>(b => b
+                .AppendPath("post")
+            ).ConfigureAwait(false);
+
+            Assert.NotNull(result);
+            Assert.Equal("http://httpbin.org/post", result.Url);
+        }
     }
 }

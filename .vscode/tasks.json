@@ -1,38 +1,33 @@
 {
   "version": "2.0.0",
-  "command": "dotnet",
-  "problemMatcher": "$msCompile",
   "tasks": [
     {
       "label": "build",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "command": "dotnet",
+      "type": "process",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "args":[
-        "FluentRest.sln",
+      "args": [
+        "build",
         "/p:GenerateFullPaths=true"
       ],
-      "presentation": {
-        "panel": "dedicated"
-      }
+      "problemMatcher": "$msCompile"
     },
     {
       "label": "test",
+      "command": "dotnet",
+      "type": "process",
       "group": {
         "kind": "test",
         "isDefault": true
       },
-      "options": {
-        "cwd": "${workspaceFolder}/test/FluentRest.Tests"
-      },
       "args": [
-        "FluentRest.Tests.csproj",
+        "test",
         "/p:GenerateFullPaths=true"
-      ]
+      ],
+      "problemMatcher": "$msCompile"
     }
   ]
 }

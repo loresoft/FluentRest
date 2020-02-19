@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 
 namespace FluentRest.Fake
@@ -45,8 +46,22 @@ namespace FluentRest.Fake
         /// <exception cref="ArgumentNullException"><paramref name="value" /> is <see langword="null" />.</exception>
         public FakeContentBuilder Data<T>(T value)
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var content = JsonSerializer.SerializeToUtf8Bytes(value, options);
+            byte[] content;
+
+            // convert various passing in data types to raw bytes
+            if (value is string stringContent)
+            {
+                content = Encoding.UTF8.GetBytes(stringContent);
+            }
+            else if (value is byte[] byteArrayContent)
+            {
+                content = byteArrayContent;
+            }
+            else
+            {
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                content = JsonSerializer.SerializeToUtf8Bytes(value, options);
+            }
 
             Container.HttpContent = content;
 
