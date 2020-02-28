@@ -20,6 +20,12 @@ namespace FluentRest.Fake
         }
 
         /// <summary>
+        /// The callback used to serialize the fake response data objects into a byte array.
+        /// If not specified, the default settings for the System.Text.Json.JsonSerializer will be used.
+        ///</summary>
+        public SerializeResponseContentCallback SerializeResponseContentCallback { get; set; }
+
+        /// <summary>
         /// Gets or sets the request URI.
         /// </summary>
         /// <value>

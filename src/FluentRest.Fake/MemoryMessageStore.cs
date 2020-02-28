@@ -29,6 +29,12 @@ namespace FluentRest.Fake
         public System.Collections.Generic.IDictionary<string, FakeResponseContainer> ResponseStore => _responseStore;
 
         /// <summary>
+        /// The callback used to serialize fake response data objects into a byte array.
+        /// If not specified, the default settings for the System.Text.Json.JsonSerializer will be used.
+        ///</summary>
+        public SerializeResponseContentCallback SerializeResponseContentCallback { get; set; }
+
+        /// <summary>
         /// Saves the specified HTTP <paramref name="response" /> to the message store as an asynchronous operation.
         /// </summary>
         /// <param name="request">The HTTP request message that was sent.</param>
@@ -113,7 +119,9 @@ namespace FluentRest.Fake
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var container = new FakeResponseContainer();
+            var container = new FakeResponseContainer {
+                SerializeResponseContentCallback = SerializeResponseContentCallback
+            };
             var containerBuilder = new FakeContainerBuilder(container);
 
             builder(containerBuilder);
@@ -124,4 +132,9 @@ namespace FluentRest.Fake
             _responseStore.AddOrUpdate(key, container, (k, o) => container);
         }
     }
+
+    /// <summary>
+    /// Callback used to serialize fake response content data objects into a byte array.
+    ///</summary>
+    public delegate byte[] SerializeResponseContentCallback(object content, Type contentType);
 }

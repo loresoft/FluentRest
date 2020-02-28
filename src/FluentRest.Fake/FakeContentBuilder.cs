@@ -37,14 +37,15 @@ namespace FluentRest.Fake
 
             return this;
         }
-
+        
         /// <summary>
         /// Sets HTTP response content to JSON serialized data of the specified <paramref name="value"/> object.
         /// </summary>
         /// <typeparam name="T">The data type to serialize.</typeparam>
         /// <param name="value">The data object to be specified to JSON.</param>
+        /// <param name="serializer">Used to control how the response data is serialized into a byte array.</param>
         /// <exception cref="ArgumentNullException"><paramref name="value" /> is <see langword="null" />.</exception>
-        public FakeContentBuilder Data<T>(T value)
+        public FakeContentBuilder Data<T>(T value, SerializeResponseContentCallback serializer = null)
         {
             byte[] content;
 
@@ -59,8 +60,10 @@ namespace FluentRest.Fake
             }
             else
             {
-                var options = new JsonSerializerOptions { WriteIndented = true };
-                content = JsonSerializer.SerializeToUtf8Bytes(value, options);
+                if (serializer == null)
+                    serializer = this.Container.SerializeResponseContentCallback ?? DefaultSerializer;
+                
+                content = serializer(value, typeof(T));
             }
 
             Container.HttpContent = content;
@@ -69,6 +72,11 @@ namespace FluentRest.Fake
             Header("Content-Type", "application/json; charset=utf-8");
 
             return this;
+        }
+
+        private byte[] DefaultSerializer(object content, Type contentType) {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            return JsonSerializer.SerializeToUtf8Bytes(content, contentType, options);
         }
     }
 }

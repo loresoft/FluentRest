@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -59,6 +60,85 @@ namespace FluentRest.Fake.Tests
             Assert.Equal("http://httpbin.org/post?page=10", result.Url);
             Assert.Equal("Fake", result.Form["Test"]);
             Assert.Equal("value", result.Form["key"]);
+        }
+
+        [Fact]
+        public async void PostWithGlobalCustomContentSerializerTest()
+        {
+            var response = new EchoResult();
+            response.Url = "http://httpbin.org/post?page=10";
+            response.Headers["Accept"] = "application/json";
+            response.QueryString["page"] = "10";
+            response.Form["Test"] = "Fake";
+            response.Form["key"] = "value";
+
+            MemoryMessageStore.Current.SerializeResponseContentCallback = CustomSerializer;
+
+            MemoryMessageStore.Current.Register(b => b
+                .Url("http://httpbin.org/post?page=10")
+                .StatusCode(HttpStatusCode.OK)
+                .ReasonPhrase("OK")
+                .Content(c => c
+                    .Header("Content-Type", "application/json; charset=utf-8")
+                    .Data(response)
+                )
+            );
+
+
+            var client = ServiceProvider.GetService<EchoClient>();
+
+            var result = await client.PostAsync<EchoResult>(b => b
+                .AppendPath("post")
+                .FormValue("Test", "Fake")
+                .FormValue("key", "value")
+                .QueryString("page", 10)
+            ).ConfigureAwait(false);
+
+            Assert.NotNull(result);
+            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("Fake", result.Form["Test"]);
+            Assert.Equal("value", result.Form["key"]);
+        }
+
+        [Fact]
+        public async void PostWithCustomContentSerializerTest()
+        {
+            var response = new EchoResult();
+            response.Url = "http://httpbin.org/post?page=10";
+            response.Headers["Accept"] = "application/json";
+            response.QueryString["page"] = "10";
+            response.Form["Test"] = "Fake";
+            response.Form["key"] = "value";
+
+            MemoryMessageStore.Current.Register(b => b
+                .Url("http://httpbin.org/post?page=10")
+                .StatusCode(HttpStatusCode.OK)
+                .ReasonPhrase("OK")
+                .Content(c => c
+                    .Header("Content-Type", "application/json; charset=utf-8")
+                    .Data(response, CustomSerializer)
+                )
+            );
+
+
+            var client = ServiceProvider.GetService<EchoClient>();
+
+            var result = await client.PostAsync<EchoResult>(b => b
+                .AppendPath("post")
+                .FormValue("Test", "Fake")
+                .FormValue("key", "value")
+                .QueryString("page", 10)
+            ).ConfigureAwait(false);
+
+            Assert.NotNull(result);
+            Assert.Equal("http://httpbin.org/post?page=10", result.Url);
+            Assert.Equal("Fake", result.Form["Test"]);
+            Assert.Equal("value", result.Form["key"]);
+        }
+
+        private byte[] CustomSerializer(object content, Type contentType) {
+            var options = new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            return JsonSerializer.SerializeToUtf8Bytes(content, contentType, options);
         }
 
         [Fact]
