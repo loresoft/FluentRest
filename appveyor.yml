@@ -23,7 +23,7 @@ before_build:
   - dotnet tool install --global coveralls.net
 
 build_script:
-  - dotnet pack FluentRest.sln --configuration Release --include-symbols --include-source 
+  - dotnet pack FluentRest.sln --configuration Release --include-symbols --include-source
 
 test_script:
   - dotnet test FluentRest.sln --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
@@ -32,7 +32,7 @@ after_test:
   - csmacnz.coveralls --useRelativePaths --multiple --input "opencover=test\FluentRest.Tests\coverage.opencover.xml;opencover=test\FluentRest.Fake.Tests\coverage.opencover.xml;opencover=test\FluentRest.Factory.Tests\coverage.opencover.xml"
 
 artifacts:
-- path: artifacts\*.nupkg
+- path: artifacts\*.*nupkg
   name: Packages
 
 deploy:

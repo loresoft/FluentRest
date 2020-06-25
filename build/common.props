@@ -11,7 +11,7 @@
   <PropertyGroup Label="Package">
     <Product>FluentRest</Product>
     <Description>Fluent wrapper over HttpClient to make REST calls easier</Description>
-    <Copyright>Copyright (c) 2019 LoreSoft</Copyright>
+    <Copyright>Copyright © $([System.DateTime]::Now.ToString(yyyy)) LoreSoft</Copyright>
     <Authors>LoreSoft</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
