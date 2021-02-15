@@ -1,4 +1,4 @@
-<Project ToolsVersion="15.0">
+<Project>
   <Import Project="version.props" />
 
   <PropertyGroup Label="Source Link">
@@ -18,8 +18,24 @@
     <PackageOutputPath>$(SolutionDir)artifacts</PackageOutputPath>
     <PackageTags>HTTP;HttpClient;REST;Fluent</PackageTags>
     <PackageProjectUrl>https://github.com/loresoft/FluentRest</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/loresoft/FluentRest/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>logo.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/loresoft/FluentRest</RepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include=".\..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\..\..\logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
 </Project>
