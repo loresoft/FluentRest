@@ -18,7 +18,7 @@ namespace FluentRest
         /// <param name="options"></param>
         public JsonContentSerializer(JsonSerializerOptions options = null)
         {
-            Options = options;
+            Options = options ?? new JsonSerializerOptions(JsonSerializerDefaults.Web);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace FluentRest
         public Task<HttpContent> SerializeAsync(object data)
         {
             if (data == null)
-                return null;
+                return Task.FromResult<HttpContent>(null);
 
             var objectType = data.GetType();
             var json = JsonSerializer.Serialize(data, objectType, Options);

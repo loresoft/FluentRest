@@ -1,5 +1,7 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
+
 using FluentRest.Tests.GitHub.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -14,7 +16,7 @@ namespace FluentRest.Tests.GitHub
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton<IContentSerializer, JsonContentSerializer>();
+            services.AddSingleton<IContentSerializer>(sp => new JsonContentSerializer(new JsonSerializerOptions(JsonSerializerDefaults.Web)));
 
             services.AddHttpClient<GithubClient>(c =>
                 {

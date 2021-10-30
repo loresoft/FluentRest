@@ -1,8 +1,0 @@
-{
-  "recommendations": [
-    "ms-vscode.csharp",
-    "streetsidesoftware.code-spell-checker",
-    "tintoy.msbuild-project-tools",
-    "jmrog.vscode-nuget-package-manager"
-  ]
-}
