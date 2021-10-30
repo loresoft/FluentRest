@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace FluentRest
 {
@@ -222,11 +223,11 @@ namespace FluentRest
             if (responseMessage == null)
                 throw new ArgumentNullException(nameof(responseMessage));
 
-            var serializer = responseMessage.RequestMessage.GetContentSerializer();
 
             if (ensureSuccess)
                 await responseMessage.EnsureSuccessStatusCode(true);
 
+            var serializer = responseMessage.RequestMessage.GetContentSerializer();
             var data = await serializer
                 .DeserializeAsync<TData>(responseMessage.Content)
                 .ConfigureAwait(false);
@@ -245,12 +246,11 @@ namespace FluentRest
         {
             if (responseMessage.IsSuccessStatusCode)
                 return;
-            
-            var message = string.Format(
-                CultureInfo.InvariantCulture,
-                "Response status code does not indicate success: {0} ({1});", 
-                (int) responseMessage.StatusCode, 
-                responseMessage.ReasonPhrase);
+
+            // will throw if respose is a problem json
+            await ProblemCheck(responseMessage).ConfigureAwait(false);
+
+            var message = $"Response status code does not indicate success: {responseMessage.StatusCode} ({responseMessage.ReasonPhrase});";
 
             if (!includeContent)
                 throw new HttpRequestException(message);
@@ -267,6 +267,21 @@ namespace FluentRest
             exception.Data.Add("Response", contentString);
             
             throw exception;
+        }
+
+        private static async Task ProblemCheck(HttpResponseMessage responseMessage)
+        {
+            string mediaType = responseMessage.Content.Headers.ContentType.MediaType;
+            if (!string.Equals(mediaType, ProblemDetails.ContentType, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var serializer = responseMessage.RequestMessage.GetContentSerializer();
+
+            var problem = await serializer
+                .DeserializeAsync<ProblemDetails>(responseMessage.Content)
+                .ConfigureAwait(false);
+
+            throw new ProblemException(problem);
         }
     }
 }

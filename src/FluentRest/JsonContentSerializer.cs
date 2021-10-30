@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace FluentRest
@@ -18,7 +19,10 @@ namespace FluentRest
         /// <param name="options"></param>
         public JsonContentSerializer(JsonSerializerOptions options = null)
         {
-            Options = options ?? new JsonSerializerOptions(JsonSerializerDefaults.Web);
+            Options = options ?? new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+            };
         }
 
         /// <summary>
@@ -62,14 +66,12 @@ namespace FluentRest
         /// <returns>The data object deserialized from the HttpContent.</returns>
         public async Task<TData> DeserializeAsync<TData>(HttpContent content)
         {
-            using (var s = await content.ReadAsStreamAsync().ConfigureAwait(false))
-            {
-                var result = await JsonSerializer
-                    .DeserializeAsync<TData>(s, Options)
-                    .ConfigureAwait(false);
+            using var stream = await content.ReadAsStreamAsync().ConfigureAwait(false);
+            var result = await JsonSerializer
+                .DeserializeAsync<TData>(stream, Options)
+                .ConfigureAwait(false);
 
-                return result;
-            }
+            return result;
         }
 
         #region Singleton

@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace FluentRest
 {
     /// <summary>
-    ///
+    /// Extension methods for <see cref="IFluentClient"/>
     /// </summary>
     public static class FluentClientExtensions
     {
