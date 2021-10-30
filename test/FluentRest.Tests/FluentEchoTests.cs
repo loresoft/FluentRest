@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -243,8 +243,8 @@ namespace FluentRest.Tests
             Assert.Equal("application/json; charset=utf-8", contentType);
             
             Assert.True(result.Json.HasValue);
-            Assert.Equal(user.Id, result.Json.Value.GetProperty("Id").GetInt64());
-            Assert.Equal(user.FirstName, result.Json.Value.GetProperty("FirstName").GetString());
+            Assert.Equal(user.Id, result.Json.Value.GetProperty("id").GetInt64());
+            Assert.Equal(user.FirstName, result.Json.Value.GetProperty("firstName").GetString());
         }
 
         [Fact]
