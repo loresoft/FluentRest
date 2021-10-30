@@ -57,9 +57,7 @@ namespace FluentRest
             {
                 reader.Read();
                 if (reader.TokenType != JsonTokenType.Null)
-                {
                     value.Status = reader.GetInt32();
-                }
             }
             else
             {
@@ -69,7 +67,7 @@ namespace FluentRest
             }
         }
 
-        internal static bool TryReadStringProperty(ref Utf8JsonReader reader, JsonEncodedText propertyName, out string? value)
+        internal static bool TryReadStringProperty(ref Utf8JsonReader reader, JsonEncodedText propertyName, out string value)
         {
             if (!reader.ValueTextEquals(propertyName.EncodedUtf8Bytes))
             {
