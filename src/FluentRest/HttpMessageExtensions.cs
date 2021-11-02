@@ -248,7 +248,7 @@ namespace FluentRest
                 return;
 
             // will throw if respose is a problem json
-            await ProblemCheck(responseMessage).ConfigureAwait(false);
+            await CheckResponseForProblem(responseMessage).ConfigureAwait(false);
 
             var message = $"Response status code does not indicate success: {responseMessage.StatusCode} ({responseMessage.ReasonPhrase});";
 
@@ -269,9 +269,9 @@ namespace FluentRest
             throw exception;
         }
 
-        private static async Task ProblemCheck(HttpResponseMessage responseMessage)
+        private static async Task CheckResponseForProblem(HttpResponseMessage responseMessage)
         {
-            string mediaType = responseMessage.Content.Headers.ContentType.MediaType;
+            string mediaType = responseMessage.Content?.Headers?.ContentType?.MediaType;
             if (!string.Equals(mediaType, ProblemDetails.ContentType, StringComparison.OrdinalIgnoreCase))
                 return;
 
