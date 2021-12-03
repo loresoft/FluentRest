@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 
@@ -240,6 +240,53 @@ namespace FluentRest
 
             var urlBuilder = RequestMessage.GetUrlBuilder();
             urlBuilder.AppendPaths(paths);
+
+            RequestMessage.Synchronize();
+
+            return this as TBuilder;
+        }
+
+        /// <summary>
+        /// Appends the specified <paramref name="path" /> to the BaseUri of the request.
+        /// </summary>
+        /// <param name="condition">If condition is true, append path will be added; otherwise ignore path.</param>
+        /// <param name="path">The path to append.</param>
+        /// <returns>
+        /// A fluent request builder.
+        /// </returns>
+        public TBuilder AppendPathIf(Func<bool> condition, string path)
+        {
+            if (path == null)
+                return this as TBuilder;
+
+            if (condition == null || !condition())
+                return this as TBuilder;
+
+            var urlBuilder = RequestMessage.GetUrlBuilder();
+            urlBuilder.AppendPath(path);
+
+            RequestMessage.Synchronize();
+
+            return this as TBuilder;
+        }
+
+        /// <summary>
+        /// Appends the specified <paramref name="path" /> to the BaseUri of the request.
+        /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="condition">If condition is true, append path will be added; otherwise ignore path.</param>
+        /// <param name="path">The path to append.</param>
+        /// <returns>A fluent request builder.</returns>
+        public TBuilder AppendPathIf<TValue>(Func<bool> condition, TValue path)
+        {
+            if (path == null)
+                return this as TBuilder;
+
+            if (condition == null || !condition())
+                return this as TBuilder;
+
+            var urlBuilder = RequestMessage.GetUrlBuilder();
+            urlBuilder.AppendPath(path);
 
             RequestMessage.Synchronize();
 
