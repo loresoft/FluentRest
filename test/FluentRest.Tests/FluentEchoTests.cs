@@ -268,6 +268,26 @@ namespace FluentRest.Tests
         }
 
         [Fact]
+        public async void EchoPostRawJsonContentWithDetectedContentType()
+        {
+            var user = UserData.Create();
+            var json = JsonSerializer.Serialize(user);
+
+            var client = CreateClient();
+
+            var result = await client.PostAsync<EchoResult>(b => b
+                .AppendPath("post")
+                .Content(json)
+            );
+
+            Assert.NotNull(result);
+            Assert.Equal(json, result.Data);
+            Assert.True(result.Headers.ContainsKey("Content-Type"));
+            var contentType = result.Headers["Content-Type"];
+            Assert.Equal("application/json; charset=utf-8", contentType);
+        }
+
+        [Fact]
         public async void EchoPostNonFluentRawJsonContent()
         {
             var user = UserData.Create();

@@ -168,7 +168,7 @@ namespace FluentRest
 
             // handle special case where string gets sent here
             if (data is string stringContent)
-                return Content(stringContent, null, Encoding.UTF8);
+                return Content(stringContent, DetectContentType(stringContent), Encoding.UTF8);
 
             // handle case where HttpContent get here
             if (data is HttpContent httpContent)
@@ -181,6 +181,27 @@ namespace FluentRest
                 RequestMessage.Method = HttpMethod.Post;
 
             return this as TBuilder;
+        }
+
+        private string DetectContentType(string content)
+        {
+            for (int i = 0; i < content.Length; i++)
+            {
+                if (Char.IsWhiteSpace(content[i]))
+                    continue;
+
+                switch (content[i])
+                {
+                    case '{':
+                    case '[':
+                        return "application/json";
+                    case '<':
+                        return "text/xml";
+                }
+            }
+
+            // default to JSON since this is a REST library
+            return "application/json";
         }
 
         /// <summary>
