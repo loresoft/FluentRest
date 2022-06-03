@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace FluentRest.Tests
@@ -76,6 +77,32 @@ namespace FluentRest.Tests
             var fluentClientFactory = serviceProvider.GetService<IFluentClientFactory>();
             var fluentSampleClient = fluentClientFactory.CreateClient("sample");
             Assert.Equal(typeof(JsonContentSerializer), fluentSampleClient.ContentSerializer.GetType());
+            Assert.IsAssignableFrom<IFluentClient>(fluentSampleClient);
+        }
+
+        [Fact]
+        public void DefaultClient()
+        {
+            var services = new ServiceCollection();
+
+            services.AddFluentClient();
+            services.AddHttpClient(Options.DefaultName, c =>
+            {
+                c.BaseAddress = new Uri("https://sample.com/");
+            })
+                .SetSerializer<MyContentSerializer>();
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var clientFactory = serviceProvider.GetService<IHttpClientFactory>();
+            var sampleClient = clientFactory.CreateClient();
+            Assert.NotNull(sampleClient);
+            Assert.Equal(new Uri("https://sample.com/"), sampleClient.BaseAddress);
+
+            var fluentClientFactory = serviceProvider.GetService<IFluentClientFactory>();
+            var fluentSampleClient = fluentClientFactory.CreateClient();
+            Assert.Equal(typeof(MyContentSerializer), fluentSampleClient.ContentSerializer.GetType());
+            Assert.Equal(new Uri("https://sample.com/"), fluentSampleClient.HttpClient.BaseAddress);
             Assert.IsAssignableFrom<IFluentClient>(fluentSampleClient);
         }
 

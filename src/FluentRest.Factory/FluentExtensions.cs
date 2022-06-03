@@ -1,6 +1,7 @@
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
+using Microsoft.Extensions.Options;
 
 namespace FluentRest
 {
@@ -8,6 +9,17 @@ namespace FluentRest
     /// Extension methods for configuring an <see cref="FluentClient"/>
     /// </summary>
     public static class FluentExtensions {
+
+        /// <summary>
+        /// Creates a new <see cref="FluentClient"/> using the default configuration.
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <returns>An <see cref="FluentClient"/> configured using the default configuration.</returns>
+        public static IFluentClient CreateClient(this IFluentClientFactory factory)
+        {
+            return factory.CreateClient(Options.DefaultName);
+        }
+
         /// <summary>
         /// Sets the content serializer type to use when using the <see cref="FluentClient"/>.
         /// </summary>
