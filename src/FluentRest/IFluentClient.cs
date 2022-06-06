@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 
 namespace FluentRest
@@ -6,7 +6,7 @@ namespace FluentRest
     /// <summary>
     /// Provides a fluent interface for sending HTTP requests and receiving HTTP responses from a resource identified by a URI.
     /// </summary>
-    public interface IFluentClient
+    public interface IFluentClient : IDisposable
     {
         /// <summary>
         /// Gets the <see cref="HttpClient"/> used to send request.

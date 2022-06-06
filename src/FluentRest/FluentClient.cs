@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 
 namespace FluentRest
@@ -43,5 +43,11 @@ namespace FluentRest
         /// The <see cref="HttpClient" /> used to send request.
         /// </value>
         public HttpClient HttpClient { get; }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            HttpClient?.Dispose();
+        }
     }
 }
