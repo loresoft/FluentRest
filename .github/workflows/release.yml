@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       versionIncrement:
-        description: 'Specifies which part of the version is incremented '
+        description: 'Which part of the version is incremented'
         default: 'minor'
         type: choice
         options:
@@ -29,6 +29,11 @@ jobs:
 
     - name: Install GitVersioning
       run: dotnet tool update -g nbgv
+
+    - name: Initialize
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
 
     - name: Create Release
       run: nbgv prepare-release --versionIncrement $VERSION_INCREMENT
