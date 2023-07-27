@@ -1,23 +1,22 @@
-﻿using System;
+using System;
 
-namespace FluentRest.Fake
+namespace FluentRest.Fake;
+
+/// <summary>
+/// The fake response modes
+/// </summary>
+public enum FakeResponseMode
 {
     /// <summary>
-    /// The fake response modes
+    /// Send HTTP request as normal.
     /// </summary>
-    public enum FakeResponseMode
-    {
-        /// <summary>
-        /// Send HTTP request as normal.
-        /// </summary>
-        Normal,
-        /// <summary>
-        /// Respond using a fake HTTP response.
-        /// </summary>
-        Fake,
-        /// <summary>
-        /// Send HTTP request as normal and save the response for faking.
-        /// </summary>
-        Capture
-    }
+    Normal,
+    /// <summary>
+    /// Respond using a fake HTTP response.
+    /// </summary>
+    Fake,
+    /// <summary>
+    /// Send HTTP request as normal and save the response for faking.
+    /// </summary>
+    Capture
 }

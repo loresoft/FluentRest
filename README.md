@@ -2,7 +2,7 @@
 
 Lightweight fluent wrapper over HttpClient to make REST calls easier
 
-[![Build status](https://ci.appveyor.com/api/projects/status/buggns6km0ktd3j2?svg=true)](https://ci.appveyor.com/project/LoreSoft/fluentrest)
+[![Build status](https://github.com/loresoft/FluentRest/workflows/Build/badge.svg)](https://github.com/loresoft/FluentRest/actions)
 
 [![NuGet Version](https://img.shields.io/nuget/v/FluentRest.svg?style=flat-square)](https://www.nuget.org/packages/FluentRest/)
 

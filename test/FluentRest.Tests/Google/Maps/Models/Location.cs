@@ -1,16 +1,14 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
-namespace FluentRest.Tests.Google.Maps.Models
+namespace FluentRest.Tests.Google.Maps.Models;
+
+
+public class Location
 {
 
-    public class Location
-    {
+    [JsonPropertyName("lat")]
+    public double Lat { get; set; }
 
-        [JsonPropertyName("lat")]
-        public double Lat { get; set; }
-
-        [JsonPropertyName("lng")]
-        public double Lng { get; set; }
-    }
-
+    [JsonPropertyName("lng")]
+    public double Lng { get; set; }
 }

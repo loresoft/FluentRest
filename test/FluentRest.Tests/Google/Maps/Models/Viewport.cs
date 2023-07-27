@@ -1,16 +1,14 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
-namespace FluentRest.Tests.Google.Maps.Models
+namespace FluentRest.Tests.Google.Maps.Models;
+
+
+public class Viewport
 {
 
-    public class Viewport
-    {
+    [JsonPropertyName("northeast")]
+    public Location Northeast { get; set; }
 
-        [JsonPropertyName("northeast")]
-        public Location Northeast { get; set; }
-
-        [JsonPropertyName("southwest")]
-        public Location Southwest { get; set; }
-    }
-
+    [JsonPropertyName("southwest")]
+    public Location Southwest { get; set; }
 }

@@ -1,0 +1,50 @@
+<Project>
+
+  <PropertyGroup Label="Package">
+    <Description>Fluent wrapper over HttpClient to make REST calls easier</Description>
+    <Copyright>Copyright © $([System.DateTime]::Now.ToString(yyyy)) LoreSoft</Copyright>
+    <Authors>LoreSoft</Authors>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageTags>HTTP;HttpClient;REST;Fluent</PackageTags>
+    <PackageProjectUrl>https://github.com/loresoft/FluentRest</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/loresoft/FluentRest</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DebugType>portable</DebugType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\..\..\logo.png">
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+      <Visible>false</Visible>
+    </None>
+    <None Include=".\..\..\README.md">
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+      <Visible>false</Visible>
+    </None>
+  </ItemGroup>
+  
+</Project>
