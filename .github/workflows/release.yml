@@ -1,0 +1,39 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionIncrement:
+        description: 'Specifies which part of the version is incremented '
+        default: 'minor'
+        type: choice
+        options:
+        - major
+        - minor
+        - build
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+          dotnet-version: 7.0.x
+
+    - name: Install GitVersioning
+      run: dotnet tool install -g nbgv
+
+    - name: Create Release
+      run: nbgv prepare-release --versionIncrement $VERSION_INCREMENT
+      env:
+          VERSION_INCREMENT: ${{ inputs.versionIncrement }}
+
+    - name: Push Release
+      run: git push --all
