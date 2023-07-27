@@ -28,7 +28,7 @@ jobs:
           dotnet-version: 7.0.x
 
     - name: Install GitVersioning
-      run: dotnet tool install -g nbgv
+      run: dotnet tool update -g nbgv
 
     - name: Create Release
       run: nbgv prepare-release --versionIncrement $VERSION_INCREMENT
