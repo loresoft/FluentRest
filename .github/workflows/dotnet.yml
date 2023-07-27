@@ -76,7 +76,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    if: success() && github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    if: success() && github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
 
     steps:
     - name: Download Artifact
