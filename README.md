@@ -21,10 +21,10 @@ More information about NuGet package available at
 
 ## Development Builds
 
-Development builds are available on the myget.org feed.  A development build is promoted to the main NuGet feed when it's determined to be stable. 
+Development builds are available on the feedz.io feed.  A development build is promoted to the main NuGet feed when it's determined to be stable. 
 
 In your Package Manager settings add the following package source for development builds:
-<http://www.myget.org/F/loresoft/>
+<https://f.feedz.io/loresoft/open/nuget/index.json>
 
 ## Features
 

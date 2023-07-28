@@ -1,6 +1,8 @@
 name: Build
 
 env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   BUILD_PATH: '${{github.workspace}}/artifacts'
   COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
@@ -8,11 +10,13 @@ on:
   push:
     branches:
       - master
-      - 'release/*'
+      - develop
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - master
-      - 'release/*'
+      - develop
 
 jobs:
 
@@ -31,11 +35,6 @@ jobs:
           dotnet-version: | 
                 6.0.x
                 7.0.x
-
-    - name: Update Version
-      uses: dotnet/nbgv@master
-      with:
-        setAllVars: true
 
     - name: Restore Dependencies
       run: dotnet restore
@@ -74,7 +73,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    if: success() && github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release'))
+    if: success() && github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
     - name: Download Artifact
@@ -89,8 +88,15 @@ jobs:
           dotnet nuget push $package --source https://nuget.pkg.github.com/loresoft/index.json --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
         done
 
+    - name: Publish Packages feedz
+      run: |
+        for package in $(find -name "*.nupkg"); do
+          echo "${0##*/}": Pushing $package...
+          dotnet nuget push $package --source https://f.feedz.io/loresoft/open/nuget/index.json --api-key ${{ secrets.FEEDDZ_KEY }} --skip-duplicate
+        done
+
     - name: Publish Packages Nuget
-      if: startsWith(github.ref, 'refs/heads/release')
+      if: startsWith(github.ref, 'refs/tags/v')
       run: |
         for package in $(find -name "*.nupkg"); do
           echo "${0##*/}": Pushing $package...

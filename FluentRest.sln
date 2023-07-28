@@ -9,7 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{A4E004F2
 		src\Directory.Build.props = src\Directory.Build.props
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		README.md = README.md
-		version.json = version.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentRest", "src\FluentRest\FluentRest.csproj", "{392B3B57-8EEA-4B15-845E-6A4402364989}"
