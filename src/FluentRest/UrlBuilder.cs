@@ -544,7 +544,7 @@ public class UrlBuilder
     /// </returns>
     public override string ToString()
     {
-        var builder = new StringBuilder();
+        var builder = StringBuilderCache.Acquire(150);
 
         if (!string.IsNullOrWhiteSpace(_scheme))
             builder.Append(_scheme).Append(_schemeDelimiter);
@@ -553,16 +553,16 @@ public class UrlBuilder
         {
             builder.Append(_username);
             if (!string.IsNullOrWhiteSpace(_password))
-                builder.Append(":").Append(_password);
+                builder.Append(':').Append(_password);
 
-            builder.Append("@");
+            builder.Append('@');
         }
 
         if (!string.IsNullOrWhiteSpace(_host))
         {
             builder.Append(_host);
             if (_port.HasValue && !IsStandardPort())
-                builder.Append(":").Append(_port);
+                builder.Append(':').Append(_port);
         }
 
         WritePath(builder);
@@ -571,7 +571,7 @@ public class UrlBuilder
         if (!string.IsNullOrWhiteSpace(_fragment))
             builder.Append(_fragment);
 
-        return builder.ToString();
+        return StringBuilderCache.ToString(builder);
     }
 
 
@@ -586,7 +586,7 @@ public class UrlBuilder
 
     private void WritePath(StringBuilder builder)
     {
-        builder.Append("/");
+        builder.Append('/');
         if (Path == null || Path.Count == 0)
             return;
 
@@ -594,12 +594,11 @@ public class UrlBuilder
         foreach (var p in Path)
         {
             if (builder.Length > start)
-                builder.Append("/");
+                builder.Append('/');
 
-            var s = p.Replace(" ", "+");
-            s = Uri.EscapeUriString(s);
+            var v = Uri.EscapeDataString(p);
 
-            builder.Append(s);
+            builder.Append(v);
         }
     }
 
@@ -608,29 +607,27 @@ public class UrlBuilder
         if (Query == null || Query.Count == 0)
             return;
 
-        builder.Append("?");
+        builder.Append('?');
 
         int start = builder.Length;
         foreach (var pair in Query)
         {
             var key = pair.Key;
             key = Uri.EscapeDataString(key);
-            key = key.Replace("%20", "+");
 
             var values = pair.Value.ToList();
 
             foreach (var value in values)
             {
                 if (builder.Length > start)
-                    builder.Append("&");
+                    builder.Append('&');
 
                 var v = value;
                 v = Uri.EscapeDataString(v);
-                v = v.Replace("%20", "+");
 
                 builder
                     .Append(key)
-                    .Append("=")
+                    .Append('=')
                     .Append(v);
             }
         }
@@ -763,6 +760,3 @@ public class UrlBuilder
     }
 
 }
-
-
-

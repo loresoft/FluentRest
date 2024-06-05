@@ -38,6 +38,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AssemblyMetadata.Generators" Version="2.0.0" PrivateAssets="All" />
     <PackageReference Include="MinVer" Version="5.0.0" PrivateAssets="All" />
   </ItemGroup>
 
@@ -53,5 +54,5 @@
       <Visible>false</Visible>
     </None>
   </ItemGroup>
-  
+
 </Project>

@@ -21,10 +21,10 @@ public class UrlBuilderTests
 
     [Theory]
     [InlineData("http://foo/bar/baz", "date", "today", "http://foo/bar/baz?date=today")]
-    [InlineData("http://foo/bar/baz", "date", "sunday afternoon", "http://foo/bar/baz?date=sunday+afternoon")]
+    [InlineData("http://foo/bar/baz", "date", "sunday afternoon", "http://foo/bar/baz?date=sunday%20afternoon")]
     [InlineData("http://foo/bar/baz?date=today", "key1", "value1", "http://foo/bar/baz?date=today&key1=value1")]
-    [InlineData("http://foo/bar/baz?date=today", "key1", "value 1&", "http://foo/bar/baz?date=today&key1=value+1%26")]
-    [InlineData("foo/bar/baz?date=today", "key1", "value 1&", "http://foo/bar/baz?date=today&key1=value+1%26")]
+    [InlineData("http://foo/bar/baz?date=today", "key1", "value 1&", "http://foo/bar/baz?date=today&key1=value%201%26")]
+    [InlineData("foo/bar/baz?date=today", "key1", "value 1&", "http://foo/bar/baz?date=today&key1=value%201%26")]
     public void AppendQuery(string url, string key, string value, string expected)
     {
         var builder = new UrlBuilder(url);

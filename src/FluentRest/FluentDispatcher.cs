@@ -52,7 +52,7 @@ public static class FluentDispatcher
         if (requestMessage.Headers.UserAgent.Count == 0)
         {
             // user-agent header required
-            var headerValue = new ProductInfoHeaderValue("FluentRest", "5.0.0.0");
+            var headerValue = new ProductInfoHeaderValue("FluentRest", ThisAssembly.FileVersion);
             requestMessage.Headers.UserAgent.Add(headerValue);
         }
 
