@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,7 +31,7 @@ public class FileMessageStoreTests
     }
 
     [Fact]
-    public async void Register()
+    public async Task Register()
     {
         var client = ServiceProvider.GetService<EchoClient>();
 
@@ -39,7 +40,7 @@ public class FileMessageStoreTests
             .FormValue("Test", "Fake")
             .FormValue("key", "value")
             .QueryString("page", 10)
-        ).ConfigureAwait(false);
+        );
 
         Assert.NotNull(result);
         Assert.Equal("http://httpbin.org/post?page=10", result.Url);

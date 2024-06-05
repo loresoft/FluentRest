@@ -1,3 +1,5 @@
+// Ignore Spelling: Serializer
+
 namespace FluentRest;
 
 /// <summary>

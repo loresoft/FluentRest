@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -6,7 +5,7 @@ namespace FluentRest;
 
 internal sealed class ProblemDetailsConverter : JsonConverter<ProblemDetails>
 {
-    private static readonly JsonEncodedText Type = JsonEncodedText.Encode("type");
+    private static readonly JsonEncodedText ProblemType = JsonEncodedText.Encode("type");
     private static readonly JsonEncodedText Title = JsonEncodedText.Encode("title");
     private static readonly JsonEncodedText Status = JsonEncodedText.Encode("status");
     private static readonly JsonEncodedText Detail = JsonEncodedText.Encode("detail");
@@ -37,7 +36,7 @@ internal sealed class ProblemDetailsConverter : JsonConverter<ProblemDetails>
 
     internal static void ReadValue(ref Utf8JsonReader reader, ProblemDetails value, JsonSerializerOptions options)
     {
-        if (TryReadStringProperty(ref reader, Type, out var propertyValue))
+        if (TryReadStringProperty(ref reader, ProblemType, out var propertyValue))
         {
             value.Type = propertyValue;
         }
@@ -83,7 +82,7 @@ internal sealed class ProblemDetailsConverter : JsonConverter<ProblemDetails>
     internal static void WriteProblemDetails(Utf8JsonWriter writer, ProblemDetails value, JsonSerializerOptions options)
     {
         if (value.Type != null)
-            writer.WriteString(Type, value.Type);
+            writer.WriteString(ProblemType, value.Type);
 
         if (value.Title != null)
             writer.WriteString(Title, value.Title);

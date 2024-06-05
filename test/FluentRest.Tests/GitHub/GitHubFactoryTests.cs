@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 using FluentRest.Tests.GitHub.Models;
 
@@ -33,7 +34,7 @@ public class GitHubFactoryTests
     }
 
     [Fact]
-    public async void GetRepo()
+    public async Task GetRepo()
     {
         var client = ServiceProvider.GetService<GithubClient>();
         var result = await client.GetAsync<Repository>(b => b
@@ -47,7 +48,7 @@ public class GitHubFactoryTests
     }
 
     [Fact]
-    public async void GetRepoIssues()
+    public async Task GetRepoIssues()
     {
         var client = ServiceProvider.GetService<GithubClient>();
         var result = await client.GetAsync<List<Issue>>(b => b
@@ -61,7 +62,7 @@ public class GitHubFactoryTests
     }
 
     [Fact]
-    public async void GetFirstIssue()
+    public async Task GetFirstIssue()
     {
         var client = ServiceProvider.GetService<GithubClient>();
         var result = await client.GetAsync<Issue>(b => b

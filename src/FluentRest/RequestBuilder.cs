@@ -1,7 +1,3 @@
-using System;
-using System.Net.Http;
-using System.Threading;
-
 namespace FluentRest;
 
 /// <summary>
@@ -63,7 +59,7 @@ public abstract class RequestBuilder<TBuilder>
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("Argument is null or empty", nameof(key));
 
-        RequestMessage.Properties[key] = value;
+        RequestMessage.SetOption(key, value);
         return this as TBuilder;
     }
 }

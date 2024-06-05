@@ -1,5 +1,4 @@
-using System;
-using System.Net.Http;
+// Ignore Spelling: Serializer
 
 namespace FluentRest;
 

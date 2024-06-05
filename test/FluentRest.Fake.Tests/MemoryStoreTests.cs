@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,7 +29,7 @@ public class MemoryStoreTests
     }
 
     [Fact]
-    public async void PostTest()
+    public async Task PostTest()
     {
         var response = new EchoResult();
         response.Url = "http://httpbin.org/post?page=10";
@@ -56,7 +57,7 @@ public class MemoryStoreTests
             .FormValue("Test", "Fake")
             .FormValue("key", "value")
             .QueryString("page", 10)
-        ).ConfigureAwait(false);
+        );
 
         Assert.NotNull(result);
         Assert.Equal("http://httpbin.org/post?page=10", result.Url);
@@ -65,7 +66,7 @@ public class MemoryStoreTests
     }
 
     [Fact]
-    public async void PostWithGlobalCustomContentSerializerTest()
+    public async Task PostWithGlobalCustomContentSerializerTest()
     {
         var response = new EchoResult();
         response.Url = "http://httpbin.org/post?page=10";
@@ -94,7 +95,7 @@ public class MemoryStoreTests
             .FormValue("Test", "Fake")
             .FormValue("key", "value")
             .QueryString("page", 10)
-        ).ConfigureAwait(false);
+        );
 
         Assert.NotNull(result);
         Assert.Equal("http://httpbin.org/post?page=10", result.Url);
@@ -103,7 +104,7 @@ public class MemoryStoreTests
     }
 
     [Fact]
-    public async void PostWithCustomContentSerializerTest()
+    public async Task PostWithCustomContentSerializerTest()
     {
         var response = new EchoResult();
         response.Url = "http://httpbin.org/post?page=10";
@@ -130,7 +131,7 @@ public class MemoryStoreTests
             .FormValue("Test", "Fake")
             .FormValue("key", "value")
             .QueryString("page", 10)
-        ).ConfigureAwait(false);
+        );
 
         Assert.NotNull(result);
         Assert.Equal("http://httpbin.org/post?page=10", result.Url);
@@ -145,7 +146,7 @@ public class MemoryStoreTests
     }
 
     [Fact]
-    public async void PostWithStringContentTest()
+    public async Task PostWithStringContentTest()
     {
         string json = "{ \"url\": \"http://httpbin.org/post\", \"data\": \"test\" }";
 
@@ -162,14 +163,14 @@ public class MemoryStoreTests
         var client = ServiceProvider.GetService<EchoClient>();
         var result = await client.PostAsync<EchoResult>(b => b
             .AppendPath("post")
-        ).ConfigureAwait(false);
+        );
 
         Assert.NotNull(result);
         Assert.Equal("http://httpbin.org/post", result.Url);
     }
 
     [Fact]
-    public async void PostWithByteArrayContentTest()
+    public async Task PostWithByteArrayContentTest()
     {
         string json = "{ \"url\": \"http://httpbin.org/post\", \"data\": \"test\" }";
         var data = Encoding.UTF8.GetBytes(json);
@@ -187,7 +188,7 @@ public class MemoryStoreTests
         var client = ServiceProvider.GetService<EchoClient>();
         var result = await client.PostAsync<EchoResult>(b => b
             .AppendPath("post")
-        ).ConfigureAwait(false);
+        );
 
         Assert.NotNull(result);
         Assert.Equal("http://httpbin.org/post", result.Url);

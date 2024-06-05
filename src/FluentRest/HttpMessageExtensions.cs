@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+// Ignore Spelling: Serializer Deserialize
 
 namespace FluentRest;
 
@@ -13,6 +7,49 @@ namespace FluentRest;
 /// </summary>
 public static class HttpMessageExtensions
 {
+    public static TValue GetOrAddOption<TValue>(this HttpRequestMessage requestMessage, string key, Func<string, TValue> valueFactory)
+    {
+#if NET5_0_OR_GREATER
+        var optionKey = new HttpRequestOptionsKey<TValue>(key);
+        if (requestMessage.Options.TryGetValue(optionKey, out var value))
+            return value;
+
+        value = valueFactory(key);
+        requestMessage.Options.Set(optionKey, value);
+        return value;
+#else
+        if (requestMessage.Properties.TryGetValue(key, out var propertyValue))
+            return (TValue)propertyValue;
+
+        propertyValue = valueFactory(key);
+        requestMessage.Properties.Add(key, propertyValue);
+
+        return (TValue)propertyValue;
+#endif
+    }
+
+    public static bool TryGetOption<TValue>(this HttpRequestMessage requestMessage, string key, out TValue value)
+    {
+#if NET5_0_OR_GREATER
+        var optionKey = new HttpRequestOptionsKey<TValue>(key);
+        return requestMessage.Options.TryGetValue(optionKey, out value);
+#else
+        var found = requestMessage.Properties.TryGetValue(key, out var propertyValue);
+        value  = found ? (TValue)propertyValue : default;
+        return found;
+#endif
+    }
+
+    public static void SetOption<TValue>(this HttpRequestMessage requestMessage, string key, TValue value)
+    {
+#if NET5_0_OR_GREATER
+        var optionKey = new HttpRequestOptionsKey<TValue>(key);
+        requestMessage.Options.Set(optionKey, value);
+#else
+        requestMessage.Properties[key] = value;
+#endif
+    }
+
     /// <summary>
     /// Gets the <see cref="UrlBuilder"/> from the specified <paramref name="requestMessage" /> properties dictionary.
     /// </summary>
@@ -26,13 +63,13 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        var propertyValue = requestMessage.Properties.GetOrAdd(FluentProperties.RequestUrlBuilder, k =>
+        var propertyValue = requestMessage.GetOrAddOption(FluentProperties.RequestUrlBuilder, k =>
             requestMessage.RequestUri == null
                 ? new UrlBuilder()
                 : new UrlBuilder(requestMessage.RequestUri)
         );
 
-        return propertyValue as UrlBuilder;
+        return propertyValue;
     }
 
     /// <summary>
@@ -46,7 +83,7 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        requestMessage.Properties[FluentProperties.RequestUrlBuilder] = urlBuilder;
+        requestMessage.SetOption(FluentProperties.RequestUrlBuilder, urlBuilder);
     }
 
 
@@ -63,7 +100,7 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        requestMessage.Properties.TryGetValue(FluentProperties.RequestContentData, out var propertyValue);
+        requestMessage.TryGetOption<object>(FluentProperties.RequestContentData, out var propertyValue);
         return propertyValue;
     }
 
@@ -78,7 +115,7 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        requestMessage.Properties[FluentProperties.RequestContentData] = contentData;
+        requestMessage.SetOption(FluentProperties.RequestContentData, contentData);
     }
 
 
@@ -95,8 +132,8 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        var propertyValue = requestMessage.Properties.GetOrAdd(FluentProperties.RequestFormData, k => new Dictionary<string, ICollection<string>>());
-        return propertyValue as Dictionary<string, ICollection<string>>;
+        var propertyValue = requestMessage.GetOrAddOption(FluentProperties.RequestFormData, k => new Dictionary<string, ICollection<string>>());
+        return propertyValue;
     }
 
 
@@ -113,8 +150,10 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        requestMessage.Properties.TryGetValue(FluentProperties.HttpCompletionOption, out var propertyValue);
-        return (HttpCompletionOption)(propertyValue ?? HttpCompletionOption.ResponseContentRead);
+        if (requestMessage.TryGetOption<HttpCompletionOption>(FluentProperties.HttpCompletionOption, out var value))
+            return value;
+
+        return HttpCompletionOption.ResponseContentRead;
     }
 
     /// <summary>
@@ -128,7 +167,7 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        requestMessage.Properties[FluentProperties.HttpCompletionOption] = completionOption;
+        requestMessage.SetOption(FluentProperties.HttpCompletionOption, completionOption);
     }
 
 
@@ -145,8 +184,10 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        requestMessage.Properties.TryGetValue(FluentProperties.CancellationToken, out var propertyValue);
-        return (CancellationToken)(propertyValue ?? CancellationToken.None);
+        if (requestMessage.TryGetOption<CancellationToken>(FluentProperties.CancellationToken, out var propertyValue))
+            return propertyValue;
+
+        return CancellationToken.None;
     }
 
     /// <summary>
@@ -160,7 +201,7 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        requestMessage.Properties[FluentProperties.CancellationToken] = cancellationToken;
+        requestMessage.SetOption(FluentProperties.CancellationToken, cancellationToken);
     }
 
 
@@ -177,8 +218,8 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        var propertyValue = requestMessage.Properties.GetOrAdd(FluentProperties.ContentSerializer, k => ContentSerializer.Current);
-        return propertyValue as IContentSerializer;
+        var propertyValue = requestMessage.GetOrAddOption(FluentProperties.ContentSerializer, k => ContentSerializer.Current);
+        return propertyValue;
     }
 
     /// <summary>
@@ -192,7 +233,7 @@ public static class HttpMessageExtensions
         if (requestMessage == null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        requestMessage.Properties[FluentProperties.ContentSerializer] = contentSerializer ?? ContentSerializer.Current;
+        requestMessage.SetOption(FluentProperties.ContentSerializer, contentSerializer ?? ContentSerializer.Current);
     }
 
 

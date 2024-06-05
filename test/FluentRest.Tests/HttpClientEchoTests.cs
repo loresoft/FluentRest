@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Xunit;
 
@@ -15,7 +16,7 @@ namespace FluentRest.Tests;
 public class HttpClientEchoTests
 {
     [Fact]
-    public async void EchoGet()
+    public async Task EchoGet()
     {
         var client = CreateClient();
 
@@ -32,7 +33,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoGetBearer()
+    public async Task EchoGetBearer()
     {
         var client = CreateClient();
 
@@ -52,7 +53,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoBasicAuthorization()
+    public async Task EchoBasicAuthorization()
     {
         var client = CreateClient();
 
@@ -86,7 +87,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoGetAcceptMultiple()
+    public async Task EchoGetAcceptMultiple()
     {
         var client = CreateClient();
 
@@ -107,7 +108,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoPost()
+    public async Task EchoPost()
     {
         var client = CreateClient();
 
@@ -125,7 +126,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoPostResponse()
+    public async Task EchoPostResponse()
     {
         var client = CreateClient();
 
@@ -148,7 +149,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoPatch()
+    public async Task EchoPatch()
     {
         var client = CreateClient();
 
@@ -165,7 +166,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoPatchResponse()
+    public async Task EchoPatchResponse()
     {
         var client = CreateClient();
 
@@ -186,7 +187,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoPut()
+    public async Task EchoPut()
     {
         var client = CreateClient();
 
@@ -204,7 +205,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoDelete()
+    public async Task EchoDelete()
     {
         var client = CreateClient();
 
@@ -220,7 +221,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoPostData()
+    public async Task EchoPostData()
     {
         var user = UserData.Create();
         var client = CreateClient();
@@ -247,7 +248,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoPostRawJsonContent()
+    public async Task EchoPostRawJsonContent()
     {
         var user = UserData.Create();
         var json = JsonSerializer.Serialize(user);
@@ -267,7 +268,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoPostNonFluentRawJsonContent()
+    public async Task EchoPostNonFluentRawJsonContent()
     {
         var user = UserData.Create();
         var json = JsonSerializer.Serialize(user);
@@ -278,10 +279,10 @@ public class HttpClientEchoTests
 
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = client.SendAsync(request);
+        var response = await client.SendAsync(request);
         Assert.NotNull(response);
 
-        var result = await response.Result.DeserializeAsync<EchoResult>();
+        var result = await response.DeserializeAsync<EchoResult>();
 
         Assert.NotNull(result);
         Assert.Equal(json, result.Data);
@@ -292,7 +293,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoPostRawTextContent()
+    public async Task EchoPostRawTextContent()
     {
         var client = CreateClient();
 
@@ -320,7 +321,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoPostDataCustomCompressedContent()
+    public async Task EchoPostDataCustomCompressedContent()
     {
         var user = UserData.Create();
         var data = JsonCompress(user);
@@ -359,7 +360,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void EchoError()
+    public async Task EchoError()
     {
         var client = CreateClient();
 
@@ -376,7 +377,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void DefaultPost()
+    public async Task DefaultPost()
     {
         var client = CreateClient();
 
@@ -400,7 +401,7 @@ public class HttpClientEchoTests
     }
 
     [Fact]
-    public async void SendRequest()
+    public async Task SendRequest()
     {
         var client = CreateClient();
 

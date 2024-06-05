@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -175,7 +171,7 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
             return Content(httpContent);
 
         // save for later serialization
-        RequestMessage.Properties[FluentProperties.RequestContentData] = data;
+        RequestMessage.SetOption(FluentProperties.RequestContentData, data);
 
         if (RequestMessage.Method == HttpMethod.Get)
             RequestMessage.Method = HttpMethod.Post;
