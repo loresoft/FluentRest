@@ -1,4 +1,3 @@
-using System;
 using System.Net.Http;
 
 namespace FluentRest.Tests.GitHub;

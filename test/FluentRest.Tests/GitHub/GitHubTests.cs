@@ -1,20 +1,25 @@
-using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using FluentRest.Tests.GitHub.Models;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using Xunit;
+using Xunit.Abstractions;
 
 namespace FluentRest.Tests.GitHub;
 
-public class GitHubTests
+public class GitHubTests : HostTestBase
 {
+    public GitHubTests(ITestOutputHelper output, HostFixture fixture) : base(output, fixture)
+    {
+    }
+
     [Fact]
     public async Task GetRepo()
     {
-        var client = CreateClient();
+        var client = Services.GetService<GithubClient>();
         var result = await client.GetAsync<Repository>(b => b
             .AppendPath("repos")
             .AppendPath("loresoft")
@@ -28,7 +33,7 @@ public class GitHubTests
     [Fact]
     public async Task GetRepoIssues()
     {
-        var client = CreateClient();
+        var client = Services.GetService<GithubClient>();
         var result = await client.GetAsync<List<Issue>>(b => b
             .AppendPath("repos")
             .AppendPath("loresoft")
@@ -42,7 +47,7 @@ public class GitHubTests
     [Fact]
     public async Task GetFirstIssue()
     {
-        var client = CreateClient();
+        var client = Services.GetService<GithubClient>();
         var result = await client.GetAsync<Issue>(b => b
             .AppendPath("repos")
             .AppendPath("loresoft")
@@ -53,16 +58,4 @@ public class GitHubTests
 
         Assert.NotNull(result);
     }
-
-    private static FluentClient CreateClient()
-    {
-        var contentSerializer = new JsonContentSerializer();
-
-        var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri("https://api.github.com/", UriKind.Absolute);
-
-        var fluentClient = new FluentClient(httpClient, contentSerializer);
-        return fluentClient;
-    }
-
 }

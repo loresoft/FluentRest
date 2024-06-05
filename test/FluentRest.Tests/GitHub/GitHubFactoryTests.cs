@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 using FluentRest.Tests.GitHub.Models;
@@ -8,35 +6,20 @@ using FluentRest.Tests.GitHub.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 using Xunit;
+using Xunit.Abstractions;
 
 namespace FluentRest.Tests.GitHub;
 
-public class GitHubFactoryTests
+public class GitHubFactoryTests : HostTestBase
 {
-    public IServiceProvider ServiceProvider { get; }
-
-    public GitHubFactoryTests()
+    public GitHubFactoryTests(ITestOutputHelper output, HostFixture fixture) : base(output, fixture)
     {
-        var services = new ServiceCollection();
-
-        services.AddSingleton<IContentSerializer>(sp => new JsonContentSerializer(new JsonSerializerOptions(JsonSerializerDefaults.Web)));
-
-        services.AddHttpClient<GithubClient>(c =>
-            {
-                c.BaseAddress = new Uri("https://api.github.com/");
-
-                c.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
-                c.DefaultRequestHeaders.Add("User-Agent", "GitHubClient");
-            })
-            .AddHttpMessageHandler(() => new RetryHandler());
-
-        ServiceProvider = services.BuildServiceProvider();
     }
 
     [Fact]
     public async Task GetRepo()
     {
-        var client = ServiceProvider.GetService<GithubClient>();
+        var client = Services.GetService<GithubClient>();
         var result = await client.GetAsync<Repository>(b => b
             .AppendPath("repos")
             .AppendPath("loresoft")
@@ -50,7 +33,7 @@ public class GitHubFactoryTests
     [Fact]
     public async Task GetRepoIssues()
     {
-        var client = ServiceProvider.GetService<GithubClient>();
+        var client = Services.GetService<GithubClient>();
         var result = await client.GetAsync<List<Issue>>(b => b
             .AppendPath("repos")
             .AppendPath("loresoft")
@@ -64,7 +47,7 @@ public class GitHubFactoryTests
     [Fact]
     public async Task GetFirstIssue()
     {
-        var client = ServiceProvider.GetService<GithubClient>();
+        var client = Services.GetService<GithubClient>();
         var result = await client.GetAsync<Issue>(b => b
             .AppendPath("repos")
             .AppendPath("loresoft")

@@ -9,12 +9,20 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using Xunit;
+using Xunit.Abstractions;
 
 namespace FluentRest.Tests;
 
-public class HttpClientEchoTests
+public class HttpClientEchoTests : HostTestBase
 {
+    public HttpClientEchoTests(ITestOutputHelper output, HostFixture fixture)
+        : base(output, fixture)
+    {
+    }
+
     [Fact]
     public async Task EchoGet()
     {
@@ -27,7 +35,7 @@ public class HttpClientEchoTests
         );
 
         Assert.NotNull(result);
-        Assert.Equal("https://httpbin.org/get?page=1&size=10", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/get?page=1&size=10", result.Url);
         Assert.Equal("1", result.QueryString["page"]);
         Assert.Equal("10", result.QueryString["size"]);
     }
@@ -45,7 +53,7 @@ public class HttpClientEchoTests
         );
 
         Assert.NotNull(result);
-        Assert.Equal("https://httpbin.org/get?page=1&size=10", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/get?page=1&size=10", result.Url);
         Assert.Equal("1", result.QueryString["page"]);
         Assert.Equal("10", result.QueryString["size"]);
 
@@ -102,7 +110,7 @@ public class HttpClientEchoTests
         );
 
         Assert.NotNull(result);
-        Assert.Equal("https://httpbin.org/get?page=10", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/get?page=10", result.Url);
         Assert.Equal("text/xml, application/bson, application/json", result.Headers[HttpRequestHeaders.Accept]);
         Assert.Equal("testing header", result.Headers["X-Blah"]);
     }
@@ -120,7 +128,7 @@ public class HttpClientEchoTests
         );
 
         Assert.NotNull(result);
-        Assert.Equal("https://httpbin.org/post?page=10", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/post?page=10", result.Url);
         Assert.Equal("Value", result.Form["Test"]);
         Assert.Equal("value", result.Form["key"]);
     }
@@ -143,7 +151,7 @@ public class HttpClientEchoTests
         var result = await response.DeserializeAsync<EchoResult>();
 
         Assert.NotNull(result);
-        Assert.Equal("https://httpbin.org/post?page=10", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/post?page=10", result.Url);
         Assert.Equal("Value", result.Form["Test"]);
         Assert.Equal("value", result.Form["key"]);
     }
@@ -161,7 +169,7 @@ public class HttpClientEchoTests
 
         Assert.NotNull(response);
 
-        Assert.Equal("https://httpbin.org/patch?page=10", response.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/patch?page=10", response.Url);
         Assert.Equal("Value", response.Form["Test"]);
     }
 
@@ -182,7 +190,7 @@ public class HttpClientEchoTests
         var result = await response.DeserializeAsync<EchoResult>();
 
         Assert.NotNull(result);
-        Assert.Equal("https://httpbin.org/patch?page=10", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/patch?page=10", result.Url);
         Assert.Equal("Value", result.Form["Test"]);
     }
 
@@ -199,7 +207,7 @@ public class HttpClientEchoTests
         );
 
         Assert.NotNull(result);
-        Assert.Equal("https://httpbin.org/put?page=10", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/put?page=10", result.Url);
         Assert.Equal("Value", result.Form["Test"]);
         Assert.Equal("value", result.Form["key"]);
     }
@@ -236,7 +244,7 @@ public class HttpClientEchoTests
         Assert.True(result.Headers.ContainsKey("Content-Length"));
         int contentLength = Int32.Parse(result.Headers["Content-Length"]);
         Assert.True(contentLength > 0);
-        Assert.Equal("https://httpbin.org/post?page=10", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/post?page=10", result.Url);
         Assert.Equal("application/json; charset=utf-8", result.Headers[HttpRequestHeaders.ContentType]);
         Assert.True(result.Headers.ContainsKey("Content-Type"));
         var contentType = result.Headers["Content-Type"];
@@ -337,7 +345,7 @@ public class HttpClientEchoTests
         Assert.True(result.Headers.ContainsKey("Content-Length"));
         int contentLength = Int32.Parse(result.Headers["Content-Length"]);
         Assert.True(contentLength > 0);
-        Assert.Equal("https://httpbin.org/post?page=10", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/post?page=10", result.Url);
         Assert.Equal("application/json; charset=utf-8", result.Headers[HttpRequestHeaders.ContentType]);
         Assert.Equal("gzip", result.Headers[HttpRequestHeaders.ContentEncoding]);
     }
@@ -394,7 +402,7 @@ public class HttpClientEchoTests
         );
 
         Assert.NotNull(result);
-        Assert.Equal("https://httpbin.org/post?page=10", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/post?page=10", result.Url);
         Assert.Equal("Value", result.Form["Test"]);
         Assert.Equal("value", result.Form["key"]);
         Assert.Equal("Token abc-def-123", result.Headers["Authorization"]);
@@ -412,15 +420,13 @@ public class HttpClientEchoTests
 
         Assert.NotNull(result);
         Assert.True(result.Headers.ContainsKey("Content-Length"));
-        Assert.Equal("https://httpbin.org/post", result.Url);
+        Assert.Equal($"{Fixture.HttpBinUrl}/post", result.Url);
     }
 
-    private static HttpClient CreateClient()
+    private HttpClient CreateClient()
     {
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri("https://httpbin.org/", UriKind.Absolute)
-        };
+        var httpClientFactory = Services.GetService<IHttpClientFactory>();
+        var httpClient = httpClientFactory.CreateClient("HttpBin");
 
         return httpClient;
     }

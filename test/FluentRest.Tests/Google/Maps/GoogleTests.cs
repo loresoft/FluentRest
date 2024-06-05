@@ -5,7 +5,7 @@ using FluentRest.Tests.Google.Maps.Models;
 
 using Xunit;
 
-namespace FluentRest.Tests;
+namespace FluentRest.Tests.Google.Maps;
 
 public class GoogleMapsTests
 {
