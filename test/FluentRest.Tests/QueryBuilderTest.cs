@@ -44,12 +44,14 @@ public class QueryBuilderTest
         var request = new HttpRequestMessage();
         var builder = new QueryBuilder(request);
 
+        var list = new List<int> { 1, 2 };
+
         builder.BaseUri("http://test.com/");
-        builder.QueryString("Test", ["Test1", "Test2"]);
+        builder.QueryStrings("Test", list);
 
         var uri = request.GetUrlBuilder();
 
-        Assert.Equal("http://test.com/?Test=Test1&Test=Test2", uri.ToString());
+        Assert.Equal("http://test.com/?Test=1&Test=2", uri.ToString());
     }
 
     [Fact]
@@ -126,7 +128,7 @@ public class QueryBuilderTest
         var request = new HttpRequestMessage();
         var builder = new QueryBuilder(request);
 
-        builder.BaseUri("http://test.com/api/").AppendPath("v1", "bar");
+        builder.BaseUri("http://test.com/api/").AppendPaths("v1", "bar");
 
         var urlBuilder = request.GetUrlBuilder();
 
@@ -139,8 +141,8 @@ public class QueryBuilderTest
         var request = new HttpRequestMessage();
         var builder = new QueryBuilder(request);
 
-        IEnumerable<string> enumerablePaths = new List<string>(new[] { "v1", "bar" });
-        builder.BaseUri("http://test.com/api/").AppendPath(enumerablePaths);
+        var enumerablePaths = new List<string>(["v1", "bar"]);
+        builder.BaseUri("http://test.com/api/").AppendPaths(enumerablePaths);
 
         var urlBuilder = request.GetUrlBuilder();
 

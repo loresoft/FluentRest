@@ -360,7 +360,7 @@ public class UrlBuilder
     /// </summary>
     /// <param name="paths">The path segments to append.</param>
     /// <returns></returns>
-    public UrlBuilder AppendPath(IEnumerable<string> paths)
+    public UrlBuilder AppendPaths(IEnumerable<string> paths)
     {
         if (paths == null)
             return this;
@@ -462,7 +462,7 @@ public class UrlBuilder
     /// <param name="values">The query string values.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
-    public UrlBuilder AppendQuery<TValue>(string name, IEnumerable<TValue> values)
+    public UrlBuilder AppendQueries<TValue>(string name, IEnumerable<TValue> values)
     {
         if (name == null)
             throw new ArgumentNullException(nameof(name));

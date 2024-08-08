@@ -227,13 +227,13 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="paths">The paths to append.</param>
     /// <returns>A fluent request builder.</returns>
-    public TBuilder AppendPath(IEnumerable<string> paths)
+    public TBuilder AppendPaths(IEnumerable<string> paths)
     {
         if (paths == null)
             return this as TBuilder;
 
         var urlBuilder = RequestMessage.GetUrlBuilder();
-        urlBuilder.AppendPath(paths);
+        urlBuilder.AppendPaths(paths);
 
         RequestMessage.Synchronize();
 
@@ -245,7 +245,7 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="paths">The paths to append.</param>
     /// <returns>A fluent request builder.</returns>
-    public TBuilder AppendPath(params string[] paths)
+    public TBuilder AppendPaths(params string[] paths)
     {
         if (paths == null)
             return this as TBuilder;
@@ -384,7 +384,7 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// A fluent request builder.
     /// </returns>
     /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder QueryString<TValue>(string name, IEnumerable<TValue> values)
+    public TBuilder QueryStrings<TValue>(string name, IEnumerable<TValue> values)
     {
         if (name == null)
             throw new ArgumentNullException(nameof(name));
