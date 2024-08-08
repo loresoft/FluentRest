@@ -112,6 +112,22 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     }
 
     /// <summary>
+    /// Appends the specified <paramref name="name"/> and <paramref name="value"/> to the form post body if the specified <paramref name="condition"/> is true.
+    /// </summary>
+    /// <param name="condition">If condition is true, form data will be added; otherwise ignore form data.</param>
+    /// <param name="name">The form parameter name.</param>
+    /// <param name="value">The form parameter value.</param>
+    /// <returns>A fluent request builder.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+    public TBuilder FormValueIf(bool condition, string name, string value)
+    {
+        if (!condition)
+            return this as TBuilder;
+
+        return FormValue(name, value);
+    }
+
+    /// <summary>
     /// Appends the specified <paramref name="name" /> and <paramref name="value" /> to the form post body if the specified <paramref name="condition" /> is true.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
@@ -125,6 +141,25 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     public TBuilder FormValueIf<TValue>(Func<bool> condition, string name, TValue value)
     {
         if (condition == null || !condition())
+            return this as TBuilder;
+
+        return FormValue(name, value);
+    }
+
+    /// <summary>
+    /// Appends the specified <paramref name="name" /> and <paramref name="value" /> to the form post body if the specified <paramref name="condition" /> is true.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="condition">If condition is true, form data will be added; otherwise ignore form data.</param>
+    /// <param name="name">The form parameter name.</param>
+    /// <param name="value">The form parameter value.</param>
+    /// <returns>
+    /// A fluent request builder.
+    /// </returns>
+    /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+    public TBuilder FormValueIf<TValue>(bool condition, string name, TValue value)
+    {
+        if (!condition)
             return this as TBuilder;
 
         return FormValue(name, value);

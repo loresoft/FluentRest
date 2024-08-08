@@ -82,6 +82,22 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
         return Header(name, value);
     }
 
+    /// <summary>
+    /// Sets HTTP header with the specified <paramref name="name"/> and <paramref name="value"/> if the specified <paramref name="condition"/> is true.
+    /// </summary>
+    /// <param name="condition">If condition is true, header will be added; otherwise ignore header.</param>
+    /// <param name="name">The header name.</param>
+    /// <param name="value">The header value.</param>
+    /// <returns>A fluent request builder.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+    public TBuilder HeaderIf(bool condition, string name, string value)
+    {
+        if (!condition)
+            return this as TBuilder;
+
+        return Header(name, value);
+    }
+
 
     /// <summary>
     /// Sets the base URI address used when sending requests.
@@ -258,12 +274,26 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
         if (condition == null || !condition())
             return this as TBuilder;
 
-        var urlBuilder = RequestMessage.GetUrlBuilder();
-        urlBuilder.AppendPath(path);
+        return AppendPath(path);
+    }
 
-        RequestMessage.Synchronize();
+    /// <summary>
+    /// Appends the specified <paramref name="path" /> to the BaseUri of the request.
+    /// </summary>
+    /// <param name="condition">If condition is true, append path will be added; otherwise ignore path.</param>
+    /// <param name="path">The path to append.</param>
+    /// <returns>
+    /// A fluent request builder.
+    /// </returns>
+    public TBuilder AppendPathIf(bool condition, string path)
+    {
+        if (path == null)
+            return this as TBuilder;
 
-        return this as TBuilder;
+        if (!condition)
+            return this as TBuilder;
+
+        return AppendPath(path);
     }
 
     /// <summary>
@@ -281,12 +311,25 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
         if (condition == null || !condition())
             return this as TBuilder;
 
-        var urlBuilder = RequestMessage.GetUrlBuilder();
-        urlBuilder.AppendPath(path);
+        return AppendPath(path);
+    }
 
-        RequestMessage.Synchronize();
+    /// <summary>
+    /// Appends the specified <paramref name="path" /> to the BaseUri of the request.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="condition">If condition is true, append path will be added; otherwise ignore path.</param>
+    /// <param name="path">The path to append.</param>
+    /// <returns>A fluent request builder.</returns>
+    public TBuilder AppendPathIf<TValue>(bool condition, TValue path)
+    {
+        if (path == null)
+            return this as TBuilder;
 
-        return this as TBuilder;
+        if (!condition)
+            return this as TBuilder;
+
+        return AppendPath(path);
     }
 
 
@@ -348,6 +391,22 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     }
 
     /// <summary>
+    /// Appends the specified <paramref name="name"/> and <paramref name="value"/> to the request Uri if the specified <paramref name="condition"/> is true.
+    /// </summary>
+    /// <param name="condition">If condition is true, query string will be added; otherwise ignore query string.</param>
+    /// <param name="name">The query parameter name.</param>
+    /// <param name="value">The query parameter value.</param>
+    /// <returns>A fluent request builder.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+    public TBuilder QueryStringIf(bool condition, string name, string value)
+    {
+        if (!condition)
+            return this as TBuilder;
+
+        return QueryString(name, value);
+    }
+
+    /// <summary>
     /// Appends the specified <paramref name="name" /> and <paramref name="value" /> to the request Uri if the specified <paramref name="condition" /> is true.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
@@ -361,6 +420,25 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     public TBuilder QueryStringIf<TValue>(Func<bool> condition, string name, TValue value)
     {
         if (condition == null || !condition())
+            return this as TBuilder;
+
+        return QueryString(name, value);
+    }
+
+    /// <summary>
+    /// Appends the specified <paramref name="name" /> and <paramref name="value" /> to the request Uri if the specified <paramref name="condition" /> is true.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="condition">If condition is true, query string will be added; otherwise ignore query string.</param>
+    /// <param name="name">The query parameter name.</param>
+    /// <param name="value">The query parameter value.</param>
+    /// <returns>
+    /// A fluent request builder.
+    /// </returns>
+    /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+    public TBuilder QueryStringIf<TValue>(bool condition, string name, TValue value)
+    {
+        if (!condition)
             return this as TBuilder;
 
         return QueryString(name, value);
