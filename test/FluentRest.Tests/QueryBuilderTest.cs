@@ -39,6 +39,20 @@ public class QueryBuilderTest
     }
 
     [Fact]
+    public void QueryStringMultipleList()
+    {
+        var request = new HttpRequestMessage();
+        var builder = new QueryBuilder(request);
+
+        builder.BaseUri("http://test.com/");
+        builder.QueryString("Test", ["Test1", "Test2"]);
+
+        var uri = request.GetUrlBuilder();
+
+        Assert.Equal("http://test.com/?Test=Test1&Test=Test2", uri.ToString());
+    }
+
+    [Fact]
     public void HeaderSingleValue()
     {
         var request = new HttpRequestMessage();

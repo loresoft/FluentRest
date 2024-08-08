@@ -455,6 +455,31 @@ public class UrlBuilder
     }
 
     /// <summary>
+    /// Appends the query string name and values to the current url.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="name">The query string name.</param>
+    /// <param name="values">The query string values.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendQuery<TValue>(string name, IEnumerable<TValue> values)
+    {
+        if (name == null)
+            throw new ArgumentNullException(nameof(name));
+
+        if (values == null)
+            return this;
+
+        foreach (var value in values)
+        {
+            var v = value != null ? value.ToString() : string.Empty;
+            AppendQuery(name, v);
+        }
+
+        return this;
+    }
+
+    /// <summary>
     /// Conditionally appends the query string name and value to the current url if the specified <paramref name="condition" /> is <c>true</c>.
     /// </summary>
     /// <param name="condition">The condition on weather the query string is appended.</param>

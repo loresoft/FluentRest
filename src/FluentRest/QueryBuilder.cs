@@ -375,6 +375,34 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     }
 
     /// <summary>
+    /// Appends the specified <paramref name="name" /> and <paramref name="values" /> to the request Uri.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="name">The query parameter name.</param>
+    /// <param name="values">The query parameter values.</param>
+    /// <returns>
+    /// A fluent request builder.
+    /// </returns>
+    /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
+    public TBuilder QueryString<TValue>(string name, IEnumerable<TValue> values)
+    {
+        if (name == null)
+            throw new ArgumentNullException(nameof(name));
+
+        if (values == null)
+            return this as TBuilder;
+
+        foreach (var value in values)
+        {
+            var v = value != null ? value.ToString() : string.Empty;
+            QueryString(name, v);
+        }
+
+        return this as TBuilder;
+    }
+
+
+    /// <summary>
     /// Appends the specified <paramref name="name"/> and <paramref name="value"/> to the request Uri if the specified <paramref name="condition"/> is true.
     /// </summary>
     /// <param name="condition">If condition is true, query string will be added; otherwise ignore query string.</param>
