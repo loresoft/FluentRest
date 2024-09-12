@@ -1,4 +1,6 @@
+using System.Collections.Specialized;
 using System.Text;
+using System.Web;
 
 namespace FluentRest;
 
@@ -57,8 +59,8 @@ public class UrlBuilder
         { "xmpp", null }
     };
 
-    private readonly IDictionary<string, ICollection<string>> _query;
-    private readonly IList<string> _path;
+    private readonly NameValueCollection _query;
+    private readonly List<string> _path;
     private readonly string _schemeDelimiter;
 
     private string _fragment;
@@ -73,7 +75,7 @@ public class UrlBuilder
     /// </summary>
     public UrlBuilder()
     {
-        _query = new Dictionary<string, ICollection<string>>();
+        _query = new NameValueCollection();
         _path = new List<string>();
         _fragment = string.Empty;
         _host = "localhost";
@@ -175,7 +177,7 @@ public class UrlBuilder
     /// <value>
     /// The query string dictionary information included in the Url.
     /// </value>
-    public IDictionary<string, ICollection<string>> Query => _query;
+    public NameValueCollection Query => _query;
 
     /// <summary>
     /// Gets the fragment portion of the Url.
@@ -429,10 +431,7 @@ public class UrlBuilder
         if (name == null)
             throw new ArgumentNullException(nameof(name));
 
-        var v = value ?? string.Empty;
-
-        var list = Query.GetOrAdd(name, n => new List<string>());
-        list.Add(v);
+        Query.Add(name, value ?? string.Empty);
 
         return this;
     }
@@ -632,23 +631,20 @@ public class UrlBuilder
         builder.Append('?');
 
         int start = builder.Length;
-        foreach (var pair in Query)
+
+        foreach (var key in Query.AllKeys)
         {
-            var key = pair.Key;
-            key = Uri.EscapeDataString(key);
+            var k = Uri.EscapeDataString(key ?? string.Empty);
 
-            var values = pair.Value.ToList();
-
-            foreach (var value in values)
+            foreach (var value in Query.GetValues(key))
             {
                 if (builder.Length > start)
                     builder.Append('&');
 
-                var v = value;
-                v = Uri.EscapeDataString(v);
+                var v = Uri.EscapeDataString(value ?? string.Empty);
 
                 builder
-                    .Append(key)
+                    .Append(k)
                     .Append('=')
                     .Append(v);
             }
@@ -690,65 +686,8 @@ public class UrlBuilder
         if (string.IsNullOrEmpty(s))
             return;
 
-        int l = s.Length;
-        int i = 0;
-
-        // remove leading ?
-        if (s[0] == '?')
-            i = 1;
-
-        while (i < l)
-        {
-            // find next & while noting first = on the way (and if there are more)
-            int si = i;
-            int ti = -1;
-
-            while (i < l)
-            {
-                char ch = s[i];
-
-                if (ch == '=')
-                {
-                    if (ti < 0)
-                        ti = i;
-                }
-                else if (ch == '&')
-                {
-                    break;
-                }
-
-                i++;
-            }
-
-            // extract the name / value pair
-            string name = null;
-            string value = null;
-
-            if (ti >= 0)
-            {
-                name = s.Substring(si, ti - si);
-                value = s.Substring(ti + 1, i - ti - 1);
-            }
-            else
-            {
-                value = s.Substring(si, i - si);
-            }
-
-            // decode
-            name = string.IsNullOrEmpty(name) ? string.Empty : Uri.UnescapeDataString(name);
-            value = string.IsNullOrEmpty(value) ? string.Empty : Uri.UnescapeDataString(value);
-
-            // add name / value pair to the collection
-            if (!string.IsNullOrEmpty(name))
-                AppendQuery(name, value);
-
-            // trailing '&'
-
-            //if (i == l-1 && s[i] == '&')
-            //    base.Add(null, String.Empty);
-
-            i++;
-        }
+        var result = HttpUtility.ParseQueryString(s);
+        Query.Add(result);
     }
 
     private void ParsePath(string s)
