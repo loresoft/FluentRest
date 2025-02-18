@@ -16,10 +16,10 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
     public static async Task<HttpResponseMessage> GetAsync(this HttpClient httpClient, Action<QueryBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, httpClient.BaseAddress);
@@ -40,12 +40,12 @@ public static class HttpClientExtensions
     /// <param name="builder">The fluent builder factory.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
-    public static async Task<TResponse> GetAsync<TResponse>(this HttpClient httpClient, Action<QueryBuilder> builder)
+    public static async Task<TResponse?> GetAsync<TResponse>(this HttpClient httpClient, Action<QueryBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var response = await httpClient.GetAsync(builder).ConfigureAwait(false);
@@ -64,10 +64,10 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
     public static async Task<HttpResponseMessage> PostAsync(this HttpClient httpClient, Action<FormBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, httpClient.BaseAddress);
@@ -88,12 +88,12 @@ public static class HttpClientExtensions
     /// <param name="builder">The fluent builder factory.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
-    public static async Task<TResponse> PostAsync<TResponse>(this HttpClient httpClient, Action<FormBuilder> builder)
+    public static async Task<TResponse?> PostAsync<TResponse>(this HttpClient httpClient, Action<FormBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var response = await httpClient.PostAsync(builder).ConfigureAwait(false);
@@ -112,10 +112,10 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
     public static async Task<HttpResponseMessage> PutAsync(this HttpClient httpClient, Action<FormBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var requestMessage = new HttpRequestMessage(HttpMethod.Put, httpClient.BaseAddress);
@@ -136,12 +136,12 @@ public static class HttpClientExtensions
     /// <param name="builder">The fluent builder factory.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
-    public static async Task<TResponse> PutAsync<TResponse>(this HttpClient httpClient, Action<FormBuilder> builder)
+    public static async Task<TResponse?> PutAsync<TResponse>(this HttpClient httpClient, Action<FormBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var response = await httpClient.PutAsync(builder).ConfigureAwait(false);
@@ -160,10 +160,10 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
     public static async Task<HttpResponseMessage> PatchAsync(this HttpClient httpClient, Action<FormBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var requestMessage = new HttpRequestMessage(FormBuilder.HttpPatch, httpClient.BaseAddress);
@@ -184,12 +184,12 @@ public static class HttpClientExtensions
     /// <param name="builder">The fluent builder factory.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
-    public static async Task<TResponse> PatchAsync<TResponse>(this HttpClient httpClient, Action<FormBuilder> builder)
+    public static async Task<TResponse?> PatchAsync<TResponse>(this HttpClient httpClient, Action<FormBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var response = await httpClient.PatchAsync(builder).ConfigureAwait(false);
@@ -208,10 +208,10 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
     public static async Task<HttpResponseMessage> DeleteAsync(this HttpClient httpClient, Action<FormBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var requestMessage = new HttpRequestMessage(HttpMethod.Delete, httpClient.BaseAddress);
@@ -232,12 +232,12 @@ public static class HttpClientExtensions
     /// <param name="builder">The fluent builder factory.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
-    public static async Task<TResponse> DeleteAsync<TResponse>(this HttpClient httpClient, Action<FormBuilder> builder)
+    public static async Task<TResponse?> DeleteAsync<TResponse>(this HttpClient httpClient, Action<FormBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var response = await httpClient.DeleteAsync(builder).ConfigureAwait(false);
@@ -256,10 +256,10 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
     public static async Task<HttpResponseMessage> SendAsync(this HttpClient httpClient, Action<SendBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         // build request
@@ -281,12 +281,12 @@ public static class HttpClientExtensions
     /// <param name="builder">The fluent builder factory.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="httpClient" /> or <paramref name="builder" /> is <see langword="null" />.</exception>
-    public static async Task<TResponse> SendAsync<TResponse>(this HttpClient httpClient, Action<SendBuilder> builder)
+    public static async Task<TResponse?> SendAsync<TResponse>(this HttpClient httpClient, Action<SendBuilder> builder)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var response = await httpClient.SendAsync(builder).ConfigureAwait(false);

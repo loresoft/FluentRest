@@ -21,7 +21,7 @@ public class SendBuilder : PostBuilder<SendBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
     public SendBuilder Method(HttpMethod method)
     {
-        if (method == null)
+        if (method is null)
             throw new ArgumentNullException(nameof(method));
 
         RequestMessage.Method = method;

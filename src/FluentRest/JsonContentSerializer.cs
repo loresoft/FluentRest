@@ -13,8 +13,8 @@ public class JsonContentSerializer : IContentSerializer
     /// <summary>
     /// Create a new JSON content serializer with the specified options.
     /// </summary>
-    /// <param name="options"></param>
-    public JsonContentSerializer(JsonSerializerOptions options = null)
+    /// <param name="options">The <see cref="JsonSerializerOptions"/> instance to use.</param>
+    public JsonContentSerializer(JsonSerializerOptions? options = null)
     {
         Options = options ?? new JsonSerializerOptions(JsonSerializerDefaults.Web)
         {
@@ -43,16 +43,16 @@ public class JsonContentSerializer : IContentSerializer
     /// </summary>
     /// <param name="data">The data object to serialize.</param>
     /// <returns>The <see cref="HttpContent"/> that the data object serialized to.</returns>
-    public Task<HttpContent> SerializeAsync(object data)
+    public Task<HttpContent?> SerializeAsync(object? data)
     {
-        if (data == null)
-            return Task.FromResult<HttpContent>(null);
+        if (data is null)
+            return Task.FromResult<HttpContent?>(null);
 
         var objectType = data.GetType();
         var json = JsonSerializer.Serialize(data, objectType, Options);
         var httpContent = new StringContent(json, Encoding.UTF8, ContentType);
 
-        return Task.FromResult<HttpContent>(httpContent);
+        return Task.FromResult<HttpContent?>(httpContent);
     }
 
     /// <summary>
@@ -61,8 +61,11 @@ public class JsonContentSerializer : IContentSerializer
     /// <typeparam name="TData">The type of the data.</typeparam>
     /// <param name="content">The content to deserialize.</param>
     /// <returns>The data object deserialized from the HttpContent.</returns>
-    public async Task<TData> DeserializeAsync<TData>(HttpContent content)
+    public async Task<TData?> DeserializeAsync<TData>(HttpContent? content)
     {
+        if (content is null)
+            return default;
+
         using var stream = await content.ReadAsStreamAsync().ConfigureAwait(false);
         var result = await JsonSerializer
             .DeserializeAsync<TData>(stream, Options)

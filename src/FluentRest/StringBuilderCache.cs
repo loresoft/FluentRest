@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 namespace FluentRest;
 
@@ -12,7 +12,7 @@ internal static class StringBuilderCache
     private const int DefaultCapacity = 16; // == StringBuilder.DefaultCapacity
 
     [ThreadStatic]
-    private static StringBuilder t_cachedInstance;
+    private static StringBuilder? t_cachedInstance;
 
     /// <summary>Get a StringBuilder for the specified capacity.</summary>
     /// <remarks>If a StringBuilder of an appropriate size is cached, it will be returned and the cache emptied.</remarks>
@@ -22,7 +22,7 @@ internal static class StringBuilderCache
             return new StringBuilder(capacity);
 
         var sb = t_cachedInstance;
-        if (sb == null)
+        if (sb is null)
             return new StringBuilder(capacity);
 
         // Avoid StringBuilder block fragmentation by getting a new StringBuilder
@@ -38,17 +38,24 @@ internal static class StringBuilderCache
     }
 
     /// <summary>Place the specified builder in the cache if it is not too big.</summary>
-    public static void Release(StringBuilder sb)
+    public static void Release(StringBuilder stringBuilder)
     {
-        if (sb.Capacity <= MaxBuilderSize)
-            t_cachedInstance = sb;
+        if (stringBuilder is null)
+            throw new ArgumentNullException(nameof(stringBuilder));
+
+        if (stringBuilder.Capacity <= MaxBuilderSize)
+            t_cachedInstance = stringBuilder;
     }
 
     /// <summary>Release StringBuilder to the cache, and return the resulting string.</summary>
-    public static string ToString(StringBuilder sb)
+    public static string ToString(StringBuilder stringBuilder)
     {
-        string result = sb.ToString();
-        Release(sb);
+        if (stringBuilder is null)
+            throw new ArgumentNullException(nameof(stringBuilder));
+
+        string result = stringBuilder.ToString();
+        Release(stringBuilder);
+
         return result;
     }
 }

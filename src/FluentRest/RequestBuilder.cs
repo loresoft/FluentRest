@@ -1,3 +1,4 @@
+
 namespace FluentRest;
 
 /// <summary>
@@ -21,7 +22,7 @@ public abstract class RequestBuilder<TBuilder>
     /// <param name="requestMessage">The fluent HTTP request being built.</param>
     protected RequestBuilder(HttpRequestMessage requestMessage)
     {
-        RequestMessage = requestMessage;
+        RequestMessage = requestMessage ?? throw new ArgumentNullException(nameof(requestMessage));
     }
 
     /// <summary>
@@ -32,7 +33,7 @@ public abstract class RequestBuilder<TBuilder>
     public TBuilder CancellationToken(CancellationToken cancellationToken)
     {
         RequestMessage.SetCancellationToken(cancellationToken);
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -43,7 +44,7 @@ public abstract class RequestBuilder<TBuilder>
     public TBuilder CompletionOption(HttpCompletionOption completionOption)
     {
         RequestMessage.SetCompletionOption(completionOption);
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
 
@@ -57,9 +58,11 @@ public abstract class RequestBuilder<TBuilder>
     public TBuilder State(string key, object value)
     {
         if (string.IsNullOrEmpty(key))
-            throw new ArgumentException("Argument is null or empty", nameof(key));
+            throw new ArgumentException($"'{nameof(key)}' cannot be null or empty.", nameof(key));
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
 
         RequestMessage.SetOption(key, value);
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 }

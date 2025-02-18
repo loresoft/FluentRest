@@ -40,7 +40,7 @@ public class FakeResponseBuilder : FakeContainerBuilder<FakeResponseBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="value" /> is <see langword="null" />.</exception>
     public FakeResponseBuilder ReasonPhrase(string value)
     {
-        if (value == null)
+        if (value is null)
             throw new ArgumentNullException(nameof(value));
 
         Container.ResponseMessage.ReasonPhrase = value;
@@ -56,10 +56,10 @@ public class FakeResponseBuilder : FakeContainerBuilder<FakeResponseBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
     public FakeResponseBuilder Header(string name, string value)
     {
-        if (name == null)
+        if (name is null)
             throw new ArgumentNullException(nameof(name));
 
-        if (value == null)
+        if (value is null)
             Container.ResponseMessage.ResponseHeaders.Remove(name);
         else
             Container.ResponseMessage.ResponseHeaders[name] = new List<string>(new[] { value });
@@ -77,7 +77,7 @@ public class FakeResponseBuilder : FakeContainerBuilder<FakeResponseBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="builder" /> is <see langword="null" />.</exception>
     public FakeResponseBuilder Content(Action<FakeContentBuilder> builder)
     {
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var contentBuilder = new FakeContentBuilder(Container);

@@ -10,7 +10,7 @@ namespace FluentRest;
 public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     where TBuilder : PostBuilder<TBuilder>
 {
-    internal static readonly HttpMethod HttpPatch = new HttpMethod("PATCH");
+    internal static readonly HttpMethod HttpPatch = new("PATCH");
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PostBuilder{TBuilder}"/> class.
@@ -28,18 +28,19 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <param name="value">The form parameter value.</param>
     /// <returns>A fluent request builder.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder FormValue(string name, string value)
+    public TBuilder FormValue(string name, string? value)
     {
-        if (name == null)
+        if (name is null)
             throw new ArgumentNullException(nameof(name));
 
         var v = value ?? string.Empty;
 
         var formData = RequestMessage.GetFormData();
-        var list = formData.GetOrAdd(name, n => new List<string>());
+
+        var list = formData.GetOrAdd(name, _ => []);
         list.Add(v);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -52,9 +53,9 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// A fluent request builder.
     /// </returns>
     /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder FormValue<TValue>(string name, TValue value)
+    public TBuilder FormValue<TValue>(string name, TValue? value)
     {
-        var v = value != null ? value.ToString() : string.Empty;
+        var v = value?.ToString();
         return FormValue(name, v);
     }
 
@@ -69,13 +70,13 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <exception cref="System.ArgumentNullException"><paramref name="data" /> is <see langword="null" />.</exception>
     public TBuilder FormValue<TValue>(IEnumerable<KeyValuePair<string, TValue>> data)
     {
-        if (data == null)
+        if (data is null)
             throw new ArgumentNullException(nameof(data));
 
         foreach (var pair in data)
             FormValue(pair.Key, pair.Value);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -86,13 +87,13 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="data" /> is <see langword="null" />.</exception>
     public TBuilder FormValue(IEnumerable<KeyValuePair<string, string>> data)
     {
-        if (data == null)
+        if (data is null)
             throw new ArgumentNullException(nameof(data));
 
         foreach (var pair in data)
             FormValue(pair.Key, pair.Value);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -103,10 +104,10 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <param name="value">The form parameter value.</param>
     /// <returns>A fluent request builder.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder FormValueIf(Func<bool> condition, string name, string value)
+    public TBuilder FormValueIf(Func<bool> condition, string name, string? value)
     {
-        if (condition == null || !condition())
-            return this as TBuilder;
+        if (condition is null || !condition())
+            return (TBuilder)this;
 
         return FormValue(name, value);
     }
@@ -119,10 +120,10 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <param name="value">The form parameter value.</param>
     /// <returns>A fluent request builder.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder FormValueIf(bool condition, string name, string value)
+    public TBuilder FormValueIf(bool condition, string name, string? value)
     {
         if (!condition)
-            return this as TBuilder;
+            return (TBuilder)this;
 
         return FormValue(name, value);
     }
@@ -138,10 +139,10 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// A fluent request builder.
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder FormValueIf<TValue>(Func<bool> condition, string name, TValue value)
+    public TBuilder FormValueIf<TValue>(Func<bool> condition, string name, TValue? value)
     {
-        if (condition == null || !condition())
-            return this as TBuilder;
+        if (condition is null || !condition())
+            return (TBuilder)this;
 
         return FormValue(name, value);
     }
@@ -157,10 +158,10 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// A fluent request builder.
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder FormValueIf<TValue>(bool condition, string name, TValue value)
+    public TBuilder FormValueIf<TValue>(bool condition, string name, TValue? value)
     {
         if (!condition)
-            return this as TBuilder;
+            return (TBuilder)this;
 
         return FormValue(name, value);
     }
@@ -174,14 +175,14 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="content"/> is <see langword="null" />.</exception>
     public TBuilder Content(HttpContent content)
     {
-        if (content == null)
+        if (content is null)
             throw new ArgumentNullException(nameof(content));
 
         RequestMessage.Content = content;
         if (RequestMessage.Method == HttpMethod.Get)
             RequestMessage.Method = HttpMethod.Post;
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -194,7 +195,7 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="data"/> is <see langword="null" />.</exception>
     public TBuilder Content<TData>(TData data)
     {
-        if (data == null)
+        if (data is null)
             throw new ArgumentNullException(nameof(data));
 
         // handle special case where string gets sent here
@@ -211,7 +212,7 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
         if (RequestMessage.Method == HttpMethod.Get)
             RequestMessage.Method = HttpMethod.Post;
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     private string DetectContentType(string content)
@@ -246,9 +247,9 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="contentType"/> is <see langword="null" />.</exception>
     public TBuilder Content(Stream data, string contentType)
     {
-        if (data == null)
+        if (data is null)
             throw new ArgumentNullException(nameof(data));
-        if (contentType == null)
+        if (contentType is null)
             throw new ArgumentNullException(nameof(contentType));
 
         var content = new StreamContent(data);
@@ -258,7 +259,7 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
         if (RequestMessage.Method == HttpMethod.Get)
             RequestMessage.Method = HttpMethod.Post;
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -272,9 +273,9 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="contentType"/> is <see langword="null" />.</exception>
     public TBuilder Content(byte[] data, string contentType)
     {
-        if (data == null)
+        if (data is null)
             throw new ArgumentNullException(nameof(data));
-        if (contentType == null)
+        if (contentType is null)
             throw new ArgumentNullException(nameof(contentType));
 
         var content = new ByteArrayContent(data);
@@ -284,7 +285,7 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
         if (RequestMessage.Method == HttpMethod.Get)
             RequestMessage.Method = HttpMethod.Post;
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -297,19 +298,18 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <remarks>Setting the content of the request overrides any calls to FormValue.</remarks>
     /// <exception cref="ArgumentNullException"><paramref name="data"/> is <see langword="null" />.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="contentType"/> is <see langword="null" />.</exception>
-    public TBuilder Content(string data, string contentType, Encoding encoding = null)
+    public TBuilder Content(string data, string contentType, Encoding? encoding = null)
     {
-        if (data == null)
+        if (data is null)
             throw new ArgumentNullException(nameof(data));
-        if (contentType == null)
+        if (contentType is null)
             throw new ArgumentNullException(nameof(contentType));
 
-        var stringContent = new StringContent(data, encoding ?? Encoding.UTF8, contentType);
+        RequestMessage.Content = new StringContent(data, encoding ?? Encoding.UTF8, contentType);
 
-        RequestMessage.Content = stringContent;
         if (RequestMessage.Method == HttpMethod.Get)
             RequestMessage.Method = HttpMethod.Post;
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 }

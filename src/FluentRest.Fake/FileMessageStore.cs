@@ -80,7 +80,7 @@ public class FileMessageStore : FakeMessageStore
     private async Task SaveContent(HttpResponseMessage response, string contentPath)
     {
         // don't save content if not success
-        if (!response.IsSuccessStatusCode || response.Content == null || response.StatusCode == HttpStatusCode.NoContent)
+        if (!response.IsSuccessStatusCode || response.Content is null || response.StatusCode == HttpStatusCode.NoContent)
             return;
 
         var contents = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
@@ -118,7 +118,7 @@ public class FileMessageStore : FakeMessageStore
             fakeResponse = await JsonSerializer.DeserializeAsync<FakeResponseMessage>(reader);
 
         var httpResponse = Convert(fakeResponse);
-        if (httpContent == null)
+        if (httpContent is null)
             return httpResponse;
 
         // copy headers

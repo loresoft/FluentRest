@@ -14,9 +14,12 @@ public static class RequestExtensions
     /// <param name="builder">The builder to add header to.</param>
     /// <param name="token">The bearer authorization token.</param>
     /// <returns>A fluent request builder.</returns>
-    public static TBuilder BearerToken<TBuilder>(this TBuilder builder, string token)
+    public static TBuilder BearerToken<TBuilder>(this TBuilder builder, string? token)
          where TBuilder : QueryBuilder<TBuilder>
     {
+        if (builder is null)
+            throw new ArgumentNullException(nameof(builder));
+
         builder.Header(h => h.Authorization("Bearer", token));
 
         return builder;
@@ -33,6 +36,13 @@ public static class RequestExtensions
     public static TBuilder BasicAuthorization<TBuilder>(this TBuilder builder, string username, string password)
         where TBuilder : QueryBuilder<TBuilder>
     {
+        if (builder is null)
+            throw new ArgumentNullException(nameof(builder));
+        if (string.IsNullOrEmpty(username))
+            throw new ArgumentException($"'{nameof(username)}' cannot be null or empty.", nameof(username));
+        if (string.IsNullOrEmpty(password))
+            throw new ArgumentException($"'{nameof(password)}' cannot be null or empty.", nameof(password));
+
         string value = Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ":" + password));
         builder.Header(h => h.Authorization("Basic", value));
 

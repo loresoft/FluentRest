@@ -49,7 +49,7 @@ public class NewtonsoftJsonSerializer : IContentSerializer
     /// <returns>The <see cref="HttpContent"/> that the data object serialized to.</returns>
     public Task<HttpContent> SerializeAsync(object data)
     {
-        if (data == null)
+        if (data is null)
             return null;
 
         string json;

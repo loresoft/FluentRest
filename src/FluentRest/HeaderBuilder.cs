@@ -46,7 +46,7 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
 
         RequestMessage.Headers.Accept.Add(header);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
 
         RequestMessage.Headers.AcceptCharset.Add(header);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -80,7 +80,7 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
 
         RequestMessage.Headers.AcceptEncoding.Add(header);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
 
         RequestMessage.Headers.AcceptLanguage.Add(header);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -107,16 +107,16 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="parameter">The credentials containing the authentication information.</param>
     /// <returns>A fluent header builder.</returns>
     /// <exception cref="System.ArgumentNullException"></exception>
-    public TBuilder Authorization(string scheme, string parameter = null)
+    public TBuilder Authorization(string scheme, string? parameter = null)
     {
-        if (scheme == null)
+        if (scheme is null)
             throw new ArgumentNullException(nameof(scheme));
 
         var header = new AuthenticationHeaderValue(scheme, parameter);
 
         RequestMessage.Headers.Authorization = header;
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -124,17 +124,13 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="value">The header value.</param>
     /// <returns>A fluent header builder.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
-    public TBuilder CacheControl(string value)
+    public TBuilder CacheControl(string? value)
     {
-        if (value == null)
-            throw new ArgumentNullException(nameof(value));
-
         var header = CacheControlHeaderValue.Parse(value);
 
         RequestMessage.Headers.CacheControl = header;
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -143,13 +139,13 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="name">The header name.</param>
     /// <param name="value">The header value.</param>
     /// <returns>A fluent header builder.</returns>
-    public TBuilder Expect(string name, string value = null)
+    public TBuilder Expect(string name, string? value = null)
     {
         var header = new NameValueWithParametersHeaderValue(name, value);
 
         RequestMessage.Headers.Expect.Add(header);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -157,10 +153,10 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="value">The header value.</param>
     /// <returns>A fluent header builder.</returns>
-    public TBuilder From(string value)
+    public TBuilder From(string? value)
     {
         RequestMessage.Headers.From = value;
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -168,10 +164,10 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="value">The header value.</param>
     /// <returns>A fluent header builder.</returns>
-    public TBuilder Host(string value)
+    public TBuilder Host(string? value)
     {
         RequestMessage.Headers.Host = value;
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -182,7 +178,7 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     public TBuilder IfModifiedSince(DateTimeOffset? modifiedDate)
     {
         RequestMessage.Headers.IfModifiedSince = modifiedDate;
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -193,7 +189,7 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     public TBuilder IfUnmodifiedSince(DateTimeOffset? modifiedDate)
     {
         RequestMessage.Headers.IfUnmodifiedSince = modifiedDate;
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -203,15 +199,15 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="parameter">The credentials containing the authentication information.</param>
     /// <returns>A fluent header builder.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="scheme"/> is <see langword="null"/></exception>
-    public TBuilder ProxyAuthorization(string scheme, string parameter = null)
+    public TBuilder ProxyAuthorization(string scheme, string? parameter = null)
     {
-        if (scheme == null)
+        if (scheme is null)
             throw new ArgumentNullException(nameof(scheme));
 
         var header = new AuthenticationHeaderValue(scheme, parameter);
         RequestMessage.Headers.ProxyAuthorization = header;
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -225,7 +221,7 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
         var header = new RangeHeaderValue(from, to);
         RequestMessage.Headers.Range = header;
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -233,10 +229,10 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="uri">The header URI.</param>
     /// <returns>A fluent header builder.</returns>
-    public TBuilder Referrer(Uri uri)
+    public TBuilder Referrer(Uri? uri)
     {
         RequestMessage.Headers.Referrer = uri;
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -244,15 +240,15 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="value">The header value.</param>
     /// <returns>A fluent header builder.</returns>
-    public TBuilder Referrer(string value)
+    public TBuilder Referrer(string? value)
     {
         if (string.IsNullOrEmpty(value))
-            return this as TBuilder;
+            return (TBuilder)this;
 
         var uri = new Uri(value);
         RequestMessage.Headers.Referrer = uri;
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -260,15 +256,15 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="value">The header value.</param>
     /// <returns>A fluent header builder.</returns>
-    public TBuilder UserAgent(string value)
+    public TBuilder UserAgent(string? value)
     {
         if (string.IsNullOrEmpty(value))
-            return this as TBuilder;
+            return (TBuilder)this;
 
         var header = ProductInfoHeaderValue.Parse(value);
         RequestMessage.Headers.UserAgent.Add(header);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -276,9 +272,9 @@ public abstract class HeaderBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="method">The HTTP method.</param>
     /// <returns>A fluent header builder.</returns>
-    public TBuilder MethodOverride(HttpMethod method)
+    public TBuilder MethodOverride(HttpMethod? method)
     {
-        RequestMessage.Headers.Add(HttpRequestHeaders.MethodOverride, method.ToString());
-        return this as TBuilder;
+        RequestMessage.Headers.Add(HttpRequestHeaders.MethodOverride, method?.ToString());
+        return (TBuilder)this;
     }
 }

@@ -45,7 +45,7 @@ public class MemoryMessageStore : FakeMessageStore
     public override async Task SaveAsync(HttpRequestMessage request, HttpResponseMessage response)
     {
         // don't save content if not success
-        if (!response.IsSuccessStatusCode || response.Content == null || response.StatusCode == HttpStatusCode.NoContent)
+        if (!response.IsSuccessStatusCode || response.Content is null || response.StatusCode == HttpStatusCode.NoContent)
             return;
 
         var httpContent = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
@@ -93,7 +93,7 @@ public class MemoryMessageStore : FakeMessageStore
 
         taskSource.SetResult(httpResponse);
 
-        if (container.HttpContent == null)
+        if (container.HttpContent is null)
             return taskSource.Task;
 
         var httpContent = new ByteArrayContent(container.HttpContent);
@@ -116,7 +116,7 @@ public class MemoryMessageStore : FakeMessageStore
     /// <exception cref="ArgumentNullException"></exception>
     public void Register(Action<FakeContainerBuilder> builder)
     {
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var container = new FakeResponseContainer

@@ -18,7 +18,7 @@ public interface IContentSerializer
     /// </summary>
     /// <param name="data">The data object to serialize.</param>
     /// <returns>The <see cref="HttpContent"/> that the data object serialized to.</returns>
-    Task<HttpContent> SerializeAsync(object data);
+    Task<HttpContent?> SerializeAsync(object? data);
 
     /// <summary>
     /// Deserialize the <see cref="HttpContent"/> asynchronously.
@@ -26,5 +26,5 @@ public interface IContentSerializer
     /// <typeparam name="TData">The type of the data.</typeparam>
     /// <param name="content">The content to deserialize.</param>
     /// <returns>The data object deserialized from the HttpContent.</returns>
-    Task<TData> DeserializeAsync<TData>(HttpContent content);
+    Task<TData?> DeserializeAsync<TData>(HttpContent? content);
 }

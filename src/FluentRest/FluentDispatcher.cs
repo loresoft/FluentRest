@@ -17,10 +17,10 @@ public static class FluentDispatcher
     /// <exception cref="ArgumentNullException"><paramref name="httpClient"/> or <paramref name="requestMessage"/> is <see langword="null" />.</exception>
     public static async Task<HttpResponseMessage> SendAsync(HttpClient httpClient, HttpRequestMessage requestMessage)
     {
-        if (httpClient == null)
+        if (httpClient is null)
             throw new ArgumentNullException(nameof(httpClient));
 
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
 
         requestMessage = await PrepareRequest(requestMessage).ConfigureAwait(false);
@@ -62,7 +62,7 @@ public static class FluentDispatcher
         return requestMessage;
     }
 
-    private static async Task<HttpContent> GetContent(HttpRequestMessage requestMessage)
+    private static async Task<HttpContent?> GetContent(HttpRequestMessage requestMessage)
     {
         if (requestMessage.Method == HttpMethod.Get)
             return null;
@@ -85,7 +85,7 @@ public static class FluentDispatcher
 
         var formDictionary = requestMessage.GetFormData();
 
-        if (formDictionary == null || formDictionary.Count == 0)
+        if (formDictionary is null || formDictionary.Count == 0)
             return new StringContent(string.Empty, Encoding.UTF8, serializer.ContentType);
 
         // convert NameValue to KeyValuePair
@@ -94,11 +94,12 @@ public static class FluentDispatcher
         {
             var key = pair.Key;
             var values = pair.Value.ToList();
-            formData.AddRange(values.Select(value => new KeyValuePair<string, string>(key, value)));
+            var pairs = values.Select(value => new KeyValuePair<string, string>(key, value));
+
+            formData.AddRange(pairs);
         }
 
-        var formContent = new FormUrlEncodedContent(formData);
-        return formContent;
+        return new FormUrlEncodedContent(formData);
 
     }
 }

@@ -37,13 +37,13 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="builder" /> is <see langword="null" />.</exception>
     public TBuilder Header(Action<HeaderBuilder> builder)
     {
-        if (builder == null)
+        if (builder is null)
             throw new ArgumentNullException(nameof(builder));
 
         var headerBuilder = new HeaderBuilder(RequestMessage);
         builder(headerBuilder);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -53,17 +53,17 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="value">The header value.</param>
     /// <returns>A fluent request builder.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder Header(string name, string value)
+    public TBuilder Header(string name, string? value)
     {
-        if (name == null)
+        if (name is null)
             throw new ArgumentNullException(nameof(name));
 
-        if (value == null)
+        if (value is null)
             RequestMessage.Headers.Remove(name);
         else
             RequestMessage.Headers.Add(name, value);
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -74,10 +74,10 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="value">The header value.</param>
     /// <returns>A fluent request builder.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder HeaderIf(Func<bool> condition, string name, string value)
+    public TBuilder HeaderIf(Func<bool> condition, string name, string? value)
     {
-        if (condition == null || !condition())
-            return this as TBuilder;
+        if (condition is null || !condition())
+            return (TBuilder)this;
 
         return Header(name, value);
     }
@@ -90,10 +90,10 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="value">The header value.</param>
     /// <returns>A fluent request builder.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder HeaderIf(bool condition, string name, string value)
+    public TBuilder HeaderIf(bool condition, string name, string? value)
     {
         if (!condition)
-            return this as TBuilder;
+            return (TBuilder)this;
 
         return Header(name, value);
     }
@@ -107,7 +107,7 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="path" /> is <see langword="null" />.</exception>
     public TBuilder BaseUri(Uri path)
     {
-        if (path == null)
+        if (path is null)
             throw new ArgumentNullException(nameof(path));
 
         var urlBuilder = new UrlBuilder(path);
@@ -116,7 +116,7 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
         RequestMessage.Synchronize();
 
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="path" /> is <see langword="null" />.</exception>
     public TBuilder BaseUri(string path)
     {
-        if (path == null)
+        if (path is null)
             throw new ArgumentNullException(nameof(path));
 
         var uri = new Uri(path, UriKind.Absolute);
@@ -143,7 +143,7 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="path" /> is <see langword="null" />.</exception>
     public TBuilder FullUri(Uri path)
     {
-        if (path == null)
+        if (path is null)
             throw new ArgumentNullException(nameof(path));
 
         return BaseUri(path);
@@ -157,7 +157,7 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="path" /> is <see langword="null" />.</exception>
     public TBuilder FullUri(string path)
     {
-        if (path == null)
+        if (path is null)
             throw new ArgumentNullException(nameof(path));
 
         var u = new Uri(path, UriKind.Absolute);
@@ -170,17 +170,17 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="path">The path to append.</param>
     /// <returns>A fluent request builder.</returns>
-    public TBuilder AppendPath(Uri path)
+    public TBuilder AppendPath(Uri? path)
     {
-        if (path == null)
-            return this as TBuilder;
+        if (path is null)
+            return (TBuilder)this;
 
         var urlBuilder = RequestMessage.GetUrlBuilder();
         urlBuilder.AppendPath(path);
 
         RequestMessage.Synchronize();
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -190,17 +190,17 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <returns>
     /// A fluent request builder.
     /// </returns>
-    public TBuilder AppendPath(string path)
+    public TBuilder AppendPath(string? path)
     {
-        if (path == null)
-            return this as TBuilder;
+        if (path is null)
+            return (TBuilder)this;
 
         var urlBuilder = RequestMessage.GetUrlBuilder();
         urlBuilder.AppendPath(path);
 
         RequestMessage.Synchronize();
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -209,17 +209,17 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="path">The path to append.</param>
     /// <returns>A fluent request builder.</returns>
-    public TBuilder AppendPath<TValue>(TValue path)
+    public TBuilder AppendPath<TValue>(TValue? path)
     {
-        if (path == null)
-            return this as TBuilder;
+        if (path is null)
+            return (TBuilder)this;
 
         var urlBuilder = RequestMessage.GetUrlBuilder();
         urlBuilder.AppendPath(path);
 
         RequestMessage.Synchronize();
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -227,17 +227,17 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="paths">The paths to append.</param>
     /// <returns>A fluent request builder.</returns>
-    public TBuilder AppendPaths(IEnumerable<string> paths)
+    public TBuilder AppendPaths(IEnumerable<string>? paths)
     {
-        if (paths == null)
-            return this as TBuilder;
+        if (paths is null)
+            return (TBuilder)this;
 
         var urlBuilder = RequestMessage.GetUrlBuilder();
         urlBuilder.AppendPaths(paths);
 
         RequestMessage.Synchronize();
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -245,17 +245,17 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// </summary>
     /// <param name="paths">The paths to append.</param>
     /// <returns>A fluent request builder.</returns>
-    public TBuilder AppendPaths(params string[] paths)
+    public TBuilder AppendPaths(params string[]? paths)
     {
-        if (paths == null)
-            return this as TBuilder;
+        if (paths is null)
+            return (TBuilder)this;
 
         var urlBuilder = RequestMessage.GetUrlBuilder();
         urlBuilder.AppendPaths(paths);
 
         RequestMessage.Synchronize();
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
     /// <summary>
@@ -266,13 +266,13 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <returns>
     /// A fluent request builder.
     /// </returns>
-    public TBuilder AppendPathIf(Func<bool> condition, string path)
+    public TBuilder AppendPathIf(Func<bool> condition, string? path)
     {
-        if (path == null)
-            return this as TBuilder;
+        if (path is null)
+            return (TBuilder)this;
 
-        if (condition == null || !condition())
-            return this as TBuilder;
+        if (condition is null || !condition())
+            return (TBuilder)this;
 
         return AppendPath(path);
     }
@@ -285,13 +285,13 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <returns>
     /// A fluent request builder.
     /// </returns>
-    public TBuilder AppendPathIf(bool condition, string path)
+    public TBuilder AppendPathIf(bool condition, string? path)
     {
-        if (path == null)
-            return this as TBuilder;
+        if (path is null)
+            return (TBuilder)this;
 
         if (!condition)
-            return this as TBuilder;
+            return (TBuilder)this;
 
         return AppendPath(path);
     }
@@ -303,13 +303,13 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="condition">If condition is true, append path will be added; otherwise ignore path.</param>
     /// <param name="path">The path to append.</param>
     /// <returns>A fluent request builder.</returns>
-    public TBuilder AppendPathIf<TValue>(Func<bool> condition, TValue path)
+    public TBuilder AppendPathIf<TValue>(Func<bool> condition, TValue? path)
     {
-        if (path == null)
-            return this as TBuilder;
+        if (path is null)
+            return (TBuilder)this;
 
-        if (condition == null || !condition())
-            return this as TBuilder;
+        if (condition is null || !condition())
+            return (TBuilder)this;
 
         return AppendPath(path);
     }
@@ -321,13 +321,13 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="condition">If condition is true, append path will be added; otherwise ignore path.</param>
     /// <param name="path">The path to append.</param>
     /// <returns>A fluent request builder.</returns>
-    public TBuilder AppendPathIf<TValue>(bool condition, TValue path)
+    public TBuilder AppendPathIf<TValue>(bool condition, TValue? path)
     {
-        if (path == null)
-            return this as TBuilder;
+        if (path is null)
+            return (TBuilder)this;
 
         if (!condition)
-            return this as TBuilder;
+            return (TBuilder)this;
 
         return AppendPath(path);
     }
@@ -340,9 +340,9 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="value">The query parameter value.</param>
     /// <returns>A fluent request builder.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder QueryString(string name, string value)
+    public TBuilder QueryString(string name, string? value)
     {
-        if (name == null)
+        if (name is null)
             throw new ArgumentNullException(nameof(name));
 
 
@@ -351,7 +351,7 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
 
         RequestMessage.Synchronize();
 
-        return this as TBuilder;
+        return (TBuilder)this;
 
     }
 
@@ -365,9 +365,9 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// A fluent request builder.
     /// </returns>
     /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder QueryString<TValue>(string name, TValue value)
+    public TBuilder QueryString<TValue>(string name, TValue? value)
     {
-        if (name == null)
+        if (name is null)
             throw new ArgumentNullException(nameof(name));
 
         var v = value != null ? value.ToString() : string.Empty;
@@ -384,13 +384,13 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// A fluent request builder.
     /// </returns>
     /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder QueryStrings<TValue>(string name, IEnumerable<TValue> values)
+    public TBuilder QueryStrings<TValue>(string name, IEnumerable<TValue>? values)
     {
-        if (name == null)
+        if (name is null)
             throw new ArgumentNullException(nameof(name));
 
-        if (values == null)
-            return this as TBuilder;
+        if (values is null)
+            return (TBuilder)this;
 
         foreach (var value in values)
         {
@@ -398,7 +398,7 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
             QueryString(name, v);
         }
 
-        return this as TBuilder;
+        return (TBuilder)this;
     }
 
 
@@ -410,10 +410,10 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="value">The query parameter value.</param>
     /// <returns>A fluent request builder.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder QueryStringIf(Func<bool> condition, string name, string value)
+    public TBuilder QueryStringIf(Func<bool> condition, string name, string? value)
     {
-        if (condition == null || !condition())
-            return this as TBuilder;
+        if (condition is null || !condition())
+            return (TBuilder)this;
 
         return QueryString(name, value);
     }
@@ -426,10 +426,10 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// <param name="value">The query parameter value.</param>
     /// <returns>A fluent request builder.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder QueryStringIf(bool condition, string name, string value)
+    public TBuilder QueryStringIf(bool condition, string name, string? value)
     {
         if (!condition)
-            return this as TBuilder;
+            return (TBuilder)this;
 
         return QueryString(name, value);
     }
@@ -445,10 +445,10 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// A fluent request builder.
     /// </returns>
     /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder QueryStringIf<TValue>(Func<bool> condition, string name, TValue value)
+    public TBuilder QueryStringIf<TValue>(Func<bool> condition, string name, TValue? value)
     {
-        if (condition == null || !condition())
-            return this as TBuilder;
+        if (condition is null || !condition())
+            return (TBuilder)this;
 
         return QueryString(name, value);
     }
@@ -464,10 +464,10 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
     /// A fluent request builder.
     /// </returns>
     /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
-    public TBuilder QueryStringIf<TValue>(bool condition, string name, TValue value)
+    public TBuilder QueryStringIf<TValue>(bool condition, string name, TValue? value)
     {
         if (!condition)
-            return this as TBuilder;
+            return (TBuilder)this;
 
         return QueryString(name, value);
     }

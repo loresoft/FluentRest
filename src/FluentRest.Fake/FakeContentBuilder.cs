@@ -27,10 +27,10 @@ public class FakeContentBuilder : FakeContainerBuilder<FakeResponseBuilder>
     /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
     public FakeContentBuilder Header(string name, string value)
     {
-        if (name == null)
+        if (name is null)
             throw new ArgumentNullException(nameof(name));
 
-        if (value == null)
+        if (value is null)
             Container.ResponseMessage.ContentHeaders.Remove(name);
         else
             Container.ResponseMessage.ContentHeaders[name] = new List<string>(new[] { value });
@@ -60,7 +60,7 @@ public class FakeContentBuilder : FakeContainerBuilder<FakeResponseBuilder>
         }
         else
         {
-            if (serializer == null)
+            if (serializer is null)
                 serializer = this.Container.SerializeResponseContentCallback ?? DefaultSerializer;
 
             content = serializer(value, typeof(T));

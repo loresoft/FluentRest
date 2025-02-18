@@ -20,7 +20,7 @@ public class FluentClient : IFluentClient
     /// </summary>
     /// <param name="httpClient">The HTTP client.</param>
     /// <param name="contentSerializer">The content serializer.</param>
-    public FluentClient(HttpClient httpClient, IContentSerializer contentSerializer)
+    public FluentClient(HttpClient httpClient, IContentSerializer? contentSerializer)
     {
         HttpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         ContentSerializer = contentSerializer ?? FluentRest.ContentSerializer.Current;
@@ -42,10 +42,4 @@ public class FluentClient : IFluentClient
     /// The <see cref="HttpClient" /> used to send request.
     /// </value>
     public HttpClient HttpClient { get; }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        HttpClient?.Dispose();
-    }
 }

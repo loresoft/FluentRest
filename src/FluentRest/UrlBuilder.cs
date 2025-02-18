@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace FluentRest;
@@ -7,106 +8,47 @@ namespace FluentRest;
 /// <summary>
 /// Build and modify uniform resource locator (URL)
 /// </summary>
-public class UrlBuilder
+public sealed partial class UrlBuilder
 {
     //scheme:[//[user[:password]@]host[:port]][/path][?query][#fragment]
 
     private static readonly Dictionary<string, int?> _schemePorts = new Dictionary<string, int?>(StringComparer.OrdinalIgnoreCase)
     {
-        { "acap", 674 },
-        { "afp", 548 },
-        { "dict", 2628 },
-        { "dns", 53 },
-        { "file", null },
-        { "ftp", 21 },
-        { "git", 9418 },
-        { "gopher", 70 },
-        { "http", 80 },
-        { "https", 443 },
-        { "imap", 143 },
-        { "ipp", 631 },
-        { "ipps", 631 },
-        { "irc", 194 },
-        { "ircs", 6697 },
-        { "ldap", 389 },
-        { "ldaps", 636 },
-        { "mms", 1755 },
-        { "msrp", 2855 },
-        { "msrps", null },
-        { "mtqp", 1038 },
-        { "nfs", 111 },
-        { "nntp", 119 },
-        { "nntps", 563 },
-        { "pop", 110 },
-        { "prospero", 1525 },
-        { "redis", 6379 },
-        { "rsync", 873 },
-        { "rtsp", 554 },
-        { "rtsps", 322 },
-        { "rtspu", 5005 },
-        { "sftp", 22 },
-        { "smb", 445 },
-        { "snmp", 161 },
-        { "ssh", 22 },
-        { "steam", null },
-        { "svn", 3690 },
-        { "telnet", 23 },
-        { "ventrilo", 3784 },
-        { "vnc", 5900 },
-        { "wais", 210 },
-        { "ws", 80 },
-        { "wss", 443 },
-        { "xmpp", null }
+        { "acap", 674 },{ "afp", 548 },{ "dict", 2628 },{ "dns", 53 },{ "file", null },{ "ftp", 21 },{ "git", 9418 },{ "gopher", 70 },
+        { "http", 80 },{ "https", 443 },{ "imap", 143 },{ "ipp", 631 },{ "ipps", 631 },{ "irc", 194 },{ "ircs", 6697 },{ "ldap", 389 },
+        { "ldaps", 636 },{ "mms", 1755 },{ "msrp", 2855 },{ "msrps", null },{ "mtqp", 1038 },{ "nfs", 111 },{ "nntp", 119 },{ "nntps", 563 },
+        { "pop", 110 },{ "prospero", 1525 },{ "redis", 6379 },{ "rsync", 873 },{ "rtsp", 554 },{ "rtsps", 322 },{ "rtspu", 5005 },{ "sftp", 22 },
+        { "smb", 445 },{ "snmp", 161 },{ "ssh", 22 },{ "steam", null },{ "svn", 3690 },{ "telnet", 23 },{ "ventrilo", 3784 },{ "vnc", 5900 },
+        { "wais", 210 },{ "ws", 80 },{ "wss", 443 },{ "xmpp", null }
     };
 
-    private readonly NameValueCollection _query;
-    private readonly List<string> _path;
-    private readonly string _schemeDelimiter;
+    private const string _urlParseExpression = @"^(?:(?<scheme>[a-z][a-z0-9+\-.]*):\/\/)?(?:(?<username>[^:]*)(?::(?<password>[^@]*))?@)?(?<host>[^\/?#:]*)(?::(?<port>\d+))?(?<path>[^?#]*)(?:\?(?<query>[^#]*))?(?:#(?<fragment>.*))?$";
 
-    private string _fragment;
-    private string _host;
-    private string _password;
-    private int? _port;
-    private string _scheme;
-    private string _username;
+#if NET7_0_OR_GREATER
+    [GeneratedRegex(_urlParseExpression)]
+    private static partial Regex UrlParseRegex();
+#else
+    private static readonly Lazy<Regex> _urlParseRegex = new(() => new(_urlParseExpression));
+    private static Regex UrlParseRegex() => _urlParseRegex.Value;
+#endif
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UrlBuilder"/> class.
     /// </summary>
     public UrlBuilder()
     {
-        _query = new NameValueCollection();
-        _path = new List<string>();
-        _fragment = string.Empty;
-        _host = "localhost";
-        _password = string.Empty;
-        _scheme = "http";
-        _schemeDelimiter = "://";
-        _username = string.Empty;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UrlBuilder"/> with the specified <paramref name="uri"/>.
+    /// Initializes a new instance of the <see cref="UrlBuilder"/> with the specified <paramref name="url"/>.
     /// </summary>
-    /// <param name="uri">A URI string.</param>
-    /// <exception cref="ArgumentNullException">uri is null</exception>
-    public UrlBuilder(string uri) : this()
+    /// <param name="url">A URL string.</param>
+    public UrlBuilder(string? url)
     {
-        if (uri == null)
-            throw new ArgumentNullException(nameof(uri));
+        if (string.IsNullOrWhiteSpace(url))
+            return;
 
-        // setting allowRelative=true for a string like www.acme.org
-        Uri tryUri = new Uri(uri, UriKind.RelativeOrAbsolute);
-
-        if (tryUri.IsAbsoluteUri)
-        {
-            SetFieldsFromUri(tryUri);
-        }
-        else
-        {
-            uri = "http://" + uri;
-            SetFieldsFromUri(new Uri(uri));
-        }
+        ParseUrl(url);
     }
 
     /// <summary>
@@ -114,9 +56,9 @@ public class UrlBuilder
     /// </summary>
     /// <param name="uri">An instance of the <see cref="Uri"/> class</param>
     /// <exception cref="ArgumentNullException">uri is null</exception>
-    public UrlBuilder(Uri uri) : this()
+    public UrlBuilder(Uri uri)
     {
-        if (uri == null)
+        if (uri is null)
             throw new ArgumentNullException(nameof(uri));
 
         SetFieldsFromUri(uri);
@@ -129,7 +71,7 @@ public class UrlBuilder
     /// <value>
     /// The scheme name of the Url.
     /// </value>
-    public string Scheme => _scheme;
+    public string? Scheme { get; private set; }
 
     /// <summary>
     /// Gets the user name associated with the user that accesses the Url.
@@ -137,7 +79,7 @@ public class UrlBuilder
     /// <value>
     /// The user name associated with the user that accesses the Url.
     /// </value>
-    public string UserName => _username;
+    public string? UserName { get; private set; }
 
     /// <summary>
     /// Gets the password associated with the user that accesses the Url.
@@ -145,7 +87,7 @@ public class UrlBuilder
     /// <value>
     /// The password associated with the user that accesses the Url.
     /// </value>
-    public string Password => _password;
+    public string? Password { get; private set; }
 
     /// <summary>
     /// Gets the Domain Name System (DNS) host name or IP address of a server.
@@ -153,7 +95,7 @@ public class UrlBuilder
     /// <value>
     /// The Domain Name System (DNS) host name or IP address of a server.
     /// </value>
-    public string Host => _host;
+    public string? Host { get; private set; }
 
     /// <summary>
     /// Gets the port number of the Url.
@@ -161,7 +103,8 @@ public class UrlBuilder
     /// <value>
     /// The port number of the Url.
     /// </value>
-    public int? Port => GetStandardPort();
+    public int? Port { get; private set; }
+
 
     /// <summary>
     /// Gets the path segment collection to the resource referenced by the Url.
@@ -169,7 +112,7 @@ public class UrlBuilder
     /// <value>
     /// The path segment collection to the resource referenced by the Url.
     /// </value>
-    public IList<string> Path => _path;
+    public List<string> Path { get; } = [];
 
     /// <summary>
     /// Gets the query string dictionary information included in the Url.
@@ -177,7 +120,7 @@ public class UrlBuilder
     /// <value>
     /// The query string dictionary information included in the Url.
     /// </value>
-    public NameValueCollection Query => _query;
+    public NameValueCollection Query { get; } = [];
 
     /// <summary>
     /// Gets the fragment portion of the Url.
@@ -185,7 +128,7 @@ public class UrlBuilder
     /// <value>
     /// The fragment portion of the Url.
     /// </value>
-    public string Fragment => _fragment;
+    public string? Fragment { get; private set; }
 
 
     /// <summary>
@@ -193,24 +136,25 @@ public class UrlBuilder
     /// </summary>
     /// <param name="value">The schema name.</param>
     /// <returns></returns>
-    public UrlBuilder SetScheme(string value)
+    public UrlBuilder SetScheme(string? value)
     {
-        if (value == null)
-            value = string.Empty;
+        Scheme = value;
 
-        int index = value.IndexOf(':');
+        if (Scheme is null)
+            return this;
+
+        int index = Scheme.IndexOf(':');
         if (index != -1)
-            value = value.Substring(0, index);
+            Scheme = Scheme.Substring(0, index);
 
-        if (value.Length != 0)
+        if (Scheme.Length != 0)
         {
             if (!Uri.CheckSchemeName(value))
                 throw new ArgumentException("Invalid URI: The URI scheme is not valid.", nameof(value));
 
-            value = value.ToLowerInvariant();
+            Scheme = Scheme.ToLowerInvariant();
         }
 
-        _scheme = value;
         return this;
     }
 
@@ -219,12 +163,9 @@ public class UrlBuilder
     /// </summary>
     /// <param name="value">The user name associated with the user that access the Url.</param>
     /// <returns></returns>
-    public UrlBuilder SetUserName(string value)
+    public UrlBuilder SetUserName(string? value)
     {
-        if (value == null)
-            value = string.Empty;
-
-        _username = value;
+        UserName = value;
         return this;
     }
 
@@ -233,12 +174,9 @@ public class UrlBuilder
     /// </summary>
     /// <param name="value">The password associated with the user that access the Url.</param>
     /// <returns></returns>
-    public UrlBuilder SetPassword(string value)
+    public UrlBuilder SetPassword(string? value)
     {
-        if (value == null)
-            value = string.Empty;
-
-        _password = value;
+        Password = value;
         return this;
     }
 
@@ -247,18 +185,19 @@ public class UrlBuilder
     /// </summary>
     /// <param name="value">The Domain Name System (DNS) host name or IP address.</param>
     /// <returns></returns>
-    public UrlBuilder SetHost(string value)
+    public UrlBuilder SetHost(string? value)
     {
-        if (value == null)
-            value = string.Empty;
+        Host = value;
 
-        _host = value;
+        if (Host is null)
+            return this;
+
         //probable ipv6 address - Note: this is only supported for cases where the authority is inet-based.
-        if (_host.IndexOf(':') >= 0)
+        if (Host.Contains(':'))
         {
             //set brackets
-            if (_host[0] != '[')
-                _host = "[" + _host + "]";
+            if (Host[0] != '[')
+                Host = "[" + Host + "]";
         }
 
         return this;
@@ -274,7 +213,7 @@ public class UrlBuilder
         if (value < -1 || value > 0xFFFF)
             throw new ArgumentOutOfRangeException(nameof(value));
 
-        _port = value;
+        Port = value;
         return this;
     }
 
@@ -283,12 +222,12 @@ public class UrlBuilder
     /// </summary>
     /// <param name="value">The port number.</param>
     /// <returns></returns>
-    public UrlBuilder SetPort(string value)
+    public UrlBuilder SetPort(string? value)
     {
         if (!string.IsNullOrEmpty(value) && int.TryParse(value, out int port))
             return SetPort(port);
 
-        _port = null;
+        Port = null;
         return this;
     }
 
@@ -297,15 +236,15 @@ public class UrlBuilder
     /// </summary>
     /// <param name="value">The fragment portion.</param>
     /// <returns></returns>
-    public UrlBuilder SetFragment(string value)
+    public UrlBuilder SetFragment(string? value)
     {
-        if (value == null)
-            value = string.Empty;
+        Fragment = value;
+        if (Fragment is null)
+            return this;
 
-        if (value.Length > 0 && value[0] != '#')
-            value = '#' + value;
+        if (Fragment.Length > 0 && Fragment[0] != '#')
+            Fragment = '#' + Fragment;
 
-        _fragment = value;
         return this;
     }
 
@@ -315,9 +254,9 @@ public class UrlBuilder
     /// </summary>
     /// <param name="path">The path segment to append.</param>
     /// <returns></returns>
-    public UrlBuilder AppendPath(Uri path)
+    public UrlBuilder AppendPath(Uri? path)
     {
-        if (path == null)
+        if (path is null)
             return this;
 
         ParsePath(path.AbsolutePath);
@@ -330,9 +269,9 @@ public class UrlBuilder
     /// </summary>
     /// <param name="path">The path segment to append.</param>
     /// <returns></returns>
-    public UrlBuilder AppendPath(string path)
+    public UrlBuilder AppendPath(string? path)
     {
-        if (path == null)
+        if (path is null)
             return this;
 
         ParsePath(path);
@@ -346,9 +285,9 @@ public class UrlBuilder
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="path">The path segment to append.</param>
     /// <returns></returns>
-    public UrlBuilder AppendPath<TValue>(TValue path)
+    public UrlBuilder AppendPath<TValue>(TValue? path)
     {
-        if (path == null)
+        if (path is null)
             return this;
 
         var v = path.ToString();
@@ -362,9 +301,9 @@ public class UrlBuilder
     /// </summary>
     /// <param name="paths">The path segments to append.</param>
     /// <returns></returns>
-    public UrlBuilder AppendPaths(IEnumerable<string> paths)
+    public UrlBuilder AppendPaths(IEnumerable<string>? paths)
     {
-        if (paths == null)
+        if (paths is null)
             return this;
 
         foreach (var path in paths)
@@ -378,9 +317,9 @@ public class UrlBuilder
     /// </summary>
     /// <param name="paths">The path segments to append.</param>
     /// <returns></returns>
-    public UrlBuilder AppendPaths(params string[] paths)
+    public UrlBuilder AppendPaths(params string[]? paths)
     {
-        if (paths == null)
+        if (paths is null)
             return this;
 
         foreach (var path in paths)
@@ -408,10 +347,10 @@ public class UrlBuilder
     /// </summary>
     /// <param name="path">The path segment to set.</param>
     /// <returns></returns>
-    public UrlBuilder SetPath(string path)
+    public UrlBuilder SetPath(string? path)
     {
         Path.Clear();
-        if (path == null)
+        if (path is null)
             return this;
 
         ParsePath(path);
@@ -426,12 +365,12 @@ public class UrlBuilder
     /// <param name="value">The query string value.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
-    public UrlBuilder AppendQuery(string name, string value)
+    public UrlBuilder AppendQuery(string name, string? value)
     {
-        if (name == null)
+        if (name is null)
             throw new ArgumentNullException(nameof(name));
 
-        Query.Add(name, value ?? string.Empty);
+        Query.Add(name, value);
 
         return this;
     }
@@ -444,12 +383,12 @@ public class UrlBuilder
     /// <param name="value">The query string value.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
-    public UrlBuilder AppendQuery<TValue>(string name, TValue value)
+    public UrlBuilder AppendQuery<TValue>(string name, TValue? value)
     {
-        if (name == null)
+        if (name is null)
             throw new ArgumentNullException(nameof(name));
 
-        var v = value != null ? value.ToString() : string.Empty;
+        var v = value?.ToString();
         return AppendQuery(name, v);
     }
 
@@ -461,21 +400,38 @@ public class UrlBuilder
     /// <param name="values">The query string values.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
-    public UrlBuilder AppendQueries<TValue>(string name, IEnumerable<TValue> values)
+    public UrlBuilder AppendQueries<TValue>(string name, IEnumerable<TValue>? values)
     {
-        if (name == null)
+        if (name is null)
             throw new ArgumentNullException(nameof(name));
 
-        if (values == null)
+        if (values is null)
             return this;
 
         foreach (var value in values)
         {
-            var v = value != null ? value.ToString() : string.Empty;
+            var v = value?.ToString();
             AppendQuery(name, v);
         }
 
         return this;
+    }
+
+
+    /// <summary>
+    /// Conditionally appends the query string name and value to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+    /// </summary>
+    /// <param name="condition">The condition on weather the query string is appended.</param>
+    /// <param name="name">The query string name.</param>
+    /// <param name="value">The query string value.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendQueryIf(Func<bool> condition, string name, string? value)
+    {
+        if (condition is null || !condition())
+            return this;
+
+        return AppendQuery(name, value);
     }
 
     /// <summary>
@@ -486,9 +442,9 @@ public class UrlBuilder
     /// <param name="value">The query string value.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
-    public UrlBuilder AppendQueryIf(Func<bool> condition, string name, string value)
+    public UrlBuilder AppendQueryIf(bool condition, string name, string? value)
     {
-        if (condition == null || !condition())
+        if (!condition)
             return this;
 
         return AppendQuery(name, value);
@@ -503,22 +459,40 @@ public class UrlBuilder
     /// <param name="value">The query string value.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
-    public UrlBuilder AppendQueryIf<TValue>(Func<bool> condition, string name, TValue value)
+    public UrlBuilder AppendQueryIf<TValue>(Func<bool> condition, string name, TValue? value)
     {
-        if (condition == null || !condition())
+        if (condition is null || !condition())
             return this;
 
         return AppendQuery(name, value);
     }
 
     /// <summary>
+    /// Conditionally appends the query string name and value to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="condition">The condition on weather the query string is appended.</param>
+    /// <param name="name">The query string name.</param>
+    /// <param name="value">The query string value.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendQueryIf<TValue>(bool condition, string name, TValue? value)
+    {
+        if (!condition)
+            return this;
+
+        return AppendQuery(name, value);
+    }
+
+
+    /// <summary>
     /// Appends the query string to the current url.
     /// </summary>
     /// <param name="queryString">The query string to append.</param>
     /// <returns></returns>
-    public UrlBuilder AppendQuery(string queryString)
+    public UrlBuilder AppendQuery(string? queryString)
     {
-        if (queryString == null)
+        if (queryString is null)
             return this;
 
         ParseQueryString(queryString);
@@ -531,10 +505,10 @@ public class UrlBuilder
     /// </summary>
     /// <param name="queryString">The query string to set.</param>
     /// <returns></returns>
-    public UrlBuilder SetQuery(string queryString)
+    public UrlBuilder SetQuery(string? queryString)
     {
         Query.Clear();
-        if (queryString == null)
+        if (queryString is null)
             return this;
 
         ParseQueryString(queryString);
@@ -552,9 +526,7 @@ public class UrlBuilder
     public Uri ToUri()
     {
         var url = ToString();
-        var uri = new Uri(url, UriKind.Absolute);
-
-        return uri;
+        return new Uri(url, UriKind.RelativeOrAbsolute);
     }
 
     /// <summary>
@@ -567,48 +539,46 @@ public class UrlBuilder
     {
         var builder = StringBuilderCache.Acquire(150);
 
-        if (!string.IsNullOrWhiteSpace(_scheme))
-            builder.Append(_scheme).Append(_schemeDelimiter);
+        if (!string.IsNullOrWhiteSpace(Scheme))
+            builder.Append(Scheme).Append(Uri.SchemeDelimiter);
 
-        if (!string.IsNullOrWhiteSpace(_username))
+        if (!string.IsNullOrWhiteSpace(UserName))
         {
-            builder.Append(_username);
-            if (!string.IsNullOrWhiteSpace(_password))
-                builder.Append(':').Append(_password);
+            builder.Append(UserName);
+            if (!string.IsNullOrWhiteSpace(Password))
+                builder.Append(':').Append(Password);
 
             builder.Append('@');
         }
 
-        if (!string.IsNullOrWhiteSpace(_host))
+        if (!string.IsNullOrWhiteSpace(Host))
         {
-            builder.Append(_host);
-            if (_port.HasValue && !IsStandardPort())
-                builder.Append(':').Append(_port);
+            builder.Append(Host);
+            if (Port.HasValue && !IsStandardPort())
+                builder.Append(':').Append(Port);
         }
 
         WritePath(builder);
         WriteQueryString(builder);
 
-        if (!string.IsNullOrWhiteSpace(_fragment))
-            builder.Append(_fragment);
+        if (!string.IsNullOrWhiteSpace(Fragment))
+            builder.Append(Fragment);
 
         return StringBuilderCache.ToString(builder);
     }
 
-
-    private bool IsStandardPort()
-    {
-        if (_schemePorts.TryGetValue(_scheme, out int? port))
-            return port == _port;
-
-        return false;
-    }
+    /// <summary>
+    /// Creates a new <see cref="UrlBuilder"/> using the optional base path.
+    /// </summary>
+    /// <param name="baseUrl">The base path for the UrlBuilder</param>
+    /// <returns>A new instance of UrlBuilder</returns>
+    public static UrlBuilder Create(string? baseUrl = null) => new(baseUrl);
 
 
     private void WritePath(StringBuilder builder)
     {
         builder.Append('/');
-        if (Path == null || Path.Count == 0)
+        if (Path is null || Path.Count == 0)
             return;
 
         int start = builder.Length;
@@ -625,7 +595,7 @@ public class UrlBuilder
 
     private void WriteQueryString(StringBuilder builder)
     {
-        if (Query == null || Query.Count == 0)
+        if (Query is null || Query.Count == 0)
             return;
 
         builder.Append('?');
@@ -635,8 +605,9 @@ public class UrlBuilder
         foreach (var key in Query.AllKeys)
         {
             var k = Uri.EscapeDataString(key ?? string.Empty);
+            var values = Query.GetValues(key) ?? [string.Empty];
 
-            foreach (var value in Query.GetValues(key))
+            foreach (var value in values)
             {
                 if (builder.Length > start)
                     builder.Append('&');
@@ -654,48 +625,72 @@ public class UrlBuilder
 
     private void SetFieldsFromUri(Uri uri)
     {
-        _scheme = uri.Scheme;
-        _host = uri.Host;
-        _port = uri.Port;
-        _fragment = uri.Fragment;
+        if (!uri.IsAbsoluteUri)
+            return;
+
+        Scheme = uri.Scheme;
+        Host = uri.Host;
+        Port = uri.Port;
+        Fragment = uri.Fragment;
 
         ParseQueryString(uri.Query);
         ParsePath(uri.AbsolutePath);
 
-        string userInfo = uri.UserInfo;
+        var userInfo = uri.UserInfo;
 
-        if (userInfo.Length <= 0)
+        if (string.IsNullOrEmpty(userInfo))
             return;
 
         int index = userInfo.IndexOf(':');
 
         if (index != -1)
         {
-            _password = userInfo.Substring(index + 1);
-            _username = userInfo.Substring(0, index);
+            Password = userInfo.Substring(index + 1);
+            UserName = userInfo.Substring(0, index);
         }
         else
         {
-            _username = userInfo;
+            UserName = userInfo;
         }
     }
 
-    // based on HttpUtility.ParseQueryString
-    private void ParseQueryString(string s)
+    private void ParseUrl(string? url)
     {
-        if (string.IsNullOrEmpty(s))
+        if (string.IsNullOrEmpty(url))
             return;
 
-        var result = HttpUtility.ParseQueryString(s);
+        var match = UrlParseRegex().Match(url);
+        if (!match.Success)
+            return;
+
+        SetScheme(match.Groups["scheme"].Value);
+        SetUserName(match.Groups["username"].Value);
+        SetPassword(match.Groups["password"].Value);
+        SetHost(match.Groups["host"].Value);
+        SetPort(match.Groups["port"].Value);
+        SetPath(match.Groups["path"].Value);
+        SetQuery(match.Groups["query"].Value);
+        SetFragment(match.Groups["fragment"].Value);
+    }
+
+    private void ParseQueryString(string queryString)
+    {
+        if (string.IsNullOrEmpty(queryString))
+            return;
+
+        var result = HttpUtility.ParseQueryString(queryString);
         Query.Add(result);
     }
 
-    private void ParsePath(string s)
+    private void ParsePath(string? path)
     {
-        if (string.IsNullOrEmpty(s))
+        if (string.IsNullOrEmpty(path))
             return;
 
-        var parts = s.Split('/');
+        var parts = path?.Split('/');
+        if (parts == null)
+            return;
+
         foreach (var part in parts)
         {
             if (string.IsNullOrEmpty(part))
@@ -708,16 +703,14 @@ public class UrlBuilder
     }
 
 
-    private int? GetStandardPort()
+    private bool IsStandardPort()
     {
-        if (_port.HasValue)
-            return _port;
+        if (string.IsNullOrEmpty(Scheme))
+            return false;
 
-        if (string.IsNullOrEmpty(_scheme))
-            return _port;
+        if (_schemePorts.TryGetValue(Scheme!, out int? port))
+            return port == Port;
 
-        _schemePorts.TryGetValue(_scheme, out int? port);
-        return port;
+        return false;
     }
-
 }

@@ -49,7 +49,7 @@ public class FakeContainerBuilder : FakeContainerBuilder<FakeContainerBuilder>
     /// <exception cref="System.ArgumentNullException"><paramref name="value" /> is <see langword="null" />.</exception>
     public FakeResponseBuilder Url(string value)
     {
-        if (value == null)
+        if (value is null)
             throw new ArgumentNullException(nameof(value));
 
         Container.RequestUri = new Uri(value, UriKind.Absolute);
@@ -65,7 +65,7 @@ public class FakeContainerBuilder : FakeContainerBuilder<FakeContainerBuilder>
     /// <exception cref="System.ArgumentNullException"><paramref name="value" /> is <see langword="null" />.</exception>
     public FakeResponseBuilder Url(Uri value)
     {
-        if (value == null)
+        if (value is null)
             throw new ArgumentNullException(nameof(value));
 
         Container.RequestUri = value;

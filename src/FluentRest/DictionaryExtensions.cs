@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace FluentRest;
 
 /// <summary>
@@ -19,16 +21,16 @@ public static class DictionaryExtensions
     /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /></exception>
     public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TKey, TValue> valueFactory)
     {
-        if (key == null)
+        if (key is null)
             throw new ArgumentNullException(nameof(key));
 
         if (dictionary.TryGetValue(key, out var value))
             return value;
 
-        value = valueFactory(key);
-        dictionary.Add(key, value);
+        var factoryValue = valueFactory(key);
+        dictionary.Add(key, factoryValue);
 
-        return value;
+        return factoryValue;
     }
 
     /// <summary>
@@ -45,7 +47,7 @@ public static class DictionaryExtensions
     /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /></exception>
     public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
     {
-        if (key == null)
+        if (key is null)
             throw new ArgumentNullException(nameof(key));
 
         if (dictionary.ContainsKey(key))
@@ -65,9 +67,9 @@ public static class DictionaryExtensions
     /// <param name="value">When this method returns, value contains the object removed from the Dictionary or the default value if the operation failed.</param>
     /// <returns><c>true</c> if an object was removed successfully; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="key" /> is <see langword="null" /></exception>
-    public static bool TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)
+    public static bool TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, [MaybeNullWhen(false)] out TValue? value)
     {
-        if (key == null)
+        if (key is null)
             throw new ArgumentNullException(nameof(key));
 
         if (!dictionary.TryGetValue(key, out value))
@@ -89,7 +91,7 @@ public static class DictionaryExtensions
     /// <exception cref="System.ArgumentNullException">Thrown if key is a <c>null</c> reference </exception>
     public static bool TryUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue newValue, TValue comparisonValue)
     {
-        if (key == null)
+        if (key is null)
             throw new ArgumentNullException(nameof(key));
 
         if (!dictionary.TryGetValue(key, out var value))

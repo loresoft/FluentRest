@@ -1,5 +1,7 @@
 // Ignore Spelling: Serializer Deserialize
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace FluentRest;
 
 /// <summary>
@@ -9,6 +11,13 @@ public static class HttpMessageExtensions
 {
     public static TValue GetOrAddOption<TValue>(this HttpRequestMessage requestMessage, string key, Func<string, TValue> valueFactory)
     {
+        if (requestMessage is null)
+            throw new ArgumentNullException(nameof(requestMessage));
+        if (key == null)
+            throw new ArgumentNullException(nameof(key));
+        if (valueFactory is null)
+            throw new ArgumentNullException(nameof(valueFactory));
+
 #if NET5_0_OR_GREATER
         var optionKey = new HttpRequestOptionsKey<TValue>(key);
         if (requestMessage.Options.TryGetValue(optionKey, out var value))
@@ -21,15 +30,20 @@ public static class HttpMessageExtensions
         if (requestMessage.Properties.TryGetValue(key, out var propertyValue))
             return (TValue)propertyValue;
 
-        propertyValue = valueFactory(key);
-        requestMessage.Properties.Add(key, propertyValue);
+        var factoryValue = valueFactory(key);
+        requestMessage.Properties.Add(key, factoryValue);
 
-        return (TValue)propertyValue;
+        return factoryValue;
 #endif
     }
 
-    public static bool TryGetOption<TValue>(this HttpRequestMessage requestMessage, string key, out TValue value)
+    public static bool TryGetOption<TValue>(this HttpRequestMessage requestMessage, string key, [MaybeNullWhen(false)] out TValue? value)
     {
+        if (requestMessage is null)
+            throw new ArgumentNullException(nameof(requestMessage));
+        if (key == null)
+            throw new ArgumentNullException(nameof(key));
+
 #if NET5_0_OR_GREATER
         var optionKey = new HttpRequestOptionsKey<TValue>(key);
         return requestMessage.Options.TryGetValue(optionKey, out value);
@@ -42,6 +56,11 @@ public static class HttpMessageExtensions
 
     public static void SetOption<TValue>(this HttpRequestMessage requestMessage, string key, TValue value)
     {
+        if (requestMessage is null)
+            throw new ArgumentNullException(nameof(requestMessage));
+        if (key == null)
+            throw new ArgumentNullException(nameof(key));
+
 #if NET5_0_OR_GREATER
         var optionKey = new HttpRequestOptionsKey<TValue>(key);
         requestMessage.Options.Set(optionKey, value);
@@ -60,16 +79,14 @@ public static class HttpMessageExtensions
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null"/></exception>
     public static UrlBuilder GetUrlBuilder(this HttpRequestMessage requestMessage)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        var propertyValue = requestMessage.GetOrAddOption(FluentProperties.RequestUrlBuilder, k =>
-            requestMessage.RequestUri == null
+        return requestMessage.GetOrAddOption(FluentProperties.RequestUrlBuilder, k =>
+            requestMessage.RequestUri is null
                 ? new UrlBuilder()
                 : new UrlBuilder(requestMessage.RequestUri)
         );
-
-        return propertyValue;
     }
 
     /// <summary>
@@ -80,8 +97,10 @@ public static class HttpMessageExtensions
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage" /> is <see langword="null" /></exception>
     public static void SetUrlBuilder(this HttpRequestMessage requestMessage, UrlBuilder urlBuilder)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
+        if (urlBuilder is null)
+            throw new ArgumentNullException(nameof(urlBuilder));
 
         requestMessage.SetOption(FluentProperties.RequestUrlBuilder, urlBuilder);
     }
@@ -95,9 +114,9 @@ public static class HttpMessageExtensions
     /// The content data to send for the request message.
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null"/></exception>
-    public static object GetContentData(this HttpRequestMessage requestMessage)
+    public static object? GetContentData(this HttpRequestMessage requestMessage)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
 
         requestMessage.TryGetOption<object>(FluentProperties.RequestContentData, out var propertyValue);
@@ -112,8 +131,10 @@ public static class HttpMessageExtensions
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage" /> is <see langword="null" /></exception>
     public static void SetContentData(this HttpRequestMessage requestMessage, object contentData)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
+        if (contentData is null)
+            throw new ArgumentNullException(nameof(contentData));
 
         requestMessage.SetOption(FluentProperties.RequestContentData, contentData);
     }
@@ -129,11 +150,10 @@ public static class HttpMessageExtensions
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null"/></exception>
     public static Dictionary<string, ICollection<string>> GetFormData(this HttpRequestMessage requestMessage)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        var propertyValue = requestMessage.GetOrAddOption(FluentProperties.RequestFormData, k => new Dictionary<string, ICollection<string>>());
-        return propertyValue;
+        return requestMessage.GetOrAddOption(FluentProperties.RequestFormData, _ => new Dictionary<string, ICollection<string>>());
     }
 
 
@@ -147,7 +167,7 @@ public static class HttpMessageExtensions
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null"/></exception>
     public static HttpCompletionOption GetCompletionOption(this HttpRequestMessage requestMessage)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
 
         if (requestMessage.TryGetOption<HttpCompletionOption>(FluentProperties.HttpCompletionOption, out var value))
@@ -164,7 +184,7 @@ public static class HttpMessageExtensions
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null"/></exception>
     public static void SetCompletionOption(this HttpRequestMessage requestMessage, HttpCompletionOption completionOption)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
 
         requestMessage.SetOption(FluentProperties.HttpCompletionOption, completionOption);
@@ -181,7 +201,7 @@ public static class HttpMessageExtensions
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null"/></exception>
     public static CancellationToken GetCancellationToken(this HttpRequestMessage requestMessage)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
 
         if (requestMessage.TryGetOption<CancellationToken>(FluentProperties.CancellationToken, out var propertyValue))
@@ -198,7 +218,7 @@ public static class HttpMessageExtensions
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null"/></exception>
     public static void SetCancellationToken(this HttpRequestMessage requestMessage, CancellationToken cancellationToken)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
 
         requestMessage.SetOption(FluentProperties.CancellationToken, cancellationToken);
@@ -215,11 +235,10 @@ public static class HttpMessageExtensions
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null"/></exception>
     public static IContentSerializer GetContentSerializer(this HttpRequestMessage requestMessage)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
 
-        var propertyValue = requestMessage.GetOrAddOption(FluentProperties.ContentSerializer, k => ContentSerializer.Current);
-        return propertyValue;
+        return requestMessage.GetOrAddOption(FluentProperties.ContentSerializer, _ => ContentSerializer.Current);
     }
 
     /// <summary>
@@ -230,7 +249,7 @@ public static class HttpMessageExtensions
     /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> is <see langword="null"/></exception>
     public static void SetContentSerializer(this HttpRequestMessage requestMessage, IContentSerializer contentSerializer)
     {
-        if (requestMessage == null)
+        if (requestMessage is null)
             throw new ArgumentNullException(nameof(requestMessage));
 
         requestMessage.SetOption(FluentProperties.ContentSerializer, contentSerializer ?? ContentSerializer.Current);
@@ -243,6 +262,9 @@ public static class HttpMessageExtensions
     /// <param name="requestMessage">The request message.</param>
     public static void Synchronize(this HttpRequestMessage requestMessage)
     {
+        if (requestMessage is null)
+            throw new ArgumentNullException(nameof(requestMessage));
+
         var urlBuilder = requestMessage.GetUrlBuilder();
         requestMessage.RequestUri = urlBuilder.ToUri();
     }
@@ -259,21 +281,22 @@ public static class HttpMessageExtensions
     /// </returns>
     /// <exception cref="HttpRequestException">Response status code does not indicate success.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="responseMessage"/> is <see langword="null"/></exception>
-    public static async Task<TData> DeserializeAsync<TData>(this HttpResponseMessage responseMessage, bool ensureSuccess = true)
+    public static async Task<TData?> DeserializeAsync<TData>(this HttpResponseMessage responseMessage, bool ensureSuccess = true)
     {
-        if (responseMessage == null)
+        if (responseMessage is null)
             throw new ArgumentNullException(nameof(responseMessage));
-
 
         if (ensureSuccess)
             await responseMessage.EnsureSuccessStatusCode(true);
 
+        if (responseMessage.RequestMessage is null)
+            throw new ArgumentException("HttpResponseMessage request is null", nameof(responseMessage));
+
         var serializer = responseMessage.RequestMessage.GetContentSerializer();
-        var data = await serializer
+
+        return await serializer
             .DeserializeAsync<TData>(responseMessage.Content)
             .ConfigureAwait(false);
-
-        return data;
     }
 
     /// <summary>
@@ -281,14 +304,16 @@ public static class HttpMessageExtensions
     /// </summary>
     /// <param name="responseMessage">The response message.</param>
     /// <param name="includeContent">if set to <c>true</c> the response content is included in the exception.</param>
-    /// <returns></returns>
     /// <exception cref="HttpRequestException">The HTTP response is unsuccessful.</exception>
     public static async Task EnsureSuccessStatusCode(this HttpResponseMessage responseMessage, bool includeContent)
     {
+        if (responseMessage is null)
+            throw new ArgumentNullException(nameof(responseMessage));
+
         if (responseMessage.IsSuccessStatusCode)
             return;
 
-        // will throw if respose is a problem json
+        // will throw if response is a problem json
         await CheckResponseForProblem(responseMessage).ConfigureAwait(false);
 
         var message = $"Response status code does not indicate success: {responseMessage.StatusCode} ({responseMessage.ReasonPhrase});";
@@ -312,9 +337,12 @@ public static class HttpMessageExtensions
 
     private static async Task CheckResponseForProblem(HttpResponseMessage responseMessage)
     {
-        string mediaType = responseMessage.Content?.Headers?.ContentType?.MediaType;
+        var mediaType = responseMessage.Content.Headers.ContentType?.MediaType;
         if (!string.Equals(mediaType, ProblemDetails.ContentType, StringComparison.OrdinalIgnoreCase))
             return;
+
+        if (responseMessage.RequestMessage is null)
+            throw new ArgumentException("HttpResponseMessage request is null", nameof(responseMessage));
 
         var serializer = responseMessage.RequestMessage.GetContentSerializer();
 
@@ -322,6 +350,7 @@ public static class HttpMessageExtensions
             .DeserializeAsync<ProblemDetails>(responseMessage.Content)
             .ConfigureAwait(false);
 
-        throw new ProblemException(problem);
+        if (problem != null)
+            throw new ProblemException(problem);
     }
 }
