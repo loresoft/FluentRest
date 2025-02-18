@@ -204,4 +204,26 @@ public class UrlBuilderTests
         builder.ToString().Should().Be("http://foo.com/test/bar?test=True");
 
     }
+
+    [Fact]
+    public void BuildBaseRelativePath()
+    {
+        var builder = UrlBuilder
+            .Create("/foo")
+            .AppendPath("/bar")
+            .AppendQuery("test", true);
+
+        builder.Scheme.Should().BeEmpty();
+        builder.Host.Should().BeEmpty();
+        builder.Port.Should().BeNull();
+
+        builder.Path.Should().NotBeEmpty();
+        builder.Path.Should().Contain("foo");
+        builder.Path.Should().Contain("bar");
+
+        builder.Query.AllKeys.Length.Should().BeGreaterThan(0);
+        builder.Query.AllKeys.Should().Contain("test");
+
+        builder.ToString().Should().Be("/foo/bar?test=True");
+    }
 }

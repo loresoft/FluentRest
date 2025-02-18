@@ -587,7 +587,7 @@ public sealed partial class UrlBuilder
             if (builder.Length > start)
                 builder.Append('/');
 
-            var v = Uri.EscapeDataString(p);
+            var v = Uri.EscapeDataString(p ?? string.Empty);
 
             builder.Append(v);
         }
