@@ -255,7 +255,7 @@ public class FluentEchoTests : HostTestBase
         Assert.Equal(user.FirstName, result.Json.Value.GetProperty("firstName").GetString());
     }
 
-    //[Fact]
+    [Fact]
     public async Task EchoPostRawJsonContent()
     {
         var user = UserData.Create();

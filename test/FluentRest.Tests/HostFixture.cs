@@ -28,6 +28,9 @@ public class HostFixture : TestApplicationFixture, IAsyncLifetime
     {
         await _container.StartAsync();
 
+        // wait for startup
+        await Task.Delay(5000);
+
         // get container url
         HttpBinUrl = $"http://{_container.Hostname}:{_container.GetMappedPublicPort(80)}";
     }
