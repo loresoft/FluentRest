@@ -162,10 +162,11 @@ public sealed partial class UrlBuilder
     /// Replace the user name for the current Url.
     /// </summary>
     /// <param name="value">The user name associated with the user that access the Url.</param>
+    /// <param name="unescape">Converts a url string to its unescaped representation.</param>
     /// <returns></returns>
-    public UrlBuilder SetUserName(string? value)
+    public UrlBuilder SetUserName(string? value, bool unescape = false)
     {
-        UserName = value;
+        UserName = value != null && unescape ? Uri.UnescapeDataString(value) : value;
         return this;
     }
 
@@ -173,10 +174,11 @@ public sealed partial class UrlBuilder
     /// Replace the password for the current Url.
     /// </summary>
     /// <param name="value">The password associated with the user that access the Url.</param>
+    /// <param name="unescape">Converts a url string to its unescaped representation.</param>
     /// <returns></returns>
-    public UrlBuilder SetPassword(string? value)
+    public UrlBuilder SetPassword(string? value, bool unescape = false)
     {
-        Password = value;
+        Password = value != null && unescape ? Uri.UnescapeDataString(value) : value;
         return this;
     }
 
@@ -301,23 +303,7 @@ public sealed partial class UrlBuilder
     /// </summary>
     /// <param name="paths">The path segments to append.</param>
     /// <returns></returns>
-    public UrlBuilder AppendPaths(IEnumerable<string>? paths)
-    {
-        if (paths is null)
-            return this;
-
-        foreach (var path in paths)
-            ParsePath(path);
-
-        return this;
-    }
-
-    /// <summary>
-    /// Appends the path segments to the current Url.
-    /// </summary>
-    /// <param name="paths">The path segments to append.</param>
-    /// <returns></returns>
-    public UrlBuilder AppendPaths(params string[]? paths)
+    public UrlBuilder AppendPaths(params IEnumerable<string>? paths)
     {
         if (paths is null)
             return this;
@@ -339,6 +325,100 @@ public sealed partial class UrlBuilder
         var p = string.Format(format, arguments);
 
         return AppendPath(p);
+    }
+
+
+    /// <summary>
+    /// Conditionally appends a path segment to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+    /// </summary>
+    /// <param name="condition">The condition on weather the query string is appended.</param>
+    /// <param name="path">The path segment to append.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendPathIf(Func<bool> condition, string? path)
+    {
+        if (condition is null || !condition())
+            return this;
+
+        return AppendPath(path);
+    }
+
+    /// <summary>
+    /// Conditionally appends a path segment to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+    /// </summary>
+    /// <param name="condition">The condition on weather the query string is appended.</param>
+    /// <param name="path">The path segment to append.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendPathIf(Func<string?, bool> condition, string? path)
+    {
+        if (condition is null || !condition(path))
+            return this;
+
+        return AppendPath(path);
+    }
+
+    /// <summary>
+    /// Conditionally appends a path segment to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+    /// </summary>
+    /// <param name="condition">The condition on weather the query string is appended.</param>
+    /// <param name="path">The path segment to append.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendPathIf(bool condition, string? path)
+    {
+        if (!condition)
+            return this;
+
+        return AppendPath(path);
+    }
+
+    /// <summary>
+    /// Conditionally appends a path segment to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="condition">The condition on weather the query string is appended.</param>
+    /// <param name="path">The path segment to append.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendPathIf<TValue>(Func<bool> condition, TValue? path)
+    {
+        if (condition is null || !condition())
+            return this;
+
+        return AppendPath(path);
+    }
+
+    /// <summary>
+    /// Conditionally appends a path segment to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="condition">The condition on weather the query string is appended.</param>
+    /// <param name="path">The path segment to append.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendPathIf<TValue>(Func<TValue?, bool> condition, TValue? path)
+    {
+        if (condition is null || !condition(path))
+            return this;
+
+        return AppendPath(path);
+    }
+
+    /// <summary>
+    /// Conditionally appends a path segment to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="condition">The condition on weather the query string is appended.</param>
+    /// <param name="path">The path segment to append.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendPathIf<TValue>(bool condition, TValue? path)
+    {
+        if (!condition)
+            return this;
+
+        return AppendPath(path);
     }
 
 
@@ -392,6 +472,7 @@ public sealed partial class UrlBuilder
         return AppendQuery(name, v);
     }
 
+
     /// <summary>
     /// Appends the query string name and values to the current url.
     /// </summary>
@@ -417,6 +498,44 @@ public sealed partial class UrlBuilder
         return this;
     }
 
+    /// <summary>
+    /// Appends the query string name and values to the current url.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="values">The query string values.</param>
+    /// <returns></returns>
+    public UrlBuilder AppendQueries<TValue>(IEnumerable<KeyValuePair<string, TValue>>? values)
+    {
+        if (values is null)
+            return this;
+
+        foreach (var value in values)
+        {
+            var n = value.Key;
+            var v = value.Value?.ToString();
+
+            AppendQuery(n, v);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Appends the query string name and values to the current url.
+    /// </summary>
+    /// <param name="values">The query string values.</param>
+    /// <returns></returns>
+    public UrlBuilder AppendQueries(NameValueCollection? values)
+    {
+
+        if (values is null)
+            return this;
+
+        Query.Add(values);
+
+        return this;
+    }
+
 
     /// <summary>
     /// Conditionally appends the query string name and value to the current url if the specified <paramref name="condition" /> is <c>true</c>.
@@ -429,6 +548,22 @@ public sealed partial class UrlBuilder
     public UrlBuilder AppendQueryIf(Func<bool> condition, string name, string? value)
     {
         if (condition is null || !condition())
+            return this;
+
+        return AppendQuery(name, value);
+    }
+
+    /// <summary>
+    /// Conditionally appends the query string name and value to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+    /// </summary>
+    /// <param name="condition">The condition on weather the query string is appended.</param>
+    /// <param name="name">The query string name.</param>
+    /// <param name="value">The query string value.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendQueryIf(Func<string?, bool> condition, string name, string? value)
+    {
+        if (condition is null || !condition(value))
             return this;
 
         return AppendQuery(name, value);
@@ -462,6 +597,23 @@ public sealed partial class UrlBuilder
     public UrlBuilder AppendQueryIf<TValue>(Func<bool> condition, string name, TValue? value)
     {
         if (condition is null || !condition())
+            return this;
+
+        return AppendQuery(name, value);
+    }
+
+    /// <summary>
+    /// Conditionally appends the query string name and value to the current url if the specified <paramref name="condition" /> is <c>true</c>.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="condition">The condition on weather the query string is appended.</param>
+    /// <param name="name">The query string name.</param>
+    /// <param name="value">The query string value.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">name is <c>null</c></exception>
+    public UrlBuilder AppendQueryIf<TValue>(Func<TValue?, bool> condition, string name, TValue? value)
+    {
+        if (condition is null || !condition(value))
             return this;
 
         return AppendQuery(name, value);
@@ -544,9 +696,9 @@ public sealed partial class UrlBuilder
 
         if (!string.IsNullOrWhiteSpace(UserName))
         {
-            builder.Append(UserName);
+            builder.Append(Uri.EscapeDataString(UserName));
             if (!string.IsNullOrWhiteSpace(Password))
-                builder.Append(':').Append(Password);
+                builder.Append(':').Append(Uri.EscapeDataString(Password));
 
             builder.Append('@');
         }
@@ -626,7 +778,11 @@ public sealed partial class UrlBuilder
     private void SetFieldsFromUri(Uri uri)
     {
         if (!uri.IsAbsoluteUri)
+        {
+            // fall back to regex parser
+            ParseUrl(uri.ToString());
             return;
+        }
 
         Scheme = uri.Scheme;
         Host = uri.Host;
@@ -664,8 +820,8 @@ public sealed partial class UrlBuilder
             return;
 
         SetScheme(match.Groups["scheme"].Value);
-        SetUserName(match.Groups["username"].Value);
-        SetPassword(match.Groups["password"].Value);
+        SetUserName(match.Groups["username"].Value, true);
+        SetPassword(match.Groups["password"].Value, true);
         SetHost(match.Groups["host"].Value);
         SetPort(match.Groups["port"].Value);
         SetPath(match.Groups["path"].Value);
