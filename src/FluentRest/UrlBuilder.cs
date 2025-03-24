@@ -12,7 +12,7 @@ public sealed partial class UrlBuilder
 {
     //scheme:[//[user[:password]@]host[:port]][/path][?query][#fragment]
 
-    private static readonly Dictionary<string, int?> _schemePorts = new Dictionary<string, int?>(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, int?> _schemePorts = new(StringComparer.OrdinalIgnoreCase)
     {
         { "acap", 674 },{ "afp", 548 },{ "dict", 2628 },{ "dns", 53 },{ "file", null },{ "ftp", 21 },{ "git", 9418 },{ "gopher", 70 },
         { "http", 80 },{ "https", 443 },{ "imap", 143 },{ "ipp", 631 },{ "ipps", 631 },{ "irc", 194 },{ "ircs", 6697 },{ "ldap", 389 },
