@@ -18,7 +18,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.10" />
     <PackageReference Include="Testcontainers" Version="4.8.1" />
-    <PackageReference Include="XUnit.Hosting" Version="3.0.2" />
+    <PackageReference Include="XUnit.Hosting" Version="3.1.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
