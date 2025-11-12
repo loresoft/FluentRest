@@ -24,7 +24,7 @@ public class HostFixture : TestApplicationFixture, IAsyncLifetime
         .WithPortBinding(80, true)
         .Build();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _container.StartAsync();
 
@@ -35,7 +35,7 @@ public class HostFixture : TestApplicationFixture, IAsyncLifetime
         HttpBinUrl = $"http://{_container.Hostname}:{_container.GetMappedPublicPort(80)}";
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _container.DisposeAsync();
     }

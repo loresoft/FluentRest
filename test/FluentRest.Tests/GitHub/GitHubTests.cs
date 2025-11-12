@@ -6,15 +6,11 @@ using FluentRest.Tests.GitHub.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 using Xunit;
-using Xunit.Abstractions;
 
 namespace FluentRest.Tests.GitHub;
 
-public class GitHubTests : HostTestBase
+public class GitHubTests(HostFixture fixture) : HostTestBase(fixture)
 {
-    public GitHubTests(ITestOutputHelper output, HostFixture fixture) : base(output, fixture)
-    {
-    }
 
     [Fact]
     public async Task GetRepo()

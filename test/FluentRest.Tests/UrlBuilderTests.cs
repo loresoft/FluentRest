@@ -1,7 +1,6 @@
-using FluentAssertions;
+using AwesomeAssertions;
 
 using Xunit;
-using Xunit.Abstractions;
 
 namespace FluentRest.Tests;
 

@@ -1,15 +1,11 @@
 using Xunit;
-using Xunit.Abstractions;
 
 using XUnit.Hosting;
 
 namespace FluentRest.Tests;
 
 [Collection(HostCollection.CollectionName)]
-public abstract class HostTestBase : TestHostBase<HostFixture>
+public abstract class HostTestBase(HostFixture fixture)
+    : TestHostBase<HostFixture>(fixture)
 {
-    protected HostTestBase(ITestOutputHelper output, HostFixture fixture)
-        : base(output, fixture)
-    {
-    }
 }

@@ -12,17 +12,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 using Xunit;
-using Xunit.Abstractions;
 
 namespace FluentRest.Tests;
 
-public class HttpClientEchoTests : HostTestBase
+public class HttpClientEchoTests(HostFixture fixture) : HostTestBase(fixture)
 {
-    public HttpClientEchoTests(ITestOutputHelper output, HostFixture fixture)
-        : base(output, fixture)
-    {
-    }
-
     [Fact]
     public async Task EchoGet()
     {
