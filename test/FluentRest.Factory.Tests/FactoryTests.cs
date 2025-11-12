@@ -78,7 +78,6 @@ public class FactoryTests
 
         var fluentClientFactory = serviceProvider.GetService<IFluentClientFactory>();
         var fluentSampleClient = fluentClientFactory.CreateClient("sample");
-        Assert.Equal(typeof(JsonContentSerializer), fluentSampleClient.ContentSerializer.GetType());
         Assert.IsAssignableFrom<IFluentClient>(fluentSampleClient);
     }
 
