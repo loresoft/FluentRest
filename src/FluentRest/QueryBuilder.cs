@@ -370,7 +370,16 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
         if (name is null)
             throw new ArgumentNullException(nameof(name));
 
-        var v = value != null ? value.ToString() : string.Empty;
+        var v = value switch
+        {
+            DateTime dateTime => dateTime.ToString("o"),
+            DateTimeOffset dateTimeOffset => dateTimeOffset.ToString("o"),
+#if NET6_0_OR_GREATER
+            DateOnly dateOnly => dateOnly.ToString("o"),
+#endif
+            _ => value?.ToString()
+        };
+
         return QueryString(name, v);
     }
 
@@ -393,10 +402,7 @@ public abstract class QueryBuilder<TBuilder> : RequestBuilder<TBuilder>
             return (TBuilder)this;
 
         foreach (var value in values)
-        {
-            var v = value != null ? value.ToString() : string.Empty;
-            QueryString(name, v);
-        }
+            QueryString(name, value);
 
         return (TBuilder)this;
     }

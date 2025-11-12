@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -21,6 +22,21 @@ public class QueryBuilderTest
         var uri = request.GetUrlBuilder();
 
         Assert.Equal("http://test.com/?Test=", uri.ToString());
+    }
+
+    [Fact]
+    public void QueryStringDateTime()
+    {
+        var request = new HttpRequestMessage();
+        var builder = new QueryBuilder(request);
+
+        DateTime value = new(2025, 10, 15, 11, 11, 30, DateTimeKind.Utc);
+        builder.BaseUri("http://test.com/");
+        builder.QueryString("Test", value);
+
+        var uri = request.GetUrlBuilder();
+
+        Assert.Equal("http://test.com/?Test=2025-10-15T11%3A11%3A30.0000000Z", uri.ToString());
     }
 
     [Fact]

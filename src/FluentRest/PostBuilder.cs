@@ -55,7 +55,15 @@ public abstract class PostBuilder<TBuilder> : QueryBuilder<TBuilder>
     /// <exception cref="System.ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
     public TBuilder FormValue<TValue>(string name, TValue? value)
     {
-        var v = value?.ToString();
+        var v = value switch
+        {
+            DateTime dateTime => dateTime.ToString("o"),
+            DateTimeOffset dateTimeOffset => dateTimeOffset.ToString("o"),
+#if NET6_0_OR_GREATER
+            DateOnly dateOnly => dateOnly.ToString("o"),
+#endif
+            _ => value?.ToString()
+        };
         return FormValue(name, v);
     }
 
