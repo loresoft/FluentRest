@@ -8,9 +8,9 @@
     <PackageVersion Include="AwesomeAssertions" Version="9.3.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="FluentAssertions" Version="[7.2.0]" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="MinVer" Version="7.0.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
