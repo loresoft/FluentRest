@@ -19,8 +19,7 @@ namespace FluentRest.Tests;
 
 public class HostFixture : TestApplicationFixture, IAsyncLifetime
 {
-    private readonly IContainer _container = new ContainerBuilder()
-        .WithImage("kennethreitz/httpbin:latest")
+    private readonly IContainer _container = new ContainerBuilder("kennethreitz/httpbin:latest")
         .WithPortBinding(80, true)
         .Build();
 

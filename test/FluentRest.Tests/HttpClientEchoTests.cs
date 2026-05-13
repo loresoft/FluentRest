@@ -281,7 +281,7 @@ public class HttpClientEchoTests(HostFixture fixture) : HostTestBase(fixture)
 
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request, Xunit.TestContext.Current.CancellationToken);
         Assert.NotNull(response);
 
         var result = await response.DeserializeAsync<EchoResult>();
