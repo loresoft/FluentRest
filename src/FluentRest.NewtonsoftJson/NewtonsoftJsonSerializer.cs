@@ -1,8 +1,4 @@
-using System;
-using System.IO;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
@@ -20,7 +16,7 @@ public class NewtonsoftJsonSerializer : IContentSerializer
     /// Create a new JSON content serializer with the specified settings.
     /// </summary>
     /// <param name="settings"></param>
-    public NewtonsoftJsonSerializer(JsonSerializerSettings settings = null)
+    public NewtonsoftJsonSerializer(JsonSerializerSettings? settings = null)
     {
         Settings = settings;
         _serializer = JsonSerializer.Create(settings);
@@ -32,7 +28,7 @@ public class NewtonsoftJsonSerializer : IContentSerializer
     /// <value>
     /// The JSON serializer settings.
     /// </value>
-    public JsonSerializerSettings Settings { get; }
+    public JsonSerializerSettings? Settings { get; }
 
     /// <summary>
     /// Gets the content-type the serializer supports.
@@ -47,10 +43,10 @@ public class NewtonsoftJsonSerializer : IContentSerializer
     /// </summary>
     /// <param name="data">The data object to serialize.</param>
     /// <returns>The <see cref="HttpContent"/> that the data object serialized to.</returns>
-    public Task<HttpContent> SerializeAsync(object data)
+    public Task<HttpContent?> SerializeAsync(object? data)
     {
         if (data is null)
-            return null;
+            return Task.FromResult<HttpContent?>(null);
 
         string json;
 
@@ -64,7 +60,7 @@ public class NewtonsoftJsonSerializer : IContentSerializer
         }
 
         var httpContent = new StringContent(json, Encoding.UTF8, ContentType);
-        return Task.FromResult<HttpContent>(httpContent);
+        return Task.FromResult<HttpContent?>(httpContent);
     }
 
     /// <summary>
@@ -73,12 +69,15 @@ public class NewtonsoftJsonSerializer : IContentSerializer
     /// <typeparam name="TData">The type of the data.</typeparam>
     /// <param name="content">The content to deserialize.</param>
     /// <returns>The data object deserialized from the HttpContent.</returns>
-    public async Task<TData> DeserializeAsync<TData>(HttpContent content)
+    public async Task<TData?> DeserializeAsync<TData>(HttpContent? content)
     {
+        if (content is null)
+            return default;
+
         using (var s = await content.ReadAsStreamAsync().ConfigureAwait(false))
         using (var sr = new StreamReader(s))
         {
-            return (TData)_serializer.Deserialize(sr, typeof(TData));
+            return (TData?)_serializer.Deserialize(sr, typeof(TData));
         }
     }
 }

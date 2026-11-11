@@ -3,8 +3,6 @@ using System.Text.Json.Serialization;
 
 using AwesomeAssertions;
 
-using Xunit;
-
 namespace FluentRest.Tests;
 
 public class ProblemDetailsTests

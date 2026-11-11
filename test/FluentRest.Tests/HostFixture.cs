@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-
 using DotNet.Testcontainers.Builders;
 
 using FluentRest.Tests.GitHub;
@@ -8,10 +5,6 @@ using FluentRest.Tests.GitHub;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-
-using Xunit;
-
-using XUnit.Hosting;
 
 using IContainer = DotNet.Testcontainers.Containers.IContainer;
 

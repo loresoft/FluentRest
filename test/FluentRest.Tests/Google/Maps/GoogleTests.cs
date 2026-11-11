@@ -1,9 +1,4 @@
-using System;
-using System.Net.Http;
-
 using FluentRest.Tests.Google.Maps.Models;
-
-using Xunit;
 
 namespace FluentRest.Tests.Google.Maps;
 
@@ -21,6 +16,7 @@ public class GoogleMapsTests
 
         Assert.NotNull(result);
         Assert.Equal("OK", result.Status);
+        Assert.NotNull(result.Results);
         Assert.Single(result.Results);
 
     }

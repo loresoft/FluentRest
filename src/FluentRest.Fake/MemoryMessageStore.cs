@@ -1,7 +1,4 @@
-using System;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace FluentRest.Fake;
 
@@ -32,7 +29,7 @@ public class MemoryMessageStore : FakeMessageStore
     /// The callback used to serialize fake response data objects into a byte array.
     /// If not specified, the default settings for the System.Text.Json.JsonSerializer will be used.
     ///</summary>
-    public SerializeResponseContentCallback SerializeResponseContentCallback { get; set; }
+    public SerializeResponseContentCallback? SerializeResponseContentCallback { get; set; }
 
     /// <summary>
     /// Saves the specified HTTP <paramref name="response" /> to the message store as an asynchronous operation.
@@ -75,10 +72,8 @@ public class MemoryMessageStore : FakeMessageStore
         var taskSource = new TaskCompletionSource<HttpResponseMessage>();
         var key = GenerateKey(request);
 
-        FakeResponseContainer container;
-
-        var found = _responseStore.TryGetValue(key, out container);
-        if (!found)
+        var found = _responseStore.TryGetValue(key, out var container);
+        if (!found || container is null)
         {
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
             httpResponseMessage.RequestMessage = request;
@@ -128,6 +123,9 @@ public class MemoryMessageStore : FakeMessageStore
         builder(containerBuilder);
 
         // save to store
+        if (container.RequestUri is null)
+            throw new InvalidOperationException("A request URL must be specified when registering a fake response.");
+
         var key = container.RequestUri.ToString();
 
         _responseStore.AddOrUpdate(key, container, (k, o) => container);
@@ -137,4 +135,4 @@ public class MemoryMessageStore : FakeMessageStore
 /// <summary>
 /// Callback used to serialize fake response content data objects into a byte array.
 ///</summary>
-public delegate byte[] SerializeResponseContentCallback(object content, Type contentType);
+public delegate byte[] SerializeResponseContentCallback(object? content, Type contentType);

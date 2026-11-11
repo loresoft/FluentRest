@@ -7,19 +7,19 @@ public class Issue
 {
 
     [JsonPropertyName("url")]
-    public string Url { get; set; }
+    public string? Url { get; set; }
 
     [JsonPropertyName("labels_url")]
-    public string LabelsUrl { get; set; }
+    public string? LabelsUrl { get; set; }
 
     [JsonPropertyName("comments_url")]
-    public string CommentsUrl { get; set; }
+    public string? CommentsUrl { get; set; }
 
     [JsonPropertyName("events_url")]
-    public string EventsUrl { get; set; }
+    public string? EventsUrl { get; set; }
 
     [JsonPropertyName("html_url")]
-    public string HtmlUrl { get; set; }
+    public string? HtmlUrl { get; set; }
 
     [JsonPropertyName("id")]
     public long Id { get; set; }
@@ -28,38 +28,38 @@ public class Issue
     public int Number { get; set; }
 
     [JsonPropertyName("title")]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     [JsonPropertyName("user")]
-    public User User { get; set; }
+    public User? User { get; set; }
 
     [JsonPropertyName("labels")]
-    public Label[] Labels { get; set; }
+    public Label[]? Labels { get; set; }
 
     [JsonPropertyName("state")]
-    public string State { get; set; }
+    public string? State { get; set; }
 
     [JsonPropertyName("locked")]
     public bool Locked { get; set; }
 
     [JsonPropertyName("assignee")]
-    public User Assignee { get; set; }
+    public User? Assignee { get; set; }
 
     [JsonPropertyName("milestone")]
-    public Milestone Milestone { get; set; }
+    public Milestone? Milestone { get; set; }
 
     [JsonPropertyName("comments")]
     public int Comments { get; set; }
 
     [JsonPropertyName("created_at")]
-    public string CreatedAt { get; set; }
+    public string? CreatedAt { get; set; }
 
     [JsonPropertyName("updated_at")]
-    public string UpdatedAt { get; set; }
+    public string? UpdatedAt { get; set; }
 
     [JsonPropertyName("closed_at")]
-    public object ClosedAt { get; set; }
+    public object? ClosedAt { get; set; }
 
     [JsonPropertyName("body")]
-    public string Body { get; set; }
+    public string? Body { get; set; }
 }

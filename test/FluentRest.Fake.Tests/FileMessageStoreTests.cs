@@ -1,10 +1,4 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using Xunit;
 
 namespace FluentRest.Fake.Tests;
 
@@ -25,7 +19,7 @@ public class FileMessageStoreTests
 
         services
             .AddHttpClient<EchoClient>(c => c.BaseAddress = new Uri("http://httpbin.org/"))
-            .AddHttpMessageHandler(s => new FakeMessageHandler(s.GetService<IFakeMessageStore>(), FakeResponseMode.Fake));
+            .AddHttpMessageHandler(s => new FakeMessageHandler(s.GetRequiredService<IFakeMessageStore>(), FakeResponseMode.Fake));
 
         ServiceProvider = services.BuildServiceProvider();
     }
@@ -33,7 +27,7 @@ public class FileMessageStoreTests
     [Fact]
     public async Task Register()
     {
-        var client = ServiceProvider.GetService<EchoClient>();
+        var client = ServiceProvider.GetRequiredService<EchoClient>();
 
         var result = await client.PostAsync<EchoResult>(b => b
             .AppendPath("post")

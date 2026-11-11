@@ -1,6 +1,3 @@
-using System;
-using System.Net.Http;
-
 using Microsoft.Extensions.Options;
 
 namespace FluentRest;

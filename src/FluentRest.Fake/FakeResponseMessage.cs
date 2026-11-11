@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Net;
 
 namespace FluentRest.Fake;
@@ -34,7 +32,7 @@ public class FakeResponseMessage
     /// <value>
     /// The reason phrase.
     /// </value>
-    public string ReasonPhrase { get; set; }
+    public string? ReasonPhrase { get; set; }
 
     /// <summary>
     /// Gets or sets the response headers.

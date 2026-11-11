@@ -1,17 +1,10 @@
-using System;
-using System.IO;
 using System.IO.Compression;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
-
-using Xunit;
 
 namespace FluentRest.Tests;
 
@@ -439,10 +432,10 @@ public class FluentEchoTests(HostFixture fixture) : HostTestBase(fixture)
 
     private IFluentClient CreateClient()
     {
-        var httpClientFactory = Services.GetService<IHttpClientFactory>();
+        var httpClientFactory = Services.GetRequiredService<IHttpClientFactory>();
         var httpClient = httpClientFactory.CreateClient("HttpBin");
 
-        var serializer = Services.GetService<IContentSerializer>();
+        var serializer = Services.GetRequiredService<IContentSerializer>();
         var fluentClient = new FluentClient(httpClient, serializer);
 
         return fluentClient;

@@ -7,11 +7,11 @@ public class Geometry
 {
 
     [JsonPropertyName("location")]
-    public Location Location { get; set; }
+    public Location? Location { get; set; }
 
     [JsonPropertyName("location_type")]
-    public string LocationType { get; set; }
+    public string? LocationType { get; set; }
 
     [JsonPropertyName("viewport")]
-    public Viewport Viewport { get; set; }
+    public Viewport? Viewport { get; set; }
 }

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -24,20 +22,20 @@ public class EchoResult
     public Dictionary<string, string> Form { get; set; }
 
     [JsonPropertyName("data")]
-    public string Data { get; set; }
+    public string? Data { get; set; }
 
     [JsonPropertyName("json")]
     public JsonElement? Json { get; set; }
 
     [JsonPropertyName("origin")]
-    public string Origin { get; set; }
+    public string? Origin { get; set; }
 
     [JsonPropertyName("url")]
-    public string Url { get; set; }
+    public string? Url { get; set; }
 
     [JsonPropertyName("authenticated")]
     public bool? Authenticated { get; set; }
 
     [JsonPropertyName("user")]
-    public string User { get; set; }
+    public string? User { get; set; }
 }

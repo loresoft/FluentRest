@@ -1,11 +1,6 @@
-using System;
-using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace FluentRest.Fake;
 
@@ -99,7 +94,7 @@ public class FileMessageStore : FakeMessageStore
     }
 
 
-    private HttpContent LoadContent(string contentPath)
+    private HttpContent? LoadContent(string contentPath)
     {
         if (!File.Exists(contentPath))
             return null;
@@ -111,11 +106,14 @@ public class FileMessageStore : FakeMessageStore
         return httpContent;
     }
 
-    private async Task<HttpResponseMessage> LoadResponse(HttpContent httpContent, string responsePath)
+    private async Task<HttpResponseMessage> LoadResponse(HttpContent? httpContent, string responsePath)
     {
-        FakeResponseMessage fakeResponse;
+        FakeResponseMessage? fakeResponse;
         using (var reader = File.OpenRead(responsePath))
             fakeResponse = await JsonSerializer.DeserializeAsync<FakeResponseMessage>(reader);
+
+        if (fakeResponse is null)
+            throw new InvalidOperationException($"Response file '{responsePath}' is empty or invalid.");
 
         var httpResponse = Convert(fakeResponse);
         if (httpContent is null)

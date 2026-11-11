@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json.Serialization;
 
 namespace FluentRest.Tests.GitHub.Models;
@@ -8,13 +7,13 @@ public class Milestone
 {
 
     [JsonPropertyName("url")]
-    public string Url { get; set; }
+    public string? Url { get; set; }
 
     [JsonPropertyName("html_url")]
-    public string HtmlUrl { get; set; }
+    public string? HtmlUrl { get; set; }
 
     [JsonPropertyName("labels_url")]
-    public string LabelsUrl { get; set; }
+    public string? LabelsUrl { get; set; }
 
     [JsonPropertyName("id")]
     public int Id { get; set; }
@@ -23,13 +22,13 @@ public class Milestone
     public int Number { get; set; }
 
     [JsonPropertyName("title")]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     [JsonPropertyName("creator")]
-    public User Creator { get; set; }
+    public User? Creator { get; set; }
 
     [JsonPropertyName("open_issues")]
     public int OpenIssues { get; set; }
@@ -38,13 +37,13 @@ public class Milestone
     public int ClosedIssues { get; set; }
 
     [JsonPropertyName("state")]
-    public string State { get; set; }
+    public string? State { get; set; }
 
     [JsonPropertyName("created_at")]
-    public string CreatedAt { get; set; }
+    public string? CreatedAt { get; set; }
 
     [JsonPropertyName("updated_at")]
-    public string UpdatedAt { get; set; }
+    public string? UpdatedAt { get; set; }
 
     [JsonPropertyName("due_on")]
     public DateTime? DueOn { get; set; }

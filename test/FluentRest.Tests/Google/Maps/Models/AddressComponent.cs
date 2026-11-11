@@ -7,11 +7,11 @@ public class AddressComponent
 {
 
     [JsonPropertyName("long_name")]
-    public string LongName { get; set; }
+    public string? LongName { get; set; }
 
     [JsonPropertyName("short_name")]
-    public string ShortName { get; set; }
+    public string? ShortName { get; set; }
 
     [JsonPropertyName("types")]
-    public string[] Types { get; set; }
+    public string[]? Types { get; set; }
 }

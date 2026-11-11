@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-
-using Xunit;
-
 namespace FluentRest.Tests;
 
 public class QueryBuilderTest
@@ -15,7 +8,7 @@ public class QueryBuilderTest
         var request = new HttpRequestMessage();
         var builder = new QueryBuilder(request);
 
-        string value = null;
+        string? value = null;
         builder.BaseUri("http://test.com/");
         builder.QueryString("Test", value);
 
@@ -89,7 +82,7 @@ public class QueryBuilderTest
         var request = new HttpRequestMessage();
         var builder = new QueryBuilder(request);
 
-        string value = null;
+        string? value = null;
         builder.BaseUri("http://test.com/");
         builder.Header("Test", "Test");
 

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 
@@ -45,7 +43,7 @@ public class FakeContentBuilder : FakeContainerBuilder<FakeResponseBuilder>
     /// <param name="value">The data object to be specified to JSON.</param>
     /// <param name="serializer">Used to control how the response data is serialized into a byte array.</param>
     /// <exception cref="ArgumentNullException"><paramref name="value" /> is <see langword="null" />.</exception>
-    public FakeContentBuilder Data<T>(T value, SerializeResponseContentCallback serializer = null)
+    public FakeContentBuilder Data<T>(T value, SerializeResponseContentCallback? serializer = null)
     {
         byte[] content;
 
@@ -74,7 +72,7 @@ public class FakeContentBuilder : FakeContainerBuilder<FakeResponseBuilder>
         return this;
     }
 
-    private byte[] DefaultSerializer(object content, Type contentType)
+    private byte[] DefaultSerializer(object? content, Type contentType)
     {
         var options = new JsonSerializerOptions { WriteIndented = true };
         return JsonSerializer.SerializeToUtf8Bytes(content, contentType, options);

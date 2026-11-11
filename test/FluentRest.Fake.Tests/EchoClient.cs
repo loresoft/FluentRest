@@ -1,6 +1,3 @@
-using System;
-using System.Net.Http;
-
 namespace FluentRest.Fake.Tests;
 
 public class EchoClient : FluentClient

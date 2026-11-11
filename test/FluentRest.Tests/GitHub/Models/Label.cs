@@ -7,11 +7,11 @@ public class Label
 {
 
     [JsonPropertyName("url")]
-    public string Url { get; set; }
+    public string? Url { get; set; }
 
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [JsonPropertyName("color")]
-    public string Color { get; set; }
+    public string? Color { get; set; }
 }

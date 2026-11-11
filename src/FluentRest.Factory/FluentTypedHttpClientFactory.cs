@@ -1,7 +1,3 @@
-using System;
-using System.Net.Http;
-using System.Threading;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Options;
@@ -14,9 +10,7 @@ internal class FluentTypedHttpClientFactory<TClient> : ITypedHttpClientFactory<T
     private readonly IServiceProvider _services;
     private readonly IOptionsMonitor<FluentClientFactoryOptions> _optionsMonitor;
 
-    private ObjectFactory _activator;
-    private bool _initialized;
-    private object _lock;
+    private readonly Lazy<ObjectFactory> _activator = new Lazy<ObjectFactory>(_createActivator);
 
     public FluentTypedHttpClientFactory(IServiceProvider services, IOptionsMonitor<FluentClientFactoryOptions> optionsMonitor)
     {
@@ -36,11 +30,11 @@ internal class FluentTypedHttpClientFactory<TClient> : ITypedHttpClientFactory<T
             throw new ArgumentNullException(nameof(httpClient));
         }
 
-        LazyInitializer.EnsureInitialized(ref _activator, ref _initialized, ref _lock, _createActivator);
+        var activator = _activator.Value;
 
         var options = _optionsMonitor.Get(typeof(TClient).Name);
         var serializer = options.GetSerializer(_services);
 
-        return (TClient)_activator(_services, new object[] { httpClient, serializer });
+        return (TClient)activator(_services, new object[] { httpClient, serializer });
     }
 }

@@ -1,12 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-
-using Xunit;
 
 namespace FluentRest.Tests;
 
@@ -26,12 +19,12 @@ public class FactoryTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var typedClient = serviceProvider.GetService<SampleClient>();
+        var typedClient = serviceProvider.GetRequiredService<SampleClient>();
         Assert.Equal(typeof(MyContentSerializer), typedClient.ContentSerializer.GetType());
         Assert.Equal(new Uri("https://sample.com/"), typedClient.HttpClient.BaseAddress);
         Assert.IsAssignableFrom<IFluentClient>(typedClient);
 
-        var fluentClientFactory = serviceProvider.GetService<IFluentClientFactory>();
+        var fluentClientFactory = serviceProvider.GetRequiredService<IFluentClientFactory>();
         var namedClient = fluentClientFactory.CreateClient(typeof(SampleClient).Name);
         Assert.Equal(typeof(MyContentSerializer), namedClient.ContentSerializer.GetType());
         Assert.Equal(new Uri("https://sample.com/"), typedClient.HttpClient.BaseAddress);
@@ -52,11 +45,11 @@ public class FactoryTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var clientFactory = serviceProvider.GetService<IHttpClientFactory>();
+        var clientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         var sampleClient = clientFactory.CreateClient("sample");
         Assert.NotNull(sampleClient);
 
-        var fluentClientFactory = serviceProvider.GetService<IFluentClientFactory>();
+        var fluentClientFactory = serviceProvider.GetRequiredService<IFluentClientFactory>();
         var fluentSampleClient = fluentClientFactory.CreateClient("sample");
         Assert.Equal(typeof(MyContentSerializer), fluentSampleClient.ContentSerializer.GetType());
         Assert.Equal(new Uri("https://sample.com/"), fluentSampleClient.HttpClient.BaseAddress);
@@ -72,11 +65,11 @@ public class FactoryTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var clientFactory = serviceProvider.GetService<IHttpClientFactory>();
+        var clientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         var sampleClient = clientFactory.CreateClient("sample");
         Assert.NotNull(sampleClient);
 
-        var fluentClientFactory = serviceProvider.GetService<IFluentClientFactory>();
+        var fluentClientFactory = serviceProvider.GetRequiredService<IFluentClientFactory>();
         var fluentSampleClient = fluentClientFactory.CreateClient("sample");
         Assert.IsAssignableFrom<IFluentClient>(fluentSampleClient);
     }
@@ -95,12 +88,12 @@ public class FactoryTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var clientFactory = serviceProvider.GetService<IHttpClientFactory>();
+        var clientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         var sampleClient = clientFactory.CreateClient();
         Assert.NotNull(sampleClient);
         Assert.Equal(new Uri("https://sample.com/"), sampleClient.BaseAddress);
 
-        var fluentClientFactory = serviceProvider.GetService<IFluentClientFactory>();
+        var fluentClientFactory = serviceProvider.GetRequiredService<IFluentClientFactory>();
         var fluentSampleClient = fluentClientFactory.CreateClient();
         Assert.Equal(typeof(MyContentSerializer), fluentSampleClient.ContentSerializer.GetType());
         Assert.Equal(new Uri("https://sample.com/"), fluentSampleClient.HttpClient.BaseAddress);
@@ -117,11 +110,11 @@ public class FactoryTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var clientFactory = serviceProvider.GetService<IHttpClientFactory>();
+        var clientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         var sampleClient = clientFactory.CreateClient("sample");
         Assert.NotNull(sampleClient);
 
-        var fluentClientFactory = serviceProvider.GetService<IFluentClientFactory>();
+        var fluentClientFactory = serviceProvider.GetRequiredService<IFluentClientFactory>();
         var fluentSampleClient = fluentClientFactory.CreateClient("sample");
         Assert.Equal(typeof(ServicesContentSerializer), fluentSampleClient.ContentSerializer.GetType());
         Assert.IsAssignableFrom<IFluentClient>(fluentSampleClient);
@@ -137,11 +130,11 @@ public class FactoryTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var clientFactory = serviceProvider.GetService<IHttpClientFactory>();
+        var clientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         var sampleClient = clientFactory.CreateClient("sample");
         Assert.NotNull(sampleClient);
 
-        var fluentClientFactory = serviceProvider.GetService<IFluentClientFactory>();
+        var fluentClientFactory = serviceProvider.GetRequiredService<IFluentClientFactory>();
         var fluentSampleClient = fluentClientFactory.CreateClient("sample");
         Assert.Equal(typeof(StaticContentSerializer), fluentSampleClient.ContentSerializer.GetType());
         Assert.IsAssignableFrom<IFluentClient>(fluentSampleClient);

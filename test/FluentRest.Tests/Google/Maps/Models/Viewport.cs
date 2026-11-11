@@ -7,8 +7,8 @@ public class Viewport
 {
 
     [JsonPropertyName("northeast")]
-    public Location Northeast { get; set; }
+    public Location? Northeast { get; set; }
 
     [JsonPropertyName("southwest")]
-    public Location Southwest { get; set; }
+    public Location? Southwest { get; set; }
 }

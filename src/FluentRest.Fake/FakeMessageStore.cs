@@ -1,8 +1,3 @@
-using System;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-
 namespace FluentRest.Fake;
 
 /// <summary>
@@ -70,6 +65,9 @@ public abstract class FakeMessageStore : IFakeMessageStore
     public virtual string GenerateKey(HttpRequestMessage request)
     {
         // use RequestUri as fingerprint
+        if (request.RequestUri is null)
+            throw new ArgumentException("The request URI must be set.", nameof(request));
+
         return request.RequestUri.ToString();
     }
 }

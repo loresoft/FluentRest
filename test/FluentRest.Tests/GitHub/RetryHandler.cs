@@ -1,7 +1,4 @@
-using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace FluentRest.Tests.GitHub;
 
@@ -28,7 +25,6 @@ public class RetryHandler : DelegatingHandler
             }
         }
 
-        // Unreachable.
-        throw null;
+        throw new UnreachableException();
     }
 }

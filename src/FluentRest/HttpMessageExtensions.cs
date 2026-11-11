@@ -49,7 +49,7 @@ public static class HttpMessageExtensions
         return requestMessage.Options.TryGetValue(optionKey, out value);
 #else
         var found = requestMessage.Properties.TryGetValue(key, out var propertyValue);
-        value  = found ? (TValue)propertyValue : default;
+        value = found ? (TValue)propertyValue : default;
         return found;
 #endif
     }

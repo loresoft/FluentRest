@@ -7,17 +7,17 @@ public class GeocodeResult
 {
 
     [JsonPropertyName("address_components")]
-    public AddressComponent[] AddressComponents { get; set; }
+    public AddressComponent[]? AddressComponents { get; set; }
 
     [JsonPropertyName("formatted_address")]
-    public string FormattedAddress { get; set; }
+    public string? FormattedAddress { get; set; }
 
     [JsonPropertyName("geometry")]
-    public Geometry Geometry { get; set; }
+    public Geometry? Geometry { get; set; }
 
     [JsonPropertyName("place_id")]
-    public string PlaceId { get; set; }
+    public string? PlaceId { get; set; }
 
     [JsonPropertyName("types")]
-    public string[] Types { get; set; }
+    public string[]? Types { get; set; }
 }

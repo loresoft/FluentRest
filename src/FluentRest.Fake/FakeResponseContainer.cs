@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace FluentRest.Fake;
 
 /// <summary>
@@ -23,7 +20,7 @@ public class FakeResponseContainer
     /// The callback used to serialize the fake response data objects into a byte array.
     /// If not specified, the default settings for the System.Text.Json.JsonSerializer will be used.
     ///</summary>
-    public SerializeResponseContentCallback SerializeResponseContentCallback { get; set; }
+    public SerializeResponseContentCallback? SerializeResponseContentCallback { get; set; }
 
     /// <summary>
     /// Gets or sets the request URI.
@@ -31,7 +28,7 @@ public class FakeResponseContainer
     /// <value>
     /// The request URI.
     /// </value>
-    public Uri RequestUri { get; set; }
+    public Uri? RequestUri { get; set; }
 
     /// <summary>
     /// Gets or sets the response message.
@@ -47,5 +44,5 @@ public class FakeResponseContainer
     /// <value>
     /// The content of the HTTP response.
     /// </value>
-    public byte[] HttpContent { get; set; }
+    public byte[]? HttpContent { get; set; }
 }

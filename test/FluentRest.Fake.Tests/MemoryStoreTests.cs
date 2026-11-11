@@ -1,12 +1,8 @@
-using System;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
-
-using Xunit;
 
 namespace FluentRest.Fake.Tests;
 
@@ -23,7 +19,7 @@ public class MemoryStoreTests
 
         services
             .AddHttpClient<EchoClient>(c => c.BaseAddress = new Uri("http://httpbin.org/"))
-            .AddHttpMessageHandler(s => new FakeMessageHandler(s.GetService<IFakeMessageStore>(), FakeResponseMode.Fake));
+            .AddHttpMessageHandler(s => new FakeMessageHandler(s.GetRequiredService<IFakeMessageStore>(), FakeResponseMode.Fake));
 
         ServiceProvider = services.BuildServiceProvider();
     }
@@ -50,7 +46,7 @@ public class MemoryStoreTests
         );
 
 
-        var client = ServiceProvider.GetService<EchoClient>();
+        var client = ServiceProvider.GetRequiredService<EchoClient>();
 
         var result = await client.PostAsync<EchoResult>(b => b
             .AppendPath("post")
@@ -88,7 +84,7 @@ public class MemoryStoreTests
         );
 
 
-        var client = ServiceProvider.GetService<EchoClient>();
+        var client = ServiceProvider.GetRequiredService<EchoClient>();
 
         var result = await client.PostAsync<EchoResult>(b => b
             .AppendPath("post")
@@ -124,7 +120,7 @@ public class MemoryStoreTests
         );
 
 
-        var client = ServiceProvider.GetService<EchoClient>();
+        var client = ServiceProvider.GetRequiredService<EchoClient>();
 
         var result = await client.PostAsync<EchoResult>(b => b
             .AppendPath("post")
@@ -139,7 +135,7 @@ public class MemoryStoreTests
         Assert.Equal("value", result.Form["key"]);
     }
 
-    private byte[] CustomSerializer(object content, Type contentType)
+    private byte[] CustomSerializer(object? content, Type contentType)
     {
         var options = new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         return JsonSerializer.SerializeToUtf8Bytes(content, contentType, options);
@@ -160,7 +156,7 @@ public class MemoryStoreTests
             )
         );
 
-        var client = ServiceProvider.GetService<EchoClient>();
+        var client = ServiceProvider.GetRequiredService<EchoClient>();
         var result = await client.PostAsync<EchoResult>(b => b
             .AppendPath("post")
         );
@@ -185,7 +181,7 @@ public class MemoryStoreTests
             )
         );
 
-        var client = ServiceProvider.GetService<EchoClient>();
+        var client = ServiceProvider.GetRequiredService<EchoClient>();
         var result = await client.PostAsync<EchoResult>(b => b
             .AppendPath("post")
         );

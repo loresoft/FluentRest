@@ -4,7 +4,6 @@
     <Description>Fluent wrapper over HttpClient to make REST calls easier</Description>
     <Copyright>Copyright © $([System.DateTime]::Now.ToString(yyyy)) LoreSoft</Copyright>
     <Authors>LoreSoft</Authors>
-    <NeutralLanguage>en-US</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>HTTP;HttpClient;REST;Fluent</PackageTags>
     <PackageProjectUrl>https://github.com/loresoft/FluentRest</PackageProjectUrl>
@@ -17,9 +16,10 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Debug">
-    <DebugType>embedded</DebugType>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>false</IncludeSymbols>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!-- WASM consumers need PDBs beside the assemblies, not only on a symbol server. -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
@@ -27,12 +27,19 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Options">
+    <Language>en-US</Language>
+    <NeutralLanguage>en-US</NeutralLanguage>
     <DefaultLanguage>en-US</DefaultLanguage>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
-
+  
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0'">
+    <Features>runtime-async=on</Features>
+  </PropertyGroup>
+  
   <PropertyGroup>
     <MinVerTagPrefix>v</MinVerTagPrefix>
   </PropertyGroup>

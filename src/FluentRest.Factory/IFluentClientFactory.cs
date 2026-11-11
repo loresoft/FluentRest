@@ -1,5 +1,3 @@
-using System.Net.Http;
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentRest;

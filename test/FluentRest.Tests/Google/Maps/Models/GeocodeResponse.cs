@@ -7,8 +7,8 @@ public class GeocodeResponse
 {
 
     [JsonPropertyName("results")]
-    public GeocodeResult[] Results { get; set; }
+    public GeocodeResult[]? Results { get; set; }
 
     [JsonPropertyName("status")]
-    public string Status { get; set; }
+    public string? Status { get; set; }
 }

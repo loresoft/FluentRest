@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace FluentRest.Tests;
 
 [CollectionDefinition(CollectionName)]
