@@ -35,11 +35,7 @@
     <Nullable>enable</Nullable>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0'">
-    <Features>runtime-async=on</Features>
-  </PropertyGroup>
-  
+
   <PropertyGroup>
     <MinVerTagPrefix>v</MinVerTagPrefix>
   </PropertyGroup>
